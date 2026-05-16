@@ -82,21 +82,21 @@
   .nav-cta{background:var(--accent);color:#fff;border:none;border-radius:100px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;}
 
   /* HERO */
-  .hero{text-align:center;padding:56px 24px 0;}
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:32px;}
+  .hero{text-align:center;padding:40px 24px 0;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;}
   .edot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
   .hero-h{font-size:clamp(56px,8vw,100px);font-weight:900;line-height:.92;letter-spacing:-3px;text-transform:uppercase;}
   .hl1{display:block;color:var(--hl1);text-shadow:var(--sh1),var(--sh2);transition:color .4s,text-shadow .4s;}
   .hl2{display:block;color:var(--hl2);text-shadow:var(--sh3),var(--sh4);transition:color .4s,text-shadow .4s;}
-  .tagline{margin-top:28px;font-size:19px;color:var(--text2);}
+  .tagline{margin-top:12px;font-size:19px;color:var(--text2);}
   .tagline strong{color:#ECEAFD;font-weight:600;transition:color .4s;}
   .light .tagline strong{color:#0A0F81;}
   .domain-pill{margin-top:16px;display:inline-flex;align-items:center;background:var(--domain-bg);border:1px solid var(--domain-border);border-radius:100px;padding:7px 18px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .3s;}
   .domain-pill span{color:var(--accent2);}
 
   /* STORE BUTTONS */
-  .ctas{margin-top:24px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+  .ctas{margin-top:20px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
   .store-btn{display:flex;align-items:center;gap:11px;background:var(--btn-bg);border:1px solid var(--btn-border);border-radius:14px;padding:13px 22px;cursor:pointer;transition:background .2s,border-color .2s,transform .15s;}
   .store-btn:hover{background:var(--btn-hover);border-color:rgba(91,82,232,0.4);transform:translateY(-2px);}
   .store-icon{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
@@ -116,7 +116,7 @@
 
   /* CAROUSEL */
   /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
-  .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:32px 0 80px;}
+  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:28px 0 60px;}
   .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
   /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
@@ -140,15 +140,15 @@
   .arr:hover{background:rgba(91,82,232,.15);border-color:var(--accent);color:var(--text1);}
 
   /* SECTIONS */
-  .sec{text-align:center;padding:80px 24px 0;}
+  .sec{text-align:center;padding:60px 24px 0;}
   .slbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
   .stitle{font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;color:var(--text1);max-width:560px;margin:0 auto;}
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
   /* STEPS */
-  .steps-sec{padding:64px 36px;}
-  .steps{display:flex;gap:2px;max-width:840px;margin:44px auto 0;}
+  .steps-sec{padding:48px 36px;}
+  .steps{display:flex;gap:2px;max-width:840px;margin:32px auto 0;}
   .step{flex:1;background:var(--step-bg);border:1px solid var(--step-border);border-radius:18px;padding:26px 20px;transition:background .3s,border-color .3s;}
   .step:hover{background:rgba(91,82,232,.07);border-color:rgba(91,82,232,.3);}
   .step-n{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
@@ -158,7 +158,7 @@
   .step-c{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:16px;align-self:center;}
 
   /* PHONES */
-  .phones-sec{padding:64px 0;overflow:hidden;}
+  .phones-sec{padding:48px 0;overflow:hidden;}
   .phones{display:flex;gap:16px;padding:16px 36px;justify-content:center;}
   .phone{width:200px;height:420px;background:var(--bg2);border-radius:32px;border:1.5px solid var(--phone-border);flex-shrink:0;overflow:hidden;position:relative;transition:transform .2s,background .4s,border-color .4s;}
   .phone:hover{transform:translateY(-6px);}
@@ -169,7 +169,7 @@
   .phone-lbl.pl-hl{color:var(--accent2);font-weight:600;}
 
   /* INNER CIRCLE */
-  .ic-sec{padding:64px 40px;display:flex;align-items:center;justify-content:center;gap:52px;flex-wrap:wrap;}
+  .ic-sec{padding:48px 40px;display:flex;align-items:center;justify-content:center;gap:44px;flex-wrap:wrap;}
   .ic-vis{position:relative;width:250px;height:250px;flex-shrink:0;}
   .ring{position:absolute;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);border:1px solid rgba(91,82,232,.2);}
   .r1{width:250px;height:250px;animation:rp 3s ease-in-out infinite;}
@@ -195,9 +195,9 @@
   .vs-row-text{font-size:13px;color:var(--vs-text);line-height:1.55;}
 
   /* WAITLIST SECTION */
-  .waitlist-sec{padding:80px 36px;text-align:center;}
-  .waitlist-card{max-width:520px;margin:32px auto 0;background:var(--waitlist-bg);border:1px solid var(--waitlist-border);border-radius:24px;padding:40px 36px;transition:background .4s,border-color .4s;}
-  .waitlist-card p{font-size:15px;color:var(--text2);margin-bottom:24px;line-height:1.65;}
+  .waitlist-sec{padding:60px 36px;text-align:center;}
+  .waitlist-card{max-width:520px;margin:24px auto 0;background:var(--waitlist-bg);border:1px solid var(--waitlist-border);border-radius:24px;padding:36px 36px;transition:background .4s,border-color .4s;}
+  .waitlist-card p{font-size:15px;color:var(--text2);margin-bottom:20px;line-height:1.65;}
   .waitlist-form{display:flex;gap:0;}
   .waitlist-form input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-right:none;border-radius:12px 0 0 12px;padding:14px 18px;color:var(--input-text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:all .3s;}
   .waitlist-form input::placeholder{color:var(--input-ph);}
@@ -231,11 +231,11 @@
   @media (max-width: 900px) {
     .nav{padding:16px 24px;}
     .nav-links{gap:20px;}
-    .sec{padding:64px 20px 0;}
-    .steps-sec{padding:48px 24px;}
+    .sec{padding:48px 20px 0;}
+    .steps-sec{padding:36px 24px;}
     .phones{padding:16px 24px;flex-wrap:wrap;}
-    .ic-sec{padding:48px 24px;gap:36px;}
-    .waitlist-sec{padding:64px 24px;}
+    .ic-sec{padding:36px 24px;gap:32px;}
+    .waitlist-sec{padding:48px 24px;}
     .footer{padding:28px 24px;}
   }
 
@@ -339,7 +339,6 @@
       <img src="assets/SHOW%20UP%20TOGETHER%20VECTOR.svg" alt="SHOW UP TOGETHER" style="width:100%;height:auto;display:block;">
   </div>
     <p class="tagline">Fitness accountability with your <strong>inner circle.</strong></p>
-    <div style="margin-top:16px;"><div class="domain-pill">join<span>huddle.fit</span></div></div>
     <div class="ctas">
       <div class="store-btn">
         <div class="store-icon">
@@ -364,7 +363,7 @@
     </div>
 
     <!-- HERO WAITLIST -->
-    <div style="margin-top:32px;">
+    <div style="margin-top:22px;">
       <div class="hero-waitlist">
         <input type="email" placeholder="your@email.com"/>
         <button>Join the waitlist</button>
@@ -374,7 +373,7 @@
   </section>
 
   <!-- 2. PROOF CAROUSEL -->
-  <div class="sec" style="padding-top:48px;">
+  <div class="sec" style="padding-top:36px;">
     <div class="slbl">Proof pics from the community</div>
   </div>
 
