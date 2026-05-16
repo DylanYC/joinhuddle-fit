@@ -170,14 +170,52 @@
 
   /* INNER CIRCLE */
   .ic-sec{padding:48px 40px;display:flex;align-items:center;justify-content:center;gap:44px;flex-wrap:wrap;}
-  .ic-vis{position:relative;width:250px;height:250px;flex-shrink:0;}
-  .ring{position:absolute;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);border:1px solid rgba(91,82,232,.2);}
-  .r1{width:250px;height:250px;animation:rp 3s ease-in-out infinite;}
-  .r2{width:180px;height:180px;animation:rp 3s ease-in-out infinite .5s;}
-  .r3{width:106px;height:106px;animation:rp 3s ease-in-out infinite 1s;}
-  @keyframes rp{0%,100%{border-color:rgba(91,82,232,.2)}50%{border-color:rgba(91,82,232,.55)}}
-  .ic-ctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;z-index:3;}
-  .ic-orb{position:absolute;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.15);}
+
+  /* WHY slide-3 vignette — looping cluster animation (mirrors Flutter spec).
+     Layout uses 360x320 design-space coordinates; everything inside the frame
+     positions via percentages of the frame box. Typography & ring widths use
+     cqw so they scale with frame width. */
+  .vignette{position:relative;width:100%;max-width:360px;aspect-ratio:360/350;flex-shrink:0;container-type:inline-size;}
+  .vignette-pips{position:absolute;top:0;left:0;right:0;height:8.57%;display:flex;align-items:center;justify-content:center;gap:0.55cqw;}
+  .vignette-pips .pip{width:1.11cqw;height:1.11cqw;border-radius:999px;background:#CFD1FF;transition:width 400ms cubic-bezier(.16,1,.3,1),background-color 400ms ease;}
+  .vignette-pips .pip.active{width:3.89cqw;background:#6F75FF;}
+  .vignette-frame{position:absolute;top:8.57%;left:0;right:0;bottom:0;}
+  .vignette-halo{position:absolute;left:8.33%;top:11.25%;width:83.33%;height:68.75%;border-radius:50%;background:radial-gradient(closest-side,rgba(207,209,255,0.36),rgba(207,209,255,0) 75%);pointer-events:none;}
+  .vignette-stage{position:absolute;inset:0;}
+  .vignette-layer{position:absolute;inset:0;}
+  .vignette-layer.is-outgoing{opacity:0;transition:opacity 700ms cubic-bezier(.65,0,.35,1);}
+  .vignette-chip{position:absolute;left:67.78%;top:2.5%;background:#fff;border:0.42cqw solid #CFD1FF;border-radius:999px;padding:1.67cqw 3.33cqw;display:inline-flex;align-items:center;gap:1.67cqw;box-shadow:0 1.67cqw 4.44cqw rgba(10,15,129,0.10);white-space:nowrap;}
+  .vignette-chip svg{width:3.33cqw;height:3.33cqw;display:block;flex-shrink:0;}
+  .vignette-chip span{font-size:3.33cqw;font-weight:700;letter-spacing:0.056cqw;color:#0A0F81;line-height:1;}
+  .vignette-caption{position:absolute;left:0;right:0;bottom:1.88%;height:5%;}
+  .vignette-caption-line{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.06cqw;font-weight:700;letter-spacing:0.42cqw;color:#6F75FF;line-height:1;text-transform:uppercase;opacity:0;transform:translateY(1.11cqw);transition:opacity 500ms ease-out 200ms,transform 500ms ease-out 200ms;}
+  .vignette-caption-line.is-current{opacity:1;transform:translateY(0);}
+  .vignette-caption-line.is-prev{opacity:0;transform:translateY(1.11cqw);}
+
+  /* Avatar — three nested layers so YOU gets the brand+white double ring. */
+  .avatar{position:absolute;left:calc(var(--x) * 100% / 360);top:calc(var(--y) * 100% / 320);width:calc(var(--size) * 100% / 360);aspect-ratio:1;border-radius:50%;background:#fff;padding:0.69cqw;box-sizing:border-box;box-shadow:0 1.11cqw 3.33cqw rgba(0,0,0,0.12);}
+  .avatar.is-you{background:#6F75FF;padding:0.56cqw;box-shadow:0 2.22cqw 6.11cqw rgba(10,15,129,0.22);}
+  .avatar-mid{width:100%;height:100%;border-radius:50%;box-sizing:border-box;}
+  .avatar.is-you .avatar-mid{background:#fff;padding:0.83cqw;}
+  .avatar-inner{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--tone-bg);}
+  .avatar-mono{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--tone-ink);font-weight:700;letter-spacing:0.5px;font-size:calc(var(--size) * var(--mono-scale,0.34) * 100cqw / 360);line-height:1;}
+  .avatar-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--tone-bg);}
+  .avatar-img.is-failed{display:none;}
+
+  /* Per-avatar staggered entrance (only on the incoming layer). */
+  @keyframes vignette-avatar-in{
+    0%{opacity:0;transform:translateY(2.22cqw) scale(0.85);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .vignette-layer.is-incoming .avatar{animation:vignette-avatar-in 700ms cubic-bezier(.34,1.4,.64,1) backwards;animation-delay:calc(var(--i) * 35ms);}
+
+  @media (prefers-reduced-motion: reduce){
+    .vignette-layer.is-incoming .avatar{animation:none;}
+    .vignette-layer.is-outgoing{transition:none;opacity:0;}
+    .vignette-caption-line{transition:none;}
+    .vignette-pips .pip{transition:none;}
+  }
+
   .ic-copy{max-width:360px;}
   .ic-copy h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:12px;}
   .ic-copy p{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
@@ -484,14 +522,23 @@
   </div>
 
   <section class="ic-sec">
-    <div class="ic-vis">
-      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-      <div class="ic-ctr">You</div>
-      <div class="ic-orb" style="background:#5B52E8;top:5px;left:50%;transform:translateX(-50%);">JR</div>
-      <div class="ic-orb" style="background:#c0392b;top:50%;right:5px;transform:translateY(-50%);">MK</div>
-      <div class="ic-orb" style="background:#2d9d6e;bottom:5px;left:50%;transform:translateX(-50%);">KL</div>
-      <div class="ic-orb" style="background:#9b6dc9;top:50%;left:5px;transform:translateY(-50%);">SP</div>
-      <div class="ic-orb" style="background:#1565c0;top:16px;right:34px;">TW</div>
+    <div class="vignette" id="vignette" role="img" aria-label="Huddle works for partnerships, close friends, and families — privately">
+      <div class="vignette-pips" aria-hidden="true">
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+      </div>
+      <div class="vignette-frame">
+        <div class="vignette-halo" aria-hidden="true"></div>
+        <div class="vignette-stage" id="vignette-stage"></div>
+        <div class="vignette-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10 V8 a5 5 0 0 1 10 0 V10" stroke="#0A0F81" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="10" width="14" height="10" rx="2.4" fill="#0A0F81"/>
+            <circle cx="12" cy="15" r="1.6" fill="#fff"/>
+          </svg>
+          <span>Private</span>
+        </div>
+        <div class="vignette-caption" id="vignette-caption" aria-live="polite"></div>
+      </div>
     </div>
     <div class="ic-copy">
       <h2>Up to 12 people.<br/>Maximum accountability.</h2>
@@ -652,4 +699,174 @@ document.getElementById('cnext').onclick = () => { go(cur + 1); reset(); };
 track.addEventListener('mouseenter', () => { hov = true; clearTimeout(timer); });
 track.addEventListener('mouseleave', () => { hov = false; reset(); });
 reset();
+
+// =============================================================================
+// WHY slide-3 vignette — looping cluster animation
+// Mirrors lib/widgets/why_slide_three_animation.dart from the Flutter app.
+// 360x320 design-space positions; 4000ms hold; 700ms crossfade; per-avatar
+// staggered entrance with overshoot.
+// =============================================================================
+(function () {
+  const AVATARS_DIR = 'assets/Avatars/';
+  // Tone palette from PhotoAvatar.tones (lib/widgets/photo_avatar.dart).
+  const TONES = [
+    ['#E8E3FB', '#3B3B7A'], ['#FFE7D6', '#8C4A22'], ['#D8EFE6', '#1F5A45'],
+    ['#FAD9E0', '#8C2A47'], ['#E1E5FA', '#2A357A'], ['#F2EBD3', '#7A5B1F'],
+    ['#D4DDF5', '#1F3A7A'], ['#EFD9F2', '#5C2A6E'], ['#DFEAD0', '#3F5A1F'],
+    ['#F4E0C7', '#7A4A1F'],
+  ];
+  const MONOGRAMS = ['AM','JL','RK','SP','DT','MN','EC','BV','HW','OG'];
+
+  // Filenames map to the actual files in assets/Avatars/ (which use the
+  // naming the user delivered — Partnership_1, CloseFriends4-1, Families7-1,
+  // etc. — not the names in the Dart spec). Order within each vignette
+  // matches the Flutter slot order so toneIndex / isYou stay correct.
+  const VIGNETTES = [
+    { id:'two', label:'PERFECT FOR PARTNERSHIPS', items:[
+      {x:122,y:110,size:96,tone:0,you:true, src:AVATARS_DIR+'WHY_Slide3_Partnership_1.png'},
+      {x:220,y:124,size:86,tone:5,           src:AVATARS_DIR+'WHY_Slide3_Partnership_2.png'},
+    ]},
+    { id:'four', label:'PERFECT FOR CLOSE FRIENDS', items:[
+      {x:70, y:90, size:72,tone:1,           src:AVATARS_DIR+'WHY_Slide3_CloseFriends2.png'},
+      {x:142,y:70, size:84,tone:0,you:true, src:AVATARS_DIR+'WHY_Slide3_CloseFriends1.png'},
+      {x:220,y:90, size:72,tone:4,           src:AVATARS_DIR+'WHY_Slide3_CloseFriends4-1.png'},
+      {x:156,y:168,size:70,tone:7,           src:AVATARS_DIR+'WHY_Slide3_CloseFriends4.png'},
+    ]},
+    { id:'eleven', label:'PERFECT FOR FAMILIES', items:[
+      {x:48, y:70, size:52,tone:4,           src:AVATARS_DIR+'WHY_Slide3_Families2.png'},
+      {x:100,y:56, size:56,tone:7,           src:AVATARS_DIR+'WHY_Slide3_Families3.png'},
+      {x:156,y:44, size:56,tone:2,           src:AVATARS_DIR+'WHY_Slide3_Families4.png'},
+      {x:212,y:56, size:56,tone:8,           src:AVATARS_DIR+'WHY_Slide3_Families5.png'},
+      {x:266,y:72, size:52,tone:5,           src:AVATARS_DIR+'WHY_Slide3_Families6.png'},
+      {x:70, y:126,size:58,tone:6,           src:AVATARS_DIR+'WHY_Slide3_Families7.png'},
+      {x:132,y:116,size:76,tone:0,you:true, src:AVATARS_DIR+'WHY_Slide3_Families1.png'},
+      {x:212,y:126,size:58,tone:3,           src:AVATARS_DIR+'WHY_Slide3_Families7-1.png'},
+      {x:80, y:200,size:54,tone:9,           src:AVATARS_DIR+'WHY_Slide3_Families7-2.png'},
+      {x:153,y:200,size:54,tone:1,           src:AVATARS_DIR+'WHY_Slide3_Families7-3.png'},
+      {x:226,y:200,size:54,tone:4,           src:AVATARS_DIR+'WHY_Slide3_Families7-4.png'},
+    ]},
+  ];
+
+  const HOLD_MS = 4000;
+  const OUT_FADE_MS = 700;
+  const root = document.getElementById('vignette');
+  if (!root) return;
+  const stage = document.getElementById('vignette-stage');
+  const captionWrap = document.getElementById('vignette-caption');
+  const pips = root.querySelectorAll('.pip');
+
+  // Build the three caption layers once; we just toggle .is-current / .is-prev.
+  VIGNETTES.forEach((v, i) => {
+    const line = document.createElement('div');
+    line.className = 'vignette-caption-line' + (i === 0 ? ' is-current' : '');
+    line.textContent = v.label;
+    captionWrap.appendChild(line);
+  });
+
+  function buildLayer(vIdx, animate) {
+    const v = VIGNETTES[vIdx];
+    const layer = document.createElement('div');
+    layer.className = 'vignette-layer' + (animate ? ' is-incoming' : '');
+    v.items.forEach((spec, i) => {
+      const av = document.createElement('div');
+      av.className = 'avatar' + (spec.you ? ' is-you' : '');
+      av.style.setProperty('--x', spec.x);
+      av.style.setProperty('--y', spec.y);
+      av.style.setProperty('--size', spec.size);
+      av.style.setProperty('--i', i);
+      const tone = TONES[spec.tone % TONES.length];
+      av.style.setProperty('--tone-bg', tone[0]);
+      av.style.setProperty('--tone-ink', tone[1]);
+      const mono = spec.you ? 'YOU' : MONOGRAMS[spec.tone % MONOGRAMS.length];
+      av.style.setProperty('--mono-scale', mono.length >= 3 ? 0.30 : 0.34);
+      const mid = document.createElement('div'); mid.className = 'avatar-mid';
+      const inner = document.createElement('div'); inner.className = 'avatar-inner';
+      const monoEl = document.createElement('div');
+      monoEl.className = 'avatar-mono';
+      monoEl.textContent = mono;
+      inner.appendChild(monoEl);
+      if (spec.src) {
+        const img = document.createElement('img');
+        img.className = 'avatar-img';
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = spec.src;
+        img.onerror = () => { img.classList.add('is-failed'); };
+        inner.appendChild(img);
+      }
+      mid.appendChild(inner);
+      av.appendChild(mid);
+      layer.appendChild(av);
+    });
+    return layer;
+  }
+
+  let idx = 0;
+  let started = false;
+  let hidden = false;
+  let timer = null;
+
+  function setPips() {
+    pips.forEach((p, i) => p.classList.toggle('active', i === idx));
+  }
+  function setCaption(prevIdx) {
+    captionWrap.querySelectorAll('.vignette-caption-line').forEach((el, i) => {
+      el.classList.toggle('is-current', i === idx);
+      el.classList.toggle('is-prev', i === prevIdx);
+    });
+  }
+
+  function swap() {
+    const prev = idx;
+    idx = (idx + 1) % VIGNETTES.length;
+    const old = stage.querySelector('.vignette-layer');
+    if (old) {
+      old.classList.remove('is-incoming');
+      // Force reflow so the upcoming opacity transition has a 1→0 start state.
+      void old.offsetWidth;
+      old.classList.add('is-outgoing');
+      setTimeout(() => { if (old.parentNode) old.parentNode.removeChild(old); }, OUT_FADE_MS + 50);
+    }
+    stage.appendChild(buildLayer(idx, true));
+    setPips();
+    setCaption(prev);
+  }
+
+  function tick() {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (!hidden) swap();
+      tick();
+    }, HOLD_MS);
+  }
+
+  function start() {
+    if (started) return;
+    started = true;
+    stage.appendChild(buildLayer(0, true));
+    setPips();
+    tick();
+  }
+
+  // Only start once the user scrolls near the section — matches Flutter's
+  // `active` gate so the first vignette isn't partway through on first view.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        start();
+        io.disconnect();
+      }
+    }, { threshold: 0.15 });
+    io.observe(root);
+  } else {
+    start();
+  }
+
+  // Pause the loop while the tab is hidden — saves work and avoids the loop
+  // catching up with a burst of swaps when the user returns.
+  document.addEventListener('visibilitychange', () => {
+    hidden = document.hidden;
+  });
+})();
 </script>
