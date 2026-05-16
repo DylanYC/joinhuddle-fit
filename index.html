@@ -148,8 +148,12 @@
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
-  /* THE LOOP — sticky scroll-driven "How Huddle Works" */
-  .loop-outer{position:relative;height:300vh;}
+  /* THE LOOP — sticky scroll-driven "How Huddle Works".
+     Outer = 220vh: sticky takes 100vh, leaving 120vh of scroll range to
+     distribute across 3 steps (~40vh per step). Shorter than the "standard"
+     300vh pattern on purpose — keeps the transitions in/out of the section
+     tight so adjacent sections never feel marooned by empty whitespace. */
+  .loop-outer{position:relative;height:220vh;}
   .loop-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;}
   .loop-inner{width:100%;max-width:1120px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:380px 1fr;gap:80px;align-items:center;}
 
@@ -1554,7 +1558,14 @@ cOuter.addEventListener('click', (e) => {
     lockedByClick = true;
     clearTimeout(clickLockTimer);
     clickLockTimer = setTimeout(() => { lockedByClick = false; }, 650);
-    const target = outer.offsetTop + idx * window.innerHeight;
+    // Land just inside each step's scroll third — NOT on a boundary.
+    // The previous formula (idx * viewportH) landed step 3 exactly at the
+    // sticky-release point, which dropped the user into the empty tail of
+    // the outer container. Using outerH/3 keeps every click solidly inside
+    // its step's active range, with comfortable scroll room on both sides.
+    const outerH = outer.offsetHeight - window.innerHeight;
+    const stepRange = outerH / 3;
+    const target = outer.offsetTop + idx * stepRange + 8;
     window.scrollTo({ top: target, behavior: 'smooth' });
   }
 
