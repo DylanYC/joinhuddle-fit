@@ -59,7 +59,11 @@
     --waitlist-bg:rgba(91,82,232,0.06); --waitlist-border:rgba(91,82,232,0.2);
   }
 
-  .site{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);overflow-x:hidden;transition:background .4s,color .4s;}
+  /* overflow-x: clip (not hidden) so position:sticky descendants still work.
+     `hidden` makes .site a scroll container, which breaks any sticky inside
+     it (the loop section's sticky-left rail). `clip` prevents horizontal
+     overflow without becoming a scroll container. */
+  .site{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);overflow-x:hidden;overflow-x:clip;transition:background .4s,color .4s;}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:var(--bg);transition:background .4s;position:relative;}
   .nav-links{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);}
   .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--text1);letter-spacing:-.3px;}
@@ -176,9 +180,13 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
+  /* Right column = three stacked scene rows (Dia pattern: min-h-[60vh]
+     flex items-start pb-40). Rows are sized just slightly taller than the
+     scenes so the visible "gap" between scenes is small but the scroll
+     range is long enough to make each step feel like its own moment. */
   .loop-right{display:flex;flex-direction:column;}
-  .loop-row{min-height:78vh;display:flex;align-items:center;justify-content:center;padding:24px 0;opacity:.32;transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);transform:scale(.98);}
-  .loop-row.is-active-scene{opacity:1;transform:scale(1);}
+  .loop-row{min-height:60vh;display:flex;align-items:flex-start;justify-content:center;padding:0 0 40px;}
+  .loop-row:last-child{padding-bottom:0;}
   .loop-scene{display:flex;align-items:center;justify-content:center;}
 
   /* Scene 1 — commitment cards stacked */
@@ -1528,7 +1536,6 @@ cOuter.addEventListener('click', (e) => {
       s.classList.toggle('is-active', on);
       s.setAttribute('aria-selected', on ? 'true' : 'false');
     });
-    rows.forEach((r, i) => r.classList.toggle('is-active-scene', i === idx));
   }
 
   function isDesktop() {
