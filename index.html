@@ -116,8 +116,12 @@
 
   /* CAROUSEL */
   /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
-  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:28px 0 60px;}
-  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
+  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:28px 0 60px;cursor:grab;touch-action:pan-y;}
+  .c-outer.is-dragging{cursor:grabbing;}
+  .c-outer.is-dragging .c-track{transition:none;}
+  .c-outer.is-dragging .pcard{cursor:grabbing;pointer-events:none;}
+  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);user-select:none;-webkit-user-select:none;}
+  .c-track img,.c-track *{-webkit-user-drag:none;user-drag:none;}
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
   /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
   .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
@@ -699,6 +703,90 @@ document.getElementById('cnext').onclick = () => { go(cur + 1); reset(); };
 track.addEventListener('mouseenter', () => { hov = true; clearTimeout(timer); });
 track.addEventListener('mouseleave', () => { hov = false; reset(); });
 reset();
+
+// ---- Drag / swipe (Zoom-style click+hold and drag) ----
+// Step width must be measured live: card size + gap change at the 640px breakpoint.
+const cOuter = document.querySelector('.c-outer');
+function getStep() {
+  const card = track.querySelector('.pcard');
+  if (!card) return STEP;
+  const cs = getComputedStyle(track);
+  const gap = parseFloat(cs.columnGap || cs.gap) || 0;
+  return card.offsetWidth + gap;
+}
+let dragId = null, dragStartX = 0, dragStartY = 0, dragStartT = 0;
+let baseTx = 0, dragDx = 0, dragLocked = false, didDrag = false;
+
+cOuter.addEventListener('pointerdown', (e) => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  dragId = e.pointerId;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  dragStartT = performance.now();
+  dragDx = 0;
+  dragLocked = false;
+  didDrag = false;
+  baseTx = -cur * getStep();
+  track.style.transition = 'none';
+  hov = true;
+  clearTimeout(timer);
+});
+
+cOuter.addEventListener('pointermove', (e) => {
+  if (e.pointerId !== dragId) return;
+  const dx = e.clientX - dragStartX;
+  const dy = e.clientY - dragStartY;
+  if (!dragLocked) {
+    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    if (Math.abs(dx) <= Math.abs(dy)) {
+      // Vertical intent — release so the page can scroll.
+      dragId = null;
+      track.style.transition = SMOOTH;
+      hov = false;
+      reset();
+      return;
+    }
+    dragLocked = true;
+    cOuter.classList.add('is-dragging');
+    try { cOuter.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+  didDrag = true;
+  dragDx = dx;
+  track.style.transform = `translateX(${baseTx + dx}px)`;
+  e.preventDefault();
+});
+
+function endDrag(e) {
+  if (e.pointerId !== dragId) return;
+  dragId = null;
+  cOuter.classList.remove('is-dragging');
+  if (!dragLocked) {
+    // Drag never engaged — restore transition and resume autoplay.
+    track.style.transition = SMOOTH;
+    hov = false;
+    reset();
+    return;
+  }
+  const step = getStep();
+  const elapsed = Math.max(performance.now() - dragStartT, 1);
+  const velocity = dragDx / elapsed; // px per ms
+  let move = Math.round(-dragDx / step);
+  // Flick: short, fast swipe still advances one card.
+  if (Math.abs(velocity) > 0.5 && Math.abs(dragDx) > 15) {
+    move = dragDx < 0 ? Math.max(move, 1) : Math.min(move, -1);
+  }
+  track.style.transition = SMOOTH;
+  go(cur + move);
+  hov = false;
+  reset();
+}
+cOuter.addEventListener('pointerup', endDrag);
+cOuter.addEventListener('pointercancel', endDrag);
+
+// Suppress the click that follows a real drag (prevents pcard ghost-clicks).
+cOuter.addEventListener('click', (e) => {
+  if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; }
+}, true);
 
 // =============================================================================
 // WHY slide-3 vignette — looping cluster animation
