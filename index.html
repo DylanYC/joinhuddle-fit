@@ -70,7 +70,8 @@
   .nav-logo .logo-word{fill:#ECEAFD;transition:fill .4s;}
   .light .nav-logo .logo-word{fill:#0A0F81;}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--text2);list-style:none;}
-  .nav-links li{cursor:pointer;}
+  .nav-links li{cursor:pointer;transition:color .2s ease;}
+  .nav-links li:hover{color:var(--text1);}
   .nav-right{display:flex;align-items:center;gap:12px;}
   .toggle{display:flex;align-items:center;gap:8px;background:var(--toggle-bg);border:1px solid var(--toggle-border);border-radius:100px;padding:5px 12px;cursor:pointer;user-select:none;transition:all .3s;}
   .t-icon{font-size:13px;}
@@ -317,7 +318,7 @@
         <circle class="logo-mark" cx="508.333" cy="341.001" r="90.6666"/>
       </svg>
     </div>
-    <ul class="nav-links"><li>How it works</li><li>Inner Circle</li><li>Waitlist</li></ul>
+    <ul class="nav-links"><li onclick="smoothScrollTo('loop')">How it works</li><li onclick="smoothScrollTo('inner-circle')">Inner Circle</li></ul>
     <div class="nav-right">
       <div class="toggle" id="toggle" onclick="toggleMode()">
         <span class="t-icon" id="ticon">☀️</span>
@@ -384,7 +385,7 @@
   </section>
 
   <!-- 3. THE LOOP -->
-  <div class="sec">
+  <div class="sec" id="loop">
     <div class="slbl">The Loop</div>
     <h2 class="stitle">Commit. Prove it.<br/><em>Celebrate together.</em></h2>
   </div>
@@ -472,7 +473,7 @@
   </section>
 
   <!-- 5. INNER CIRCLE -->
-  <div class="sec">
+  <div class="sec" id="inner-circle">
     <div class="slbl">The Inner Circle</div>
     <h2 class="stitle">Not a feed.<br/><em>A circle.</em></h2>
     <p class="ssub">Huddle isn't for followers and likes. It's for the people you actually feel comfortable being honest with — the wins, the setbacks, and everything in between.</p>
@@ -542,6 +543,24 @@
 </div>
 
 <script>
+// Smooth scroll: snappy departure, soft landing (easeOutQuart)
+function smoothScrollTo(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const startY = window.scrollY || window.pageYOffset;
+  const targetY = target.getBoundingClientRect().top + startY - 32;
+  const distance = targetY - startY;
+  const duration = Math.min(900, Math.max(450, Math.abs(distance) * 0.55));
+  const startTime = performance.now();
+  const ease = t => 1 - Math.pow(1 - t, 4);
+  function step(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    window.scrollTo(0, startY + distance * ease(t));
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
 let light = true;
 function toggleMode() {
   light = !light;
