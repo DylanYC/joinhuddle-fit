@@ -117,8 +117,11 @@
   /* CAROUSEL */
   .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:16px 0 20px;}
   .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
-  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .32s cubic-bezier(.25,.46,.45,.94),box-shadow .32s cubic-bezier(.25,.46,.45,.94);}
-  .pcard:hover{transform:translateY(-10px);box-shadow:var(--card-shadow);}
+  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .4s cubic-bezier(.22,.61,.36,1),box-shadow .4s cubic-bezier(.22,.61,.36,1);}
+  /* Dark-mode hover: layered black shadows with low opacities = soft natural depth */
+  .pcard:hover{transform:translateY(-6px);box-shadow:0 2px 4px rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.28),0 28px 56px rgba(0,0,0,.32);}
+  /* Light-mode hover: brand-indigo-tinted shadow for elegance */
+  .light .pcard:hover{box-shadow:0 1px 3px rgba(10,15,129,.06),0 8px 18px rgba(10,15,129,.09),0 22px 44px rgba(10,15,129,.12);}
   .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:30px 12px 11px;}
   .pc-task{font-size:10px;color:rgba(255,255,255,.65);margin-bottom:3px;}
