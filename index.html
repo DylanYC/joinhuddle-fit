@@ -121,11 +121,10 @@
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
   /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
   .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
-  /* Light-mode: subtle resting shadow + Zoom-style elegant hover.
-     Shadow values scaled down from Zoom's (which are tuned for larger ~340px cards)
-     so the rounded-rect silhouette stays visible at our 240px card width. */
-  .light .pcard{box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 16px rgba(0,0,0,.08);}
-  .light .pcard:hover{transform:translate3d(0,-8px,0) scale(1.015);box-shadow:0 10px 24px rgba(0,0,0,.16),0 20px 44px rgba(0,0,0,.10);filter:brightness(1.02);}
+  /* Light-mode: indigo-tinted shadow (using brand color #1A165C) for that custom-built feel,
+     with a noticeable lift. Tinted shadows feel brand-aligned vs generic pure-black. */
+  .light .pcard{box-shadow:0 2px 6px rgba(26,22,92,.08),0 8px 20px rgba(26,22,92,.10);}
+  .light .pcard:hover{transform:translate3d(0,-12px,0) scale(1.015);box-shadow:0 14px 32px rgba(26,22,92,.22),0 28px 56px rgba(26,22,92,.16);filter:brightness(1.02);}
   .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:30px 12px 11px;}
   .pc-task{font-size:10px;color:rgba(255,255,255,.65);margin-bottom:3px;}
