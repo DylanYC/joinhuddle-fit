@@ -148,18 +148,19 @@
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
-  /* THE LOOP — sticky scroll-driven "How Huddle Works".
-     Outer = 220vh: sticky takes 100vh, leaving 120vh of scroll range to
-     distribute across 3 steps (~40vh per step). Shorter than the "standard"
-     300vh pattern on purpose — keeps the transitions in/out of the section
-     tight so adjacent sections never feel marooned by empty whitespace. */
-  .loop-outer{position:relative;height:220vh;}
-  .loop-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;}
-  .loop-inner{width:100%;max-width:1120px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:380px 1fr;gap:80px;align-items:center;}
+  /* THE LOOP — "How Huddle Works".
+     Dia-style pattern: section has NO artificial height. The right column is
+     just three stacked scene rows; the left column has a small sticky nav
+     that sticks at top:18vh while the user scrolls past those rows. Because
+     the section's height is exactly the sum of its rows, the next section
+     follows immediately — no empty container tail. */
+  .loop-outer{position:relative;padding:60px 0;}
+  .loop-inner{width:100%;max-width:1120px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:380px 1fr;gap:96px;}
 
-  .loop-left{display:flex;flex-direction:column;}
+  .loop-left{position:relative;}
+  .loop-sticky-nav{position:sticky;top:18vh;display:flex;flex-direction:column;}
   .loop-left .slbl{text-align:left;margin-bottom:14px;}
-  .loop-title{text-align:left;margin:0 0 36px;max-width:none;font-size:clamp(32px,4vw,44px);line-height:1.05;}
+  .loop-title{text-align:left;margin:0 0 32px;max-width:none;font-size:clamp(32px,4vw,44px);line-height:1.05;}
 
   .loop-steps{display:flex;flex-direction:column;}
   .loop-step{appearance:none;background:none;border:0;border-left:2px solid var(--border2);padding:18px 0 18px 24px;text-align:left;cursor:pointer;color:inherit;font:inherit;font-family:'Inter',sans-serif;transition:border-color .35s ease;}
@@ -175,12 +176,10 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
-  .loop-progress-track{position:absolute;left:56px;bottom:36px;width:56px;height:2px;background:var(--border2);border-radius:1px;z-index:4;}
-  .loop-progress-fill{height:100%;background:var(--accent);border-radius:1px;width:33.33%;transition:width .4s ease;}
-
-  .loop-right{position:relative;height:460px;display:flex;align-items:center;justify-content:center;}
-  .loop-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
-  .loop-scene.is-active{opacity:1;transform:translateY(0);pointer-events:auto;}
+  .loop-right{display:flex;flex-direction:column;}
+  .loop-row{min-height:78vh;display:flex;align-items:center;justify-content:center;padding:24px 0;opacity:.32;transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);transform:scale(.98);}
+  .loop-row.is-active-scene{opacity:1;transform:scale(1);}
+  .loop-scene{display:flex;align-items:center;justify-content:center;}
 
   /* Scene 1 — commitment cards stacked */
   .loop-cardstack{position:relative;width:300px;height:380px;}
@@ -218,10 +217,6 @@
   .loop-comment-handle{font-weight:700;color:#292D91;margin-right:4px;}
   .loop-comment-time{font-size:10px;color:rgba(120,120,120,0.7);margin-left:6px;}
 
-  .loop-pdots{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);display:flex;gap:7px;align-items:center;z-index:5;}
-  .loop-pdot{width:6px;height:6px;border-radius:999px;background:var(--border2);border:0;cursor:pointer;padding:0;transition:all .35s ease;}
-  .loop-pdot.is-active{width:22px;background:var(--accent);}
-  .loop-pdot:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
 
   /* PHONES */
   .phones-sec{padding:48px 0;overflow:hidden;}
@@ -432,12 +427,11 @@
 
   /* ============ THE LOOP — collapse sticky on smaller screens ============ */
   @media (max-width: 900px) {
-    .loop-outer{height:auto;}
-    .loop-sticky{position:static;height:auto;overflow:visible;padding:32px 0 12px;display:block;}
+    .loop-outer{padding:40px 0 20px;}
     .loop-inner{display:flex;flex-direction:column;grid-template-columns:none;gap:0;padding:0 20px;max-width:540px;}
-    .loop-left,.loop-right,.loop-steps{display:contents;}
+    .loop-left,.loop-right,.loop-steps,.loop-sticky-nav{display:contents;}
     .loop-left .slbl{order:0;text-align:center;}
-    .loop-title{order:1;text-align:center;margin:0 auto 28px;}
+    .loop-title{order:1;text-align:center;margin:0 auto 24px;}
     .loop-step{order:2;border-left:0;border-top:2px solid var(--border2);padding:18px 0 0;cursor:default;width:100%;}
     .loop-step + .loop-step{margin-top:0;}
     .loop-step .loop-step-n{color:var(--accent);}
@@ -446,11 +440,10 @@
     .loop-step:nth-of-type(1){order:2;}
     .loop-step:nth-of-type(2){order:4;}
     .loop-step:nth-of-type(3){order:6;}
-    .loop-scene{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;margin:22px auto 28px;display:flex;justify-content:center;}
-    .loop-scene:nth-of-type(1){order:3;}
-    .loop-scene:nth-of-type(2){order:5;}
-    .loop-scene:nth-of-type(3){order:7;}
-    .loop-progress-track,.loop-pdots{display:none;}
+    .loop-row{min-height:0;opacity:1;transform:none;padding:18px 0 28px;}
+    .loop-row:nth-of-type(1){order:3;}
+    .loop-row:nth-of-type(2){order:5;}
+    .loop-row:nth-of-type(3){order:7;}
     .loop-cardstack{transform:scale(0.92);transform-origin:center;}
     .loop-feed-card{width:100%;max-width:352px;}
   }
@@ -608,12 +601,12 @@
     </div>
   </section>
 
-  <!-- 3. THE LOOP — How Huddle Works (sticky scroll-driven) -->
+  <!-- 3. THE LOOP — How Huddle Works (Dia-style sticky-left, scrolling-right) -->
   <section class="loop-outer" id="loop">
-    <div class="loop-sticky">
-      <div class="loop-inner">
+    <div class="loop-inner">
 
-        <div class="loop-left">
+      <div class="loop-left">
+        <div class="loop-sticky-nav">
           <span class="slbl">The Loop</span>
           <h2 class="stitle loop-title">How Huddle<br/><em>Works</em></h2>
           <div class="loop-steps" role="tablist" aria-label="How Huddle works — three steps">
@@ -634,37 +627,33 @@
             </button>
           </div>
         </div>
+      </div>
 
-        <div class="loop-right">
+      <div class="loop-right">
 
-          <!-- SCENE 1 — Commitment cards stack -->
-          <div class="loop-scene is-active" data-scene="0" aria-hidden="false">
+        <!-- ROW 1 — Commitment cards stack -->
+        <div class="loop-row is-active-scene" data-step="0">
+          <div class="loop-scene">
             <div class="loop-cardstack" id="loop-cardstack"></div>
           </div>
+        </div>
 
-          <!-- SCENE 2 — Single proof card -->
-          <div class="loop-scene" data-scene="1" aria-hidden="true">
+        <!-- ROW 2 — Single proof card -->
+        <div class="loop-row" data-step="1">
+          <div class="loop-scene">
             <div class="loop-proof-card" id="loop-proof-card"></div>
           </div>
+        </div>
 
-          <!-- SCENE 3 — Celebration feed card -->
-          <div class="loop-scene" data-scene="2" aria-hidden="true">
+        <!-- ROW 3 — Celebration feed card -->
+        <div class="loop-row" data-step="2">
+          <div class="loop-scene">
             <div class="loop-feed-card" id="loop-feed-card"></div>
           </div>
-
-          <div class="loop-pdots" id="loop-pdots" aria-hidden="true">
-            <button class="loop-pdot is-active" type="button" data-step="0" aria-label="Step 1"></button>
-            <button class="loop-pdot" type="button" data-step="1" aria-label="Step 2"></button>
-            <button class="loop-pdot" type="button" data-step="2" aria-label="Step 3"></button>
-          </div>
-
         </div>
 
       </div>
 
-      <div class="loop-progress-track" aria-hidden="true">
-        <div class="loop-progress-fill" id="loop-progress-fill"></div>
-      </div>
     </div>
   </section>
 
@@ -1520,12 +1509,12 @@ cOuter.addEventListener('click', (e) => {
     '</div>'
   );
 
-  // ── State + scroll driver ──
-  const steps   = Array.from(document.querySelectorAll('.loop-step'));
-  const scenes  = Array.from(document.querySelectorAll('.loop-scene'));
-  const dots    = Array.from(document.querySelectorAll('.loop-pdot'));
-  const fillEl  = document.getElementById('loop-progress-fill');
-  const fills   = ['33.33%', '66.66%', '100%'];
+  // ── State + IntersectionObserver-driven active step ──
+  // Each scene row is min-h:78vh and visible in its own scroll position; the
+  // left nav is just sticky at top:18vh. We observe each row and update the
+  // active step when a row's center crosses the central band of the viewport.
+  const steps = Array.from(document.querySelectorAll('.loop-step'));
+  const rows  = Array.from(document.querySelectorAll('.loop-row'));
 
   let current = 0;
   let lockedByClick = false;
@@ -1539,34 +1528,28 @@ cOuter.addEventListener('click', (e) => {
       s.classList.toggle('is-active', on);
       s.setAttribute('aria-selected', on ? 'true' : 'false');
     });
-    scenes.forEach((s, i) => {
-      const on = i === idx;
-      s.classList.toggle('is-active', on);
-      s.setAttribute('aria-hidden', on ? 'false' : 'true');
-    });
-    dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
-    if (fillEl) fillEl.style.width = fills[idx];
+    rows.forEach((r, i) => r.classList.toggle('is-active-scene', i === idx));
   }
 
-  function isStickyActive() {
-    // Mobile collapse breakpoint matches the CSS @media (max-width: 900px).
+  function isDesktop() {
+    // Matches CSS @media (max-width: 900px) collapse breakpoint.
     return window.matchMedia('(min-width: 901px)').matches;
   }
 
   function jumpToStep(idx) {
-    if (!isStickyActive()) return;
+    const target = rows[idx];
+    if (!target) return;
     lockedByClick = true;
     clearTimeout(clickLockTimer);
-    clickLockTimer = setTimeout(() => { lockedByClick = false; }, 650);
-    // Land just inside each step's scroll third — NOT on a boundary.
-    // The previous formula (idx * viewportH) landed step 3 exactly at the
-    // sticky-release point, which dropped the user into the empty tail of
-    // the outer container. Using outerH/3 keeps every click solidly inside
-    // its step's active range, with comfortable scroll room on both sides.
-    const outerH = outer.offsetHeight - window.innerHeight;
-    const stepRange = outerH / 3;
-    const target = outer.offsetTop + idx * stepRange + 8;
-    window.scrollTo({ top: target, behavior: 'smooth' });
+    clickLockTimer = setTimeout(() => { lockedByClick = false; }, 700);
+    if (!isDesktop()) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    // Center the target row vertically in the viewport for a clean landing.
+    const rect = target.getBoundingClientRect();
+    const targetY = window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
   }
 
   steps.forEach(btn => {
@@ -1576,32 +1559,30 @@ cOuter.addEventListener('click', (e) => {
       jumpToStep(idx);
     });
   });
-  dots.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.step, 10);
-      setStep(idx);
-      jumpToStep(idx);
-    });
-  });
 
-  // Scroll-driver: maps scroll progress through the 300vh outer to one of
-  // three steps. Disabled when the section is collapsed on small screens.
-  let rafPending = false;
-  function onScroll() {
-    if (lockedByClick || !isStickyActive()) return;
-    if (rafPending) return;
-    rafPending = true;
-    requestAnimationFrame(() => {
-      rafPending = false;
-      const scrolled = window.scrollY - outer.offsetTop;
-      const range = outer.offsetHeight - window.innerHeight;
-      if (scrolled < 0 || scrolled > outer.offsetHeight || range <= 0) return;
-      const progress = Math.max(0, Math.min(0.9999, scrolled / range));
-      const step = Math.min(2, Math.floor(progress * 3));
-      if (step !== current) setStep(step);
+  // Watch which row's center is currently in the central band of viewport.
+  // rootMargin pulls in 38% from top and bottom — only a row whose center is
+  // in the middle ~24% of the viewport counts as "active". That keeps the
+  // active state aligned with where the user's eye actually is.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (lockedByClick) return;
+      let best = null, bestRatio = 0;
+      entries.forEach(e => {
+        if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+          bestRatio = e.intersectionRatio;
+          best = e.target;
+        }
+      });
+      if (best) {
+        const idx = parseInt(best.dataset.step, 10);
+        if (!isNaN(idx)) setStep(idx);
+      }
+    }, {
+      rootMargin: '-38% 0px -38% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1]
     });
+    rows.forEach(r => io.observe(r));
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
 })();
 </script>
