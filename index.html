@@ -189,8 +189,14 @@
   .loop-row{min-height:50vh;display:flex;align-items:center;justify-content:center;padding:0;}
   .loop-scene{display:flex;align-items:center;justify-content:center;}
 
-  /* Scene 1 — commitment cards stacked */
-  .loop-cardstack{position:relative;width:300px;height:380px;}
+  /* Scene 1 — commitment cards stacked.
+     Width has 20px slack each side for the rotated cards; height = top
+     offset of the back card (96px) + a single card's natural height
+     (~120px) + a few px for the back card's rotated bottom-left corner.
+     Sized to the actual content so the scene has no phantom empty space
+     below it (the row centers the cardstack vertically, which aligns
+     scene 1 with the active step on the left). */
+  .loop-cardstack{position:relative;width:320px;height:230px;}
   .loop-cardstack .proof-card{position:absolute;width:260px;min-width:260px;opacity:1;}
   .loop-card-back{top:96px;left:36px;transform:rotate(-4.5deg);z-index:1;opacity:.45 !important;box-shadow:0 2px 12px rgba(0,0,0,0.05) !important;}
   .loop-card-mid{top:48px;left:18px;transform:rotate(2.5deg);z-index:2;opacity:.72 !important;}
