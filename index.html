@@ -210,7 +210,7 @@
   }
 </style>
 
-<div class="site" id="site">
+<div class="site light" id="site">
 
   <!-- NAV -->
   <nav class="nav">
@@ -220,9 +220,9 @@
     <ul class="nav-links"><li>How it works</li><li>Inner Circle</li><li>Waitlist</li></ul>
     <div class="nav-right">
       <div class="toggle" id="toggle" onclick="toggleMode()">
-        <span class="t-icon" id="ticon">🌙</span>
+        <span class="t-icon" id="ticon">☀️</span>
         <div class="t-pill"><div class="t-thumb"></div></div>
-        <span class="t-lbl" id="tlbl">Dark</span>
+        <span class="t-lbl" id="tlbl">Light</span>
       </div>
       <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
     </div>
@@ -437,7 +437,7 @@
 </div>
 
 <script>
-let light = false;
+let light = true;
 function toggleMode() {
   light = !light;
   document.getElementById('site').classList.toggle('light', light);
