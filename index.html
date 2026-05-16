@@ -180,13 +180,13 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
-  /* Right column = three stacked scene rows (Dia pattern: min-h-[60vh]
-     flex items-start pb-40). Rows are sized just slightly taller than the
-     scenes so the visible "gap" between scenes is small but the scroll
-     range is long enough to make each step feel like its own moment. */
+  /* Right column = three stacked scene rows. Each row is just slightly
+     taller than its scene (~40vh card + ~10vh breathing room), with the
+     scene centered vertically so it doesn't slam against the top of the
+     column on entry. Click-to-jump (in JS) centers the row in viewport,
+     which puts the scene at exactly viewport-center. */
   .loop-right{display:flex;flex-direction:column;}
-  .loop-row{min-height:60vh;display:flex;align-items:flex-start;justify-content:center;padding:0 0 40px;}
-  .loop-row:last-child{padding-bottom:0;}
+  .loop-row{min-height:50vh;display:flex;align-items:center;justify-content:center;padding:0;}
   .loop-scene{display:flex;align-items:center;justify-content:center;}
 
   /* Scene 1 — commitment cards stacked */
