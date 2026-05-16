@@ -21,7 +21,6 @@
     --btn-bg:rgba(255,255,255,0.06); --btn-border:rgba(255,255,255,0.14); --btn-text:#ffffff; --btn-sub:rgba(255,255,255,0.5); --btn-hover:rgba(255,255,255,0.1);
     --apple-fill:#ffffff;
     --vs-bg:rgba(255,255,255,0.04); --vs-border:rgba(255,255,255,0.08); --vs-text:rgba(255,255,255,0.4); --vs-title:rgba(255,255,255,0.7); --vs-row-border:rgba(255,255,255,0.07);
-    --step-bg:rgba(255,255,255,0.03); --step-border:rgba(255,255,255,0.07);
     --domain-bg:rgba(255,255,255,0.04); --domain-border:rgba(255,255,255,0.12);
     --input-bg:rgba(255,255,255,0.06); --input-border:rgba(255,255,255,0.12); --input-text:#fff; --input-ph:rgba(255,255,255,0.28);
     --footer-border:rgba(255,255,255,0.07);
@@ -47,7 +46,6 @@
     --btn-bg:#ffffff; --btn-border:rgba(0,0,0,0.14); --btn-text:#0a0a18; --btn-sub:rgba(10,10,24,0.45); --btn-hover:#f0f0f6;
     --apple-fill:#0a0a18;
     --vs-bg:rgba(0,0,0,0.03); --vs-border:rgba(0,0,0,0.08); --vs-text:rgba(10,10,24,0.5); --vs-title:rgba(10,10,24,0.75); --vs-row-border:rgba(0,0,0,0.06);
-    --step-bg:#ffffff; --step-border:rgba(0,0,0,0.08);
     --domain-bg:rgba(91,82,232,0.07); --domain-border:rgba(91,82,232,0.22);
     --input-bg:#ffffff; --input-border:rgba(0,0,0,0.15); --input-text:#0a0a18; --input-ph:rgba(10,10,24,0.35);
     --footer-border:rgba(0,0,0,0.08);
@@ -150,16 +148,76 @@
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
-  /* STEPS */
-  .steps-sec{padding:48px 36px;}
-  .steps{display:flex;gap:2px;max-width:840px;margin:32px auto 0;}
-  .step{flex:1;background:var(--step-bg);border:1px solid var(--step-border);border-radius:18px;padding:26px 20px;transition:background .3s,border-color .3s;}
-  .step:hover{background:rgba(91,82,232,.07);border-color:rgba(91,82,232,.3);}
-  .step-n{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
-  .step-ic{width:44px;height:44px;background:rgba(91,82,232,.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
-  .step h3{font-size:16px;font-weight:700;color:var(--text1);margin-bottom:7px;}
-  .step p{font-size:13px;color:var(--text2);line-height:1.65;}
-  .step-c{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:16px;align-self:center;}
+  /* THE LOOP — sticky scroll-driven "How Huddle Works" */
+  .loop-outer{position:relative;height:300vh;}
+  .loop-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;}
+  .loop-inner{width:100%;max-width:1120px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:380px 1fr;gap:80px;align-items:center;}
+
+  .loop-left{display:flex;flex-direction:column;}
+  .loop-left .slbl{text-align:left;margin-bottom:14px;}
+  .loop-title{text-align:left;margin:0 0 36px;max-width:none;font-size:clamp(32px,4vw,44px);line-height:1.05;}
+
+  .loop-steps{display:flex;flex-direction:column;}
+  .loop-step{appearance:none;background:none;border:0;border-left:2px solid var(--border2);padding:18px 0 18px 24px;text-align:left;cursor:pointer;color:inherit;font:inherit;font-family:'Inter',sans-serif;transition:border-color .35s ease;}
+  .loop-step + .loop-step{margin-top:2px;}
+  .loop-step:hover:not(.is-active){border-left-color:rgba(91,82,232,.32);}
+  .loop-step.is-active{border-left-color:var(--accent);}
+  .loop-step:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px;}
+  .loop-step-n{display:block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;transition:color .3s;}
+  .loop-step.is-active .loop-step-n{color:var(--accent);}
+  .loop-step-title{display:block;font-size:19px;font-weight:800;line-height:1.25;letter-spacing:-.3px;color:var(--text3);transition:color .35s ease;}
+  .loop-step:hover:not(.is-active) .loop-step-title{color:var(--text2);}
+  .loop-step.is-active .loop-step-title{color:var(--text1);}
+  .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
+  .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
+
+  .loop-progress-track{position:absolute;left:56px;bottom:36px;width:56px;height:2px;background:var(--border2);border-radius:1px;z-index:4;}
+  .loop-progress-fill{height:100%;background:var(--accent);border-radius:1px;width:33.33%;transition:width .4s ease;}
+
+  .loop-right{position:relative;height:460px;display:flex;align-items:center;justify-content:center;}
+  .loop-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+  .loop-scene.is-active{opacity:1;transform:translateY(0);pointer-events:auto;}
+
+  /* Scene 1 — commitment cards stacked */
+  .loop-cardstack{position:relative;width:300px;height:380px;}
+  .loop-cardstack .proof-card{position:absolute;width:260px;min-width:260px;opacity:1;}
+  .loop-card-back{top:96px;left:36px;transform:rotate(-4.5deg);z-index:1;opacity:.45 !important;box-shadow:0 2px 12px rgba(0,0,0,0.05) !important;}
+  .loop-card-mid{top:48px;left:18px;transform:rotate(2.5deg);z-index:2;opacity:.72 !important;}
+  .loop-card-front{top:0;left:0;transform:rotate(0);z-index:3;}
+
+  /* Scene 2 — single floating proof card */
+  .loop-proof-card{width:286px;height:390px;border-radius:30px;position:relative;overflow:hidden;transform:rotate(2.5deg);background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);box-shadow:0 32px 80px rgba(194,65,12,0.38),0 8px 20px rgba(0,0,0,0.14);}
+  .loop-proof-card .proof-scene-vignette{height:58%;}
+  .loop-proof-card .proof-scene-inner{padding:22px 18px 20px;}
+
+  /* Scene 3 — celebration feed card */
+  .loop-feed-card{width:352px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.05);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);}
+  .loop-feed-header{padding:16px 16px 12px;display:flex;align-items:center;gap:10px;}
+  .loop-feed-av{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
+  .loop-feed-av img{width:100%;height:100%;object-fit:cover;display:block;}
+  .loop-feed-user{flex:1;min-width:0;}
+  .loop-feed-name{font-size:13px;font-weight:700;color:#1C1C1C;letter-spacing:-.1px;}
+  .loop-feed-meta{font-size:11px;color:#787878;margin-top:2px;}
+  .loop-feed-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:#292D91;background:rgba(111,117,255,0.12);padding:4px 10px;border-radius:999px;white-space:nowrap;}
+  .loop-feed-img{margin:0 12px;border-radius:14px;height:140px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .loop-feed-img-vignette{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.42));}
+  .loop-feed-img-badge{position:absolute;bottom:8px;left:10px;font-size:9.5px;color:rgba(255,255,255,0.88);background:rgba(0,0,0,0.32);padding:3px 8px;border-radius:6px;letter-spacing:0.02em;}
+  .loop-feed-react{padding:12px 16px 9px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(0,0,0,0.05);margin-top:12px;}
+  .loop-flex-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(111,117,255,0.08);border:1px solid rgba(111,117,255,0.18);border-radius:999px;padding:5px 12px;font-size:12px;color:#292D91;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  .loop-flex-count{color:#787878;font-weight:500;}
+  .loop-flex-who{font-size:11px;color:#787878;}
+  .loop-feed-comments{padding:8px 16px 16px;display:flex;flex-direction:column;gap:9px;}
+  .loop-comment{display:flex;align-items:flex-start;gap:8px;}
+  .loop-comment-av{width:24px;height:24px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
+  .loop-comment-av img{width:100%;height:100%;object-fit:cover;display:block;}
+  .loop-comment-body{font-size:12.5px;color:#1C1C1C;line-height:1.45;}
+  .loop-comment-handle{font-weight:700;color:#292D91;margin-right:4px;}
+  .loop-comment-time{font-size:10px;color:rgba(120,120,120,0.7);margin-left:6px;}
+
+  .loop-pdots{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);display:flex;gap:7px;align-items:center;z-index:5;}
+  .loop-pdot{width:6px;height:6px;border-radius:999px;background:var(--border2);border:0;cursor:pointer;padding:0;transition:all .35s ease;}
+  .loop-pdot.is-active{width:22px;background:var(--accent);}
+  .loop-pdot:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
 
   /* PHONES */
   .phones-sec{padding:48px 0;overflow:hidden;}
@@ -358,7 +416,6 @@
     .nav{padding:16px 24px;}
     .nav-links{gap:20px;}
     .sec{padding:48px 20px 0;}
-    .steps-sec{padding:36px 24px;}
     .phones{padding:16px 24px;flex-wrap:wrap;}
     .ic-sec{padding:36px 24px;gap:32px;}
     .waitlist-sec{padding:48px 24px;}
@@ -367,6 +424,31 @@
     .proof-side.proof-left{padding-right:20px;}
     .proof-side.proof-right{padding:0 0 0 20px;}
     .proof-card{width:170px;min-width:170px;}
+  }
+
+  /* ============ THE LOOP — collapse sticky on smaller screens ============ */
+  @media (max-width: 900px) {
+    .loop-outer{height:auto;}
+    .loop-sticky{position:static;height:auto;overflow:visible;padding:32px 0 12px;display:block;}
+    .loop-inner{display:flex;flex-direction:column;grid-template-columns:none;gap:0;padding:0 20px;max-width:540px;}
+    .loop-left,.loop-right,.loop-steps{display:contents;}
+    .loop-left .slbl{order:0;text-align:center;}
+    .loop-title{order:1;text-align:center;margin:0 auto 28px;}
+    .loop-step{order:2;border-left:0;border-top:2px solid var(--border2);padding:18px 0 0;cursor:default;width:100%;}
+    .loop-step + .loop-step{margin-top:0;}
+    .loop-step .loop-step-n{color:var(--accent);}
+    .loop-step .loop-step-title{color:var(--text1);}
+    .loop-step .loop-step-sub{max-height:none;opacity:1;margin-top:8px;overflow:visible;}
+    .loop-step:nth-of-type(1){order:2;}
+    .loop-step:nth-of-type(2){order:4;}
+    .loop-step:nth-of-type(3){order:6;}
+    .loop-scene{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;margin:22px auto 28px;display:flex;justify-content:center;}
+    .loop-scene:nth-of-type(1){order:3;}
+    .loop-scene:nth-of-type(2){order:5;}
+    .loop-scene:nth-of-type(3){order:7;}
+    .loop-progress-track,.loop-pdots{display:none;}
+    .loop-cardstack{transform:scale(0.92);transform-origin:center;}
+    .loop-feed-card{width:100%;max-width:352px;}
   }
 
   /* ============ RESPONSIVE: mobile ============ */
@@ -402,12 +484,6 @@
     /* SECTIONS */
     .sec{padding:48px 16px 0;}
     .stitle{font-size:30px;letter-spacing:-1px;}
-
-    /* STEPS stack vertically */
-    .steps-sec{padding:36px 16px;}
-    .steps{flex-direction:column;gap:12px;margin-top:28px;}
-    .step{padding:22px 18px;}
-    .step-c{display:none;}
 
     /* PHONES — horizontal scroll */
     .phones-sec{padding:36px 0;}
@@ -528,33 +604,62 @@
     </div>
   </section>
 
-  <!-- 3. THE LOOP -->
-  <div class="sec" id="loop">
-    <div class="slbl">The Loop</div>
-    <h2 class="stitle">Commit. Prove it.<br/><em>Celebrate together.</em></h2>
-  </div>
+  <!-- 3. THE LOOP — How Huddle Works (sticky scroll-driven) -->
+  <section class="loop-outer" id="loop">
+    <div class="loop-sticky">
+      <div class="loop-inner">
 
-  <section class="steps-sec">
-    <div class="steps">
-      <div class="step">
-        <div class="step-n">01</div>
-        <div class="step-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="3" stroke="#5B52E8" stroke-width="1.5"/><path d="M7 9h10M7 13h6" stroke="#5B52E8" stroke-width="1.5" stroke-linecap="round"/><circle cx="18" cy="17" r="3" fill="#5B52E8"/><path d="M16.5 17l1 1 2-2" stroke="white" stroke-width="1" stroke-linecap="round"/></svg></div>
-        <h3>Plan & commit</h3>
-        <p>Set your goals and share them as commitments with your inner circle — on the record.</p>
+        <div class="loop-left">
+          <span class="slbl">The Loop</span>
+          <h2 class="stitle loop-title">How Huddle<br/><em>Works</em></h2>
+          <div class="loop-steps" role="tablist" aria-label="How Huddle works — three steps">
+            <button class="loop-step is-active" type="button" role="tab" aria-selected="true" data-step="0">
+              <span class="loop-step-n">01</span>
+              <span class="loop-step-title">Build &amp; Share Your Daily Plans</span>
+              <span class="loop-step-sub">Set your intentions and share them with your inner circle — on the record, the moment you make them.</span>
+            </button>
+            <button class="loop-step" type="button" role="tab" aria-selected="false" data-step="1">
+              <span class="loop-step-n">02</span>
+              <span class="loop-step-title">Show Up &amp; Capture Proof</span>
+              <span class="loop-step-sub">Open the app when you're done. Catch the moment raw — still sweating, no filter, no edits. That's your proof.</span>
+            </button>
+            <button class="loop-step" type="button" role="tab" aria-selected="false" data-step="2">
+              <span class="loop-step-n">03</span>
+              <span class="loop-step-title">Celebrate Consistently, Together</span>
+              <span class="loop-step-sub">Your circle sees it instantly. Flexes, comments, real reactions from the people who actually care if you showed up.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="loop-right">
+
+          <!-- SCENE 1 — Commitment cards stack -->
+          <div class="loop-scene is-active" data-scene="0" aria-hidden="false">
+            <div class="loop-cardstack" id="loop-cardstack"></div>
+          </div>
+
+          <!-- SCENE 2 — Single proof card -->
+          <div class="loop-scene" data-scene="1" aria-hidden="true">
+            <div class="loop-proof-card" id="loop-proof-card"></div>
+          </div>
+
+          <!-- SCENE 3 — Celebration feed card -->
+          <div class="loop-scene" data-scene="2" aria-hidden="true">
+            <div class="loop-feed-card" id="loop-feed-card"></div>
+          </div>
+
+          <div class="loop-pdots" id="loop-pdots" aria-hidden="true">
+            <button class="loop-pdot is-active" type="button" data-step="0" aria-label="Step 1"></button>
+            <button class="loop-pdot" type="button" data-step="1" aria-label="Step 2"></button>
+            <button class="loop-pdot" type="button" data-step="2" aria-label="Step 3"></button>
+          </div>
+
+        </div>
+
       </div>
-      <div class="step-c">→</div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <div class="step-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="3" stroke="#5B52E8" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" stroke="#5B52E8" stroke-width="1.5"/><path d="M9 6V4M12 6V3M15 6V4" stroke="#5B52E8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <h3>Do it & prove it</h3>
-        <p>When you show up, take a photo. In the moment. No filters. Just authentic proof you did the work.</p>
-      </div>
-      <div class="step-c">→</div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <div class="step-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4L14.5 9.5H20L15.5 13L17.5 19L12 15.5L6.5 19L8.5 13L4 9.5H9.5L12 4Z" stroke="#5B52E8" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-        <h3>Celebrate together</h3>
-        <p>Your circle flexes, comments, and cheers. Real people who care about your progress.</p>
+
+      <div class="loop-progress-track" aria-hidden="true">
+        <div class="loop-progress-fill" id="loop-progress-fill"></div>
       </div>
     </div>
   </section>
@@ -1282,5 +1387,210 @@ cOuter.addEventListener('click', (e) => {
   document.addEventListener('visibilitychange', () => {
     hidden = document.hidden;
   });
+})();
+
+// =============================================================================
+// THE LOOP — sticky scroll-driven "How Huddle Works"
+// Tall outer (300vh) provides scroll range; sticky inner stays in view while
+// the active step advances. Steps are also clickable / keyboard-focusable.
+// On screens ≤900px the section collapses to a normal vertical stack (no
+// sticky, no scroll driver) — every step + scene rendered in sequence.
+// =============================================================================
+(function () {
+  const outer = document.getElementById('loop');
+  if (!outer) return;
+
+  const AV = 'assets/Avatars/';
+  const clockSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#292D91" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/></svg>';
+
+  const runIllo = `<svg width="80" height="94" viewBox="0 0 88 104" fill="none">
+    <circle cx="52" cy="13" r="12" fill="rgba(255,255,255,0.52)"/>
+    <line x1="52" y1="25" x2="45" y2="58" stroke="rgba(255,255,255,0.52)" stroke-width="7" stroke-linecap="round"/>
+    <line x1="48" y1="40" x2="72" y2="28" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="48" y1="40" x2="26" y2="52" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="45" y1="58" x2="66" y2="80" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+    <line x1="66" y1="80" x2="80" y2="100" stroke="rgba(255,255,255,0.4)" stroke-width="5" stroke-linecap="round"/>
+    <line x1="45" y1="58" x2="28" y2="84" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+    <line x1="28" y1="84" x2="14" y2="102" stroke="rgba(255,255,255,0.4)" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+
+  const runIlloWhite = `<svg width="48" height="56" viewBox="0 0 88 104" fill="none" style="opacity:.55;position:relative;z-index:1;">
+    <circle cx="52" cy="13" r="12" fill="white"/>
+    <line x1="52" y1="25" x2="45" y2="58" stroke="white" stroke-width="7" stroke-linecap="round"/>
+    <line x1="48" y1="40" x2="72" y2="28" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="48" y1="40" x2="26" y2="52" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="45" y1="58" x2="66" y2="80" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
+    <line x1="45" y1="58" x2="28" y2="84" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
+  </svg>`;
+
+  // Commitment cards — front to back. Avatars use the real photos from
+  // assets/Avatars so this matches the proof carousel's seen-by row.
+  const stackCards = [
+    {
+      emoji:'🏃', name:'Morning run — 5km', time:'7:00am',
+      viewers:[AV+'WHY_Slide3_Partnership_1.png', AV+'WHY_Slide3_Families1.png', AV+'WHY_Slide3_CloseFriends2.png'],
+      cls:'loop-card-front'
+    },
+    {
+      emoji:'🥗', name:'Sunday meal prep', time:'5:00pm',
+      viewers:[AV+'WHY_Slide3_Families3.png', AV+'WHY_Slide3_Families5.png', AV+'WHY_Slide3_Families7.png'],
+      cls:'loop-card-mid'
+    },
+    {
+      emoji:'💪', name:'Close activity rings', time:'All day',
+      viewers:[AV+'WHY_Slide3_Families6.png', AV+'WHY_Slide3_Families7-1.png'],
+      cls:'loop-card-back'
+    }
+  ];
+
+  function avMarkup(src) {
+    return '<div class="proof-av"><img src="' + src + '" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background=\'#CFD1FF\';this.remove();"></div>';
+  }
+
+  function buildStackCard(c) {
+    return (
+      '<div class="proof-card ' + c.cls + '">' +
+        '<div class="proof-card-row1">' +
+          '<div class="proof-time-pill">' + clockSVG + c.time + '</div>' +
+          '<button class="proof-kdots" aria-label="More" tabindex="-1"><span></span><span></span><span></span></button>' +
+        '</div>' +
+        '<div class="proof-card-taskname">' + c.emoji + ' ' + c.name + '</div>' +
+        '<div class="proof-card-seenby">' +
+          '<div class="proof-seen-icon"></div>' +
+          '<span class="proof-seen-label">Seen by</span>' +
+          '<div class="proof-avatars">' + c.viewers.map(avMarkup).join('') + '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  // Render stack back→front so DOM order matches z-index visuals (back first).
+  document.getElementById('loop-cardstack').innerHTML =
+    [stackCards[2], stackCards[1], stackCards[0]].map(buildStackCard).join('');
+
+  // ── SCENE 2 — single proof card (reuses .proof-scene-* visual language) ──
+  document.getElementById('loop-proof-card').innerHTML = (
+    '<div class="proof-scene-vignette"></div>' +
+    '<div class="proof-scene-inner">' +
+      '<span class="proof-scene-ts">6:47 AM</span>' +
+      '<div class="proof-scene-illo">' + runIllo + '</div>' +
+      '<div class="proof-scene-badge">' +
+        '<div class="proof-scene-badge-label">Huddle Proof</div>' +
+        '<div class="proof-scene-badge-name">🏃 Morning run — 5km</div>' +
+        '<div class="proof-scene-badge-status">' +
+          '<div class="proof-scene-check">&#10003;</div>' +
+          'Proved · sent to your circle' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+
+  // ── SCENE 3 — celebration feed card ──
+  document.getElementById('loop-feed-card').innerHTML = (
+    '<div class="loop-feed-header">' +
+      '<div class="loop-feed-av"><img src="' + AV + 'WHY_Slide3_Partnership_1.png" alt="" loading="lazy" decoding="async"></div>' +
+      '<div class="loop-feed-user">' +
+        '<div class="loop-feed-name">Jordan R.</div>' +
+        '<div class="loop-feed-meta">Morning run — 5km · 6:47 AM</div>' +
+      '</div>' +
+      '<div class="loop-feed-badge">&#10003; Proved</div>' +
+    '</div>' +
+    '<div class="loop-feed-img proof-bg-0">' +
+      '<div class="loop-feed-img-vignette"></div>' +
+      runIlloWhite +
+      '<div class="loop-feed-img-badge">6:47 AM · Today</div>' +
+    '</div>' +
+    '<div class="loop-feed-react">' +
+      '<button class="loop-flex-btn" type="button">💪 Flex <span class="loop-flex-count">5</span></button>' +
+      '<span class="loop-flex-who">Mike, Kayla + 3 others</span>' +
+    '</div>' +
+    '<div class="loop-feed-comments">' +
+      '<div class="loop-comment">' +
+        '<div class="loop-comment-av"><img src="' + AV + 'WHY_Slide3_Families2.png" alt="" loading="lazy" decoding="async"></div>' +
+        '<div class="loop-comment-body"><span class="loop-comment-handle">@mikeb</span>Absolute unit 💪<span class="loop-comment-time">just now</span></div>' +
+      '</div>' +
+      '<div class="loop-comment">' +
+        '<div class="loop-comment-av"><img src="' + AV + 'WHY_Slide3_Families3.png" alt="" loading="lazy" decoding="async"></div>' +
+        '<div class="loop-comment-body"><span class="loop-comment-handle">@kaylal</span>Let\'s GO!! This is your week 🔥<span class="loop-comment-time">just now</span></div>' +
+      '</div>' +
+    '</div>'
+  );
+
+  // ── State + scroll driver ──
+  const steps   = Array.from(document.querySelectorAll('.loop-step'));
+  const scenes  = Array.from(document.querySelectorAll('.loop-scene'));
+  const dots    = Array.from(document.querySelectorAll('.loop-pdot'));
+  const fillEl  = document.getElementById('loop-progress-fill');
+  const fills   = ['33.33%', '66.66%', '100%'];
+
+  let current = 0;
+  let lockedByClick = false;
+  let clickLockTimer = null;
+
+  function setStep(idx) {
+    if (idx === current) return;
+    current = idx;
+    steps.forEach((s, i) => {
+      const on = i === idx;
+      s.classList.toggle('is-active', on);
+      s.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    scenes.forEach((s, i) => {
+      const on = i === idx;
+      s.classList.toggle('is-active', on);
+      s.setAttribute('aria-hidden', on ? 'false' : 'true');
+    });
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    if (fillEl) fillEl.style.width = fills[idx];
+  }
+
+  function isStickyActive() {
+    // Mobile collapse breakpoint matches the CSS @media (max-width: 900px).
+    return window.matchMedia('(min-width: 901px)').matches;
+  }
+
+  function jumpToStep(idx) {
+    if (!isStickyActive()) return;
+    lockedByClick = true;
+    clearTimeout(clickLockTimer);
+    clickLockTimer = setTimeout(() => { lockedByClick = false; }, 650);
+    const target = outer.offsetTop + idx * window.innerHeight;
+    window.scrollTo({ top: target, behavior: 'smooth' });
+  }
+
+  steps.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.step, 10);
+      setStep(idx);
+      jumpToStep(idx);
+    });
+  });
+  dots.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.step, 10);
+      setStep(idx);
+      jumpToStep(idx);
+    });
+  });
+
+  // Scroll-driver: maps scroll progress through the 300vh outer to one of
+  // three steps. Disabled when the section is collapsed on small screens.
+  let rafPending = false;
+  function onScroll() {
+    if (lockedByClick || !isStickyActive()) return;
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      const scrolled = window.scrollY - outer.offsetTop;
+      const range = outer.offsetHeight - window.innerHeight;
+      if (scrolled < 0 || scrolled > outer.offsetHeight || range <= 0) return;
+      const progress = Math.max(0, Math.min(0.9999, scrolled / range));
+      const step = Math.min(2, Math.floor(progress * 3));
+      if (step !== current) setStep(step);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
 })();
 </script>
