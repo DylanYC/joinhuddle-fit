@@ -58,6 +58,8 @@
   .site{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);overflow-x:hidden;transition:background .4s,color .4s;}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:var(--bg);transition:background .4s;}
   .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--text1);letter-spacing:-.3px;}
+  .nav-logo img{height:44px;width:auto;display:block;filter:brightness(0) invert(1);transition:filter .4s;}
+  .light .nav-logo img{filter:none;}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--text2);list-style:none;}
   .nav-links li{cursor:pointer;}
   .nav-right{display:flex;align-items:center;gap:12px;}
@@ -213,7 +215,7 @@
   <!-- NAV -->
   <nav class="nav">
     <div class="nav-logo">
-      <img src="assets/Huddle-Logo2.svg" alt="Huddle" height="32">
+      <img src="assets/Huddle-Logo2.svg" alt="Huddle">
     </div>
     <ul class="nav-links"><li>How it works</li><li>Inner Circle</li><li>Waitlist</li></ul>
     <div class="nav-right">
