@@ -321,6 +321,7 @@
   [hidden]{display:none !important;}
   .waitlist-social{margin-top:14px;font-size:13px;font-weight:600;color:var(--accent2);}
   .waitlist-error{margin-top:14px;font-size:13px;color:#ff7a7a;}
+  .waitlist-success .ws-notice{margin-bottom:16px;padding:10px 14px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:10px;font-size:13px;font-weight:600;color:var(--accent2);line-height:1.5;}
   .waitlist-success .ws-title{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px;color:var(--text1);}
   .waitlist-success .ws-sub{font-size:14px;color:var(--text2);margin-bottom:18px;line-height:1.55;}
   .waitlist-success .ws-link{display:flex;gap:0;margin-bottom:14px;}
@@ -785,6 +786,7 @@
       <div class="waitlist-social" id="waitlistSocial" hidden></div>
 
       <div class="waitlist-success" id="waitlistSuccess" hidden>
+        <div class="ws-notice" id="waitlistNotice" hidden></div>
         <div class="ws-title">You're on the list ✨</div>
         <div class="ws-sub">Share your link to move up — every friend who joins counts toward your circle.</div>
         <div class="ws-link">
@@ -1726,6 +1728,7 @@ const waitlistNote = document.getElementById('waitlistNote');
 const waitlistSocial = document.getElementById('waitlistSocial');
 const waitlistSuccess = document.getElementById('waitlistSuccess');
 const waitlistError = document.getElementById('waitlistError');
+const waitlistNotice = document.getElementById('waitlistNotice');
 const shareLinkInput = document.getElementById('shareLink');
 const shareCopyBtn = document.getElementById('shareCopy');
 const shareCount = document.getElementById('shareCount');
@@ -1739,6 +1742,33 @@ function showError(msg) {
 function clearError() {
   waitlistError.hidden = true;
   waitlistError.textContent = '';
+}
+function showNotice(msg) {
+  waitlistNotice.textContent = msg;
+  waitlistNotice.hidden = false;
+}
+function clearNotice() {
+  waitlistNotice.hidden = true;
+  waitlistNotice.textContent = '';
+}
+
+async function recoverExisting(email) {
+  try {
+    const normalized = email.trim().toLowerCase();
+    const emailHash = await hashEmail(normalized);
+    const snap = await getDoc(doc(db, 'waitlist', emailHash));
+    if (!snap.exists()) return null;
+    const data = snap.data() || {};
+    if (!/^[A-Z0-9]{5}$/.test(data.referralCode || '')) return null;
+    return {
+      email: normalized,
+      referralCode: data.referralCode,
+      referredBy: data.referredBy || '',
+    };
+  } catch (e) {
+    console.error('[waitlist recover]', e);
+    return null;
+  }
 }
 
 function renderCount(n) {
@@ -1780,6 +1810,7 @@ async function showInboundSocialProof(code) {
 
 async function handleSubmit(emailInput) {
   clearError();
+  clearNotice();
   const email = (emailInput.value || '').trim();
   if (!EMAIL_RE.test(email) || email.length > 254) {
     showError('Please enter a valid email address.');
@@ -1789,16 +1820,27 @@ async function handleSubmit(emailInput) {
   const submitBtns = document.querySelectorAll('#heroForm button, #mainForm button');
   submitBtns.forEach(b => { b.disabled = true; });
 
+  const scrollToCard = () =>
+    document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   try {
     const record = await submitSignup(email, referredBy);
     save(record);
     switchToSuccessState(record);
-    // Smooth-scroll into the share UI so they see it.
-    document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToCard();
   } catch (err) {
     const msg = (err && err.code) || '';
     if (msg === 'permission-denied') {
-      showError("You're already on the waitlist — check your email for your share link.");
+      // Duplicate signup — recover their existing record and show the share UI.
+      const recovered = await recoverExisting(email);
+      if (recovered) {
+        save(recovered);
+        switchToSuccessState(recovered);
+        showNotice("You're already on the waitlist — here's your share link.");
+        scrollToCard();
+      } else {
+        showError("You're already on the waitlist, but we couldn't load your share link. Try again in a moment.");
+      }
     } else {
       console.error('[waitlist]', err);
       showError('Something went wrong. Please try again.');
