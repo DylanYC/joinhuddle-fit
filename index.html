@@ -115,13 +115,14 @@
   .hero-waitlist-note{margin-top:10px;font-size:12px;color:var(--text3);text-align:center;}
 
   /* CAROUSEL */
-  .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:16px 0 20px;}
+  /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
+  .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:32px 0 72px;}
   .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
-  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .4s cubic-bezier(.22,.61,.36,1),box-shadow .4s cubic-bezier(.22,.61,.36,1);}
-  /* Dark-mode hover: layered black shadows with low opacities = soft natural depth */
-  .pcard:hover{transform:translateY(-6px);box-shadow:0 2px 4px rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.28),0 28px 56px rgba(0,0,0,.32);}
-  /* Light-mode hover: brand-indigo-tinted shadow for elegance */
-  .light .pcard:hover{box-shadow:0 1px 3px rgba(10,15,129,.06),0 8px 18px rgba(10,15,129,.09),0 22px 44px rgba(10,15,129,.12);}
+  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1);}
+  /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
+  .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
+  /* Light-mode hover: soft brand-indigo-tinted shadow, multi-layer */
+  .light .pcard:hover{box-shadow:0 6px 14px rgba(10,15,129,.05),0 18px 36px rgba(10,15,129,.08),0 40px 72px rgba(10,15,129,.10);}
   .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:30px 12px 11px;}
   .pc-task{font-size:10px;color:rgba(255,255,255,.65);margin-bottom:3px;}
@@ -129,7 +130,7 @@
   .pc-av{width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff;border:1.5px solid rgba(255,255,255,.3);}
   .pc-name{font-size:10px;font-weight:700;color:#fff;}
   .pc-badge{position:absolute;top:9px;right:9px;background:rgba(91,82,232,.9);border-radius:100px;padding:3px 7px;font-size:8px;font-weight:700;color:#fff;}
-  .c-dots{display:flex;justify-content:center;gap:7px;margin-top:6px;}
+  .c-dots{display:flex;justify-content:center;gap:7px;margin-top:-24px;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .4s,width .4s,border-radius .4s;}
   .dot.on{background:var(--accent);width:22px;border-radius:4px;}
   .c-arrows{display:flex;justify-content:center;gap:10px;margin-top:14px;}
@@ -262,7 +263,7 @@
     .hero-waitlist button{border-radius:12px;width:100%;}
 
     /* CAROUSEL */
-    .c-outer{padding:14px 0 18px;margin-top:18px;}
+    .c-outer{padding:24px 0 56px;margin-top:18px;}
     .c-track{padding:0 14px;gap:12px;}
     .pcard{width:180px;height:240px;}
 
