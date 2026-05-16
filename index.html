@@ -300,7 +300,6 @@
 
   /* PHONE */
   .proof-phone-anchor{position:relative;flex-shrink:0;}
-  .proof-glow{position:absolute;inset:-50px;border-radius:90px;opacity:0;filter:blur(60px);transition:background .7s ease,opacity .7s ease;pointer-events:none;z-index:0;}
   .proof-phone{
     width:282px;height:580px;
     background:#131313;
@@ -575,7 +574,6 @@
       </div>
 
       <div class="proof-phone-anchor">
-        <div class="proof-glow" id="proof-glow"></div>
         <div class="proof-phone">
           <div class="proof-island"></div>
           <div class="proof-screen" id="proof-screen"></div>
@@ -1043,9 +1041,6 @@ cOuter.addEventListener('click', (e) => {
       el.classList.toggle('is-active', i === pActive)
     );
     const t = proofTasks[pActive];
-    const glow = document.getElementById('proof-glow');
-    glow.style.background = t.glowColor;
-    glow.style.opacity = '0.22';
     document.getElementById('proof-caption').textContent = t.caption;
   }
 
