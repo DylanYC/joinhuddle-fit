@@ -64,10 +64,14 @@
      it (the loop section's sticky-left rail). `clip` prevents horizontal
      overflow without becoming a scroll container. */
   .site{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);overflow-x:hidden;overflow-x:clip;transition:background .4s,color .4s;}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:var(--bg);transition:background .4s;position:relative;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:var(--bg);position:sticky;top:0;z-index:100;margin:0 auto;width:100%;border:1px solid transparent;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 0 0 rgba(0,0,0,0);transition:padding .35s cubic-bezier(.4,0,.2,1),margin .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1),max-width .35s cubic-bezier(.4,0,.2,1),top .35s cubic-bezier(.4,0,.2,1),border-radius .35s cubic-bezier(.4,0,.2,1),background .4s,border-color .4s,box-shadow .4s,backdrop-filter .4s,-webkit-backdrop-filter .4s;}
+  .nav.scrolled{top:14px;max-width:calc(100% - 32px);padding:10px 24px 10px 28px;border-radius:100px;background:rgba(10,10,24,0.55);border-color:rgba(255,255,255,0.12);box-shadow:0 14px 38px rgba(0,0,0,0.35),0 2px 6px rgba(0,0,0,0.18);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);}
+  .light .nav.scrolled{background:rgba(255,255,255,0.62);border-color:rgba(10,10,24,0.08);box-shadow:0 14px 38px rgba(10,10,24,0.10),0 2px 6px rgba(10,10,24,0.05);}
   .nav-links{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);}
   .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--text1);letter-spacing:-.3px;}
-  .nav-logo svg{height:44px;width:auto;display:block;}
+  .nav-logo svg{height:44px;width:auto;display:block;transition:height .35s cubic-bezier(.4,0,.2,1);}
+  .nav.scrolled .nav-logo svg{height:36px;}
+  .nav.scrolled .nav-cta{padding:9px 20px;}
   .nav-logo .logo-mark{fill:#6F75FF;}
   .nav-logo .logo-word{fill:#ECEAFD;transition:fill .4s;}
   .light .nav-logo .logo-word{fill:#0A0F81;}
@@ -442,6 +446,7 @@
   /* ============ RESPONSIVE: tablet & smaller ============ */
   @media (max-width: 900px) {
     .nav{padding:16px 24px;}
+    .nav.scrolled{padding:9px 18px 9px 22px;max-width:calc(100% - 24px);top:12px;}
     .nav-links{gap:20px;}
     .sec{padding:48px 20px 0;}
     .phones{padding:16px 24px;flex-wrap:wrap;}
@@ -481,11 +486,14 @@
   @media (max-width: 640px) {
     /* NAV */
     .nav{padding:14px 16px;gap:10px;}
+    .nav.scrolled{padding:8px 14px 8px 16px;max-width:calc(100% - 16px);top:10px;}
     .nav-logo svg{height:36px;}
+    .nav.scrolled .nav-logo svg{height:30px;}
     .nav-links{display:none;}
     .t-lbl{display:none;}
     .toggle{padding:6px 10px;gap:6px;}
     .nav-cta{padding:9px 16px;font-size:13px;}
+    .nav.scrolled .nav-cta{padding:8px 14px;}
 
     /* HERO */
     .hero{padding:32px 16px 0;}
@@ -823,6 +831,25 @@
 </div>
 
 <script>
+// Floating nav — toggle .scrolled past a small threshold
+(function(){
+  const nav = document.querySelector('.nav');
+  if (!nav) return;
+  let ticking = false;
+  function update() {
+    const scrolled = (window.scrollY || window.pageYOffset) > 40;
+    nav.classList.toggle('scrolled', scrolled);
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, {passive: true});
+  update();
+})();
+
 // Smooth scroll: snappy departure, soft landing (easeOutQuart)
 function smoothScrollTo(id) {
   const target = document.getElementById(id);
