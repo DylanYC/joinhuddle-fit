@@ -259,6 +259,91 @@
   .flinks{display:flex;gap:20px;font-size:13px;color:var(--text3);list-style:none;}
   .fcopy{font-size:12px;color:var(--text3);}
 
+  /* PROOF SECTION (The App — moment of proof) */
+  .proof-sec{padding:24px 24px 60px;overflow:hidden;}
+  .proof-stage{display:flex;align-items:center;justify-content:center;position:relative;max-width:1120px;margin:0 auto;}
+  .proof-side{flex:1;min-width:0;display:flex;align-items:center;gap:14px;overflow:hidden;height:300px;}
+  .proof-side.proof-left{justify-content:flex-end;padding-right:32px;}
+  .proof-side.proof-right{justify-content:flex-start;padding:0 0 0 32px;}
+
+  .proof-card{
+    width:190px;min-width:190px;
+    background:#FFFFFF;
+    border:1px solid rgba(0,0,0,0.05);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0px 2px 4px rgba(0,0,0,0.10),0px 8px 20px -6px rgba(0,0,0,0.04);
+    transition:opacity .45s cubic-bezier(.4,0,.2,1),transform .45s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,border-color .3s ease;
+  }
+  .proof-card.is-near{opacity:.78;transform:scale(1.0);}
+  .proof-card.is-far{opacity:.28;transform:scale(.93);}
+  @keyframes proof-capture{
+    0%{transform:scale(1.00);box-shadow:0px 2px 4px rgba(0,0,0,.10),0px 8px 20px -6px rgba(0,0,0,.04);border-color:rgba(0,0,0,0.05);}
+    40%{transform:scale(1.05);box-shadow:0 10px 44px rgba(111,117,255,0.42),0 0 0 1.5px rgba(111,117,255,0.55);border-color:rgba(111,117,255,0.65);}
+    100%{transform:scale(1.00);box-shadow:0px 2px 4px rgba(0,0,0,.10),0px 8px 20px -6px rgba(0,0,0,.04);border-color:rgba(0,0,0,0.05);}
+  }
+  .proof-card.is-capturing{animation:proof-capture .6s ease-out forwards;}
+
+  .proof-card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+  .proof-time-pill{display:inline-flex;align-items:center;gap:5px;background:#CFD1FF;border-radius:12px;padding:4px 9px 4px 7px;font-size:11.5px;font-weight:500;color:#292D91;}
+  .proof-kdots{width:28px;height:28px;border-radius:50%;border:none;background:#F2F2F8;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5px;flex-shrink:0;padding:0;}
+  .proof-kdots span{width:3px;height:3px;border-radius:50%;background:#9090B0;display:block;}
+  .proof-card-taskname{font-size:13px;font-weight:700;color:#1C1C1C;line-height:1.35;margin-bottom:12px;}
+  .proof-card-seenby{display:flex;align-items:center;gap:6px;}
+  .proof-seen-icon{width:18px;height:18px;border-radius:50%;background:rgba(111,117,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .proof-seen-icon::after{content:'';width:8px;height:8px;border-radius:50%;background:#6F75FF;}
+  .proof-seen-label{font-size:11px;color:#787878;white-space:nowrap;}
+  .proof-avatars{display:flex;}
+  .proof-av{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;margin-left:-5px;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
+  .proof-av:first-child{margin-left:0;}
+  .proof-av img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  /* PHONE */
+  .proof-phone-anchor{position:relative;flex-shrink:0;}
+  .proof-glow{position:absolute;inset:-50px;border-radius:90px;opacity:0;filter:blur(60px);transition:background .7s ease,opacity .7s ease;pointer-events:none;z-index:0;}
+  .proof-phone{
+    width:282px;height:580px;
+    background:#131313;
+    border-radius:52px;
+    border:1.5px solid rgba(0,0,0,0.22);
+    position:relative;overflow:hidden;z-index:1;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 60px 100px rgba(0,0,0,0.22),0 20px 40px rgba(0,0,0,0.10);
+  }
+  .proof-island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:112px;height:32px;background:#000;border-radius:20px;z-index:30;}
+  .proof-screen{position:absolute;inset:0;border-radius:50px;overflow:hidden;}
+  .proof-home-bar{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:112px;height:4px;background:rgba(255,255,255,0.22);border-radius:2px;z-index:30;}
+
+  /* SCENES */
+  .proof-scene{position:absolute;inset:0;opacity:0;transition:opacity .55s cubic-bezier(.4,0,.2,1);}
+  .proof-scene.is-active{opacity:1;}
+  .proof-scene-fallback{position:absolute;inset:0;z-index:1;}
+  .proof-scene-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block;}
+  .proof-scene-vignette{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.5));z-index:3;pointer-events:none;}
+  .proof-bg-0{background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);}
+  .proof-bg-1{background:linear-gradient(158deg,#14532d 0%,#15803d 40%,#16a34a 70%,#4ade80 100%);}
+  .proof-bg-2{background:linear-gradient(158deg,#0c1a30 0%,#1e3a5f 40%,#1d4ed8 72%,#60a5fa 100%);}
+  .proof-bg-3{background:linear-gradient(158deg,#0c4a6e 0%,#0369a1 40%,#0284c7 70%,#38bdf8 100%);}
+  .proof-bg-4{background:linear-gradient(158deg,#3b0764 0%,#7e22ce 42%,#a855f7 74%,#e879f9 100%);}
+  .proof-bg-5{background:radial-gradient(ellipse 280px 320px at 50% 35%,#1a2e1a 0%,#080808 100%);}
+  .proof-scene-inner{position:absolute;inset:0;display:flex;flex-direction:column;padding:55px 17px 33px;z-index:4;}
+  .proof-scene-ts{font-size:13px;color:rgba(255,255,255,0.82);letter-spacing:0.04em;}
+  .proof-scene-illo{flex:1;display:flex;align-items:center;justify-content:center;}
+  .proof-scene-badge{background:rgba(0,0,0,0.38);border:1px solid rgba(255,255,255,0.13);border-radius:14px;padding:11px 14px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+  .proof-scene-badge-label{font-size:8px;text-transform:uppercase;letter-spacing:0.16em;color:rgba(255,255,255,0.55);margin-bottom:4px;}
+  .proof-scene-badge-name{font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.96);margin-bottom:6px;line-height:1.3;}
+  .proof-scene-badge-status{display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.62);}
+  .proof-scene-check{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.85);}
+
+  /* CAPTION + NAV */
+  .proof-caption{text-align:center;margin-top:26px;min-height:16px;font-size:11px;color:var(--text3);letter-spacing:0.06em;text-transform:lowercase;}
+  .proof-nav{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:18px;}
+  .proof-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s ease;user-select:none;}
+  .proof-btn:hover{background:rgba(91,82,232,0.12);border-color:var(--accent);color:var(--text1);transform:scale(1.06);}
+  .proof-btn:active{transform:scale(.95);}
+  .proof-dots{display:flex;gap:7px;align-items:center;}
+  .proof-dot{height:5px;width:5px;border-radius:99px;background:var(--border2);cursor:pointer;transition:all .35s ease;}
+  .proof-dot.is-active{width:22px;background:var(--accent);}
+
   /* Hero SVG treatment */
   .hero-svg-wrap {
     max-width: min(680px, 88vw);
@@ -279,6 +364,10 @@
     .ic-sec{padding:36px 24px;gap:32px;}
     .waitlist-sec{padding:48px 24px;}
     .footer{padding:28px 24px;}
+    .proof-side{padding:0 16px;gap:10px;height:280px;}
+    .proof-side.proof-left{padding-right:20px;}
+    .proof-side.proof-right{padding:0 0 0 20px;}
+    .proof-card{width:170px;min-width:170px;}
   }
 
   /* ============ RESPONSIVE: mobile ============ */
@@ -325,6 +414,16 @@
     .phones-sec{padding:36px 0;}
     .phones{padding:16px;justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;flex-wrap:nowrap;}
     .phone{scroll-snap-align:center;width:180px;height:380px;}
+
+    /* PROOF section — hide orbit cards, only show phone */
+    .proof-sec{padding:16px 16px 36px;}
+    .proof-side{display:none;}
+    .proof-stage{justify-content:center;}
+    .proof-phone{width:248px;height:520px;border-radius:46px;}
+    .proof-screen{border-radius:44px;}
+    .proof-island{width:98px;height:28px;top:11px;}
+    .proof-scene-inner{padding:48px 14px 28px;}
+    .proof-home-bar{width:98px;}
 
     /* INNER CIRCLE stacks */
     .ic-sec{padding:36px 16px;gap:28px;flex-direction:column;}
@@ -461,61 +560,42 @@
     </div>
   </section>
 
-  <!-- 4. THE APP -->
+  <!-- 4. THE APP — moment of proof -->
   <div class="sec">
     <div class="slbl">The App</div>
-    <h2 class="stitle">Built for the<br/><em>moment of truth.</em></h2>
-    <p class="ssub">Every screen reduces friction between intent and proof.</p>
+    <h2 class="stitle">Built for the<br/><em>moment of proof.</em></h2>
+    <p class="ssub">No filters, no edits — just real and authentic moments. Capture all commitments, big and small.</p>
   </div>
 
-  <section class="phones-sec">
-    <div class="phones">
-      <div>
-        <div class="phone">
-          <div class="phone-screen" style="background:#050510;">
-            <div style="background:#0a0a1a;padding:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);"><span style="color:#fff;font-size:12px;font-weight:700;">Feed</span><div style="width:24px;height:24px;border-radius:50%;background:#5B52E8;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;">Y</div></div>
-            <div style="padding:8px;display:flex;flex-direction:column;gap:7px;">
-              <div style="background:#0f0f20;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="height:96px;background:linear-gradient(135deg,#0a1a3a,#1a3060);display:flex;align-items:center;justify-content:center;font-size:28px;">🏃</div><div style="padding:7px 8px;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:17px;height:17px;border-radius:50%;background:#5B52E8;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:#fff;">JR</div><span style="color:rgba(255,255,255,.8);font-size:10px;font-weight:600;">@jordanr</span></div><div style="color:rgba(255,255,255,.5);font-size:9px;">Morning 5K ✓</div><div style="margin-top:4px;font-size:9px;color:#5B52E8;font-weight:600;">💪 6 flexes</div></div></div>
-              <div style="background:#0f0f20;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="height:70px;background:linear-gradient(135deg,#0a1a0a,#1a3a0a);display:flex;align-items:center;justify-content:center;font-size:24px;">🥗</div><div style="padding:7px 8px;"><div style="display:flex;align-items:center;gap:5px;"><div style="width:17px;height:17px;border-radius:50%;background:#2d9d6e;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:#fff;">KL</div><span style="color:rgba(255,255,255,.8);font-size:10px;font-weight:600;">@kaylal</span></div><div style="color:rgba(255,255,255,.5);font-size:9px;margin-top:2px;">Sunday meal prep ✓</div></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="phone-lbl">Inner Circle Feed</div>
+  <section class="proof-sec">
+    <div class="proof-stage">
+      <div class="proof-side proof-left">
+        <div class="proof-card is-far" id="proof-card-fl"></div>
+        <div class="proof-card is-near" id="proof-card-nl"></div>
       </div>
-      <div>
-        <div class="phone feat">
-          <div class="phone-screen" style="background:#050510;">
-            <div style="background:#0a0a1a;padding:12px;border-bottom:1px solid rgba(91,82,232,0.2);text-align:center;"><span style="color:#fff;font-size:12px;font-weight:700;">Prove It</span></div>
-            <div style="padding:10px;">
-              <div style="background:rgba(91,82,232,.1);border:1px solid rgba(91,82,232,.3);border-radius:10px;padding:8px;margin-bottom:10px;"><div style="font-size:8px;color:rgba(255,255,255,.4);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">Your commitment</div><div style="color:#fff;font-size:11px;font-weight:600;">Morning run — 5km</div><div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:1px;">Today before 10am</div></div>
-              <div style="height:158px;background:linear-gradient(135deg,#0a1a3a,#1a3060);border-radius:13px;display:flex;align-items:center;justify-content:center;position:relative;">
-                <div style="font-size:34px;">📸</div>
-                <div style="position:absolute;top:8px;left:8px;width:16px;height:16px;border-top:2px solid rgba(255,255,255,.6);border-left:2px solid rgba(255,255,255,.6);"></div>
-                <div style="position:absolute;top:8px;right:8px;width:16px;height:16px;border-top:2px solid rgba(255,255,255,.6);border-right:2px solid rgba(255,255,255,.6);"></div>
-                <div style="position:absolute;bottom:8px;left:8px;width:16px;height:16px;border-bottom:2px solid rgba(255,255,255,.6);border-left:2px solid rgba(255,255,255,.6);"></div>
-                <div style="position:absolute;bottom:8px;right:8px;width:16px;height:16px;border-bottom:2px solid rgba(255,255,255,.6);border-right:2px solid rgba(255,255,255,.6);"></div>
-              </div>
-              <div style="display:flex;justify-content:center;margin-top:12px;"><div style="width:46px;height:46px;border-radius:50%;background:#5B52E8;border:3px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;border-radius:50%;background:#fff;opacity:.9;"></div></div></div>
-            </div>
-          </div>
+
+      <div class="proof-phone-anchor">
+        <div class="proof-glow" id="proof-glow"></div>
+        <div class="proof-phone">
+          <div class="proof-island"></div>
+          <div class="proof-screen" id="proof-screen"></div>
+          <div class="proof-home-bar"></div>
         </div>
-        <div class="phone-lbl pl-hl">Prove It — the magic</div>
       </div>
-      <div>
-        <div class="phone">
-          <div class="phone-screen" style="background:#050510;">
-            <div style="background:#0a0a1a;padding:12px;border-bottom:1px solid rgba(255,255,255,0.06);"><div style="color:#fff;font-size:12px;font-weight:700;">This Week</div><div style="color:rgba(255,255,255,.4);font-size:9px;margin-top:1px;">4/7 commitments</div></div>
-            <div style="padding:8px;display:flex;flex-direction:column;gap:5px;">
-              <div style="display:flex;gap:3px;margin-bottom:3px;"><div style="flex:1;height:5px;background:#5B52E8;border-radius:3px;"></div><div style="flex:1;height:5px;background:#5B52E8;border-radius:3px;"></div><div style="flex:1;height:5px;background:#5B52E8;border-radius:3px;"></div><div style="flex:1;height:5px;background:#5B52E8;border-radius:3px;"></div><div style="flex:1;height:5px;background:rgba(91,82,232,.2);border-radius:3px;"></div><div style="flex:1;height:5px;background:rgba(91,82,232,.2);border-radius:3px;"></div><div style="flex:1;height:5px;background:rgba(91,82,232,.2);border-radius:3px;"></div></div>
-              <div style="background:#0f0f20;border-radius:10px;padding:8px;display:flex;align-items:center;gap:6px;"><div style="width:19px;height:19px;border-radius:50%;background:#5B52E8;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;">✓</div><div><div style="color:#fff;font-size:10px;font-weight:600;">Morning run 5km</div><div style="color:#5B52E8;font-size:8px;font-weight:600;">PROVED ✓</div></div></div>
-              <div style="background:#0f0f20;border-radius:10px;padding:8px;display:flex;align-items:center;gap:6px;border:1px solid rgba(91,82,232,.3);"><div style="width:19px;height:19px;border-radius:50%;background:rgba(91,82,232,.2);border:1.5px solid rgba(91,82,232,.5);"></div><div><div style="color:#fff;font-size:10px;font-weight:600;">Evening walk</div><div style="color:rgba(255,255,255,.35);font-size:8px;">Due today · 6pm</div></div></div>
-              <div style="background:#0f0f20;border-radius:10px;padding:8px;display:flex;align-items:center;gap:6px;"><div style="width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.05);border:1.5px dashed rgba(255,255,255,.15);"></div><div><div style="color:rgba(255,255,255,.4);font-size:10px;">Meal prep Sunday</div></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="phone-lbl">Your Commitments</div>
+
+      <div class="proof-side proof-right">
+        <div class="proof-card is-near" id="proof-card-nr"></div>
+        <div class="proof-card is-far" id="proof-card-fr"></div>
       </div>
     </div>
+
+    <p class="proof-caption" id="proof-caption"></p>
+
+    <nav class="proof-nav">
+      <button class="proof-btn" id="proof-prev" aria-label="Previous">&#8592;</button>
+      <div class="proof-dots" id="proof-dots"></div>
+      <button class="proof-btn" id="proof-next" aria-label="Next">&#8594;</button>
+    </nav>
   </section>
 
   <!-- 5. INNER CIRCLE -->
@@ -787,6 +867,257 @@ cOuter.addEventListener('pointercancel', endDrag);
 cOuter.addEventListener('click', (e) => {
   if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; }
 }, true);
+
+// =============================================================================
+// PROOF SECTION — "Built for the moment of proof"
+// Phone-centred orbit carousel. Cards on either side show pending commitments;
+// the phone shows the proof scene for the active card. Capture flash plays
+// on the incoming near-card just before the phone cross-fades.
+// =============================================================================
+(function () {
+  const AV = 'assets/Avatars/';
+
+  // MEDIA SWAP — To replace placeholder scenes with real screenshots or videos:
+  //   For images: set mediaSrc to the image path e.g. "assets/proof/run-proof.jpg"
+  //   For videos: set mediaType to "video" and mediaSrc to the clip path
+  //               e.g. "assets/proof/run-proof.mp4"
+  //   Leave mediaSrc as null to show the gradient + SVG placeholder.
+  const proofTasks = [
+    {
+      emoji:'🏃', name:'Morning run — 5km', time:'7:00am',
+      viewers:[ AV+'WHY_Slide3_CloseFriends1.png', AV+'WHY_Slide3_CloseFriends2.png', AV+'WHY_Slide3_Partnership_2.png' ],
+      ts:'6:14 AM', caption:'morning run · 6:14 am',
+      glowColor:'#ea580c', bgClass:'proof-bg-0',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="88" height="104" viewBox="0 0 88 104" fill="none">
+        <circle cx="52" cy="13" r="12" fill="rgba(255,255,255,0.52)"/>
+        <line x1="52" y1="25" x2="45" y2="58" stroke="rgba(255,255,255,0.52)" stroke-width="7" stroke-linecap="round"/>
+        <line x1="48" y1="40" x2="72" y2="28" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="48" y1="40" x2="26" y2="52" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="45" y1="58" x2="66" y2="80" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="66" y1="80" x2="80" y2="100" stroke="rgba(255,255,255,0.4)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="45" y1="58" x2="28" y2="84" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="28" y1="84" x2="14" y2="102" stroke="rgba(255,255,255,0.4)" stroke-width="5" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      emoji:'🥗', name:'Sunday meal prep', time:'5:00pm',
+      viewers:[ AV+'WHY_Slide3_Families1.png', AV+'WHY_Slide3_Families3.png', AV+'WHY_Slide3_Families5.png', AV+'WHY_Slide3_Families7.png' ],
+      ts:'4:32 PM', caption:'meal prep done · 4:32 pm',
+      glowColor:'#16a34a', bgClass:'proof-bg-1',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="96" height="90" viewBox="0 0 96 90" fill="none">
+        <rect x="4" y="6" width="38" height="30" rx="6" fill="rgba(255,255,255,0.42)"/>
+        <line x1="4" y1="21" x2="42" y2="21" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+        <rect x="54" y="6" width="38" height="30" rx="6" fill="rgba(255,255,255,0.32)"/>
+        <line x1="54" y1="21" x2="92" y2="21" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <rect x="4" y="52" width="38" height="30" rx="6" fill="rgba(255,255,255,0.26)"/>
+        <line x1="4" y1="67" x2="42" y2="67" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <rect x="54" y="52" width="38" height="30" rx="6" fill="rgba(255,255,255,0.38)"/>
+        <line x1="54" y1="67" x2="92" y2="67" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+      </svg>`
+    },
+    {
+      emoji:'⛰️', name:'Summit hike — 3,000m', time:'2:00pm',
+      viewers:[ AV+'WHY_Slide3_CloseFriends4.png', AV+'WHY_Slide3_CloseFriends4-1.png', AV+'WHY_Slide3_Partnership_1.png' ],
+      ts:'2:17 PM', caption:'summit reached · 2:17 pm',
+      glowColor:'#3b82f6', bgClass:'proof-bg-2',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="114" height="96" viewBox="0 0 114 96" fill="none">
+        <polygon points="57,6 8,90 106,90" fill="rgba(255,255,255,0.35)"/>
+        <polygon points="57,6 32,90 82,90" fill="rgba(255,255,255,0.52)"/>
+        <line x1="0" y1="90" x2="114" y2="90" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+        <line x1="57" y1="3" x2="57" y2="15" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="57,2 65,13 57,11 49,13" fill="rgba(255,255,255,0.75)"/>
+      </svg>`
+    },
+    {
+      emoji:'💧', name:'Drink 3L water', time:'All day',
+      viewers:[ AV+'WHY_Slide3_Families2.png', AV+'WHY_Slide3_Families4.png' ],
+      ts:'8:45 PM', caption:'3l done · 8:45 pm',
+      glowColor:'#0ea5e9', bgClass:'proof-bg-3',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="64" height="108" viewBox="0 0 64 108" fill="none">
+        <rect x="21" y="2" width="22" height="11" rx="4" fill="rgba(255,255,255,0.38)"/>
+        <rect x="23" y="11" width="18" height="8" fill="rgba(255,255,255,0.28)"/>
+        <rect x="6" y="20" width="52" height="82" rx="12" stroke="rgba(255,255,255,0.52)" stroke-width="2" fill="rgba(255,255,255,0.05)"/>
+        <path d="M8 76 H56 V88 Q56 100 44 100 H20 Q8 100 8 88 Z" fill="rgba(255,255,255,0.36)"/>
+        <ellipse cx="32" cy="76" rx="24" ry="5" fill="rgba(255,255,255,0.22)"/>
+      </svg>`
+    },
+    {
+      emoji:'🧘', name:'Evening stretch', time:'9:00pm',
+      viewers:[ AV+'WHY_Slide3_Partnership_1.png', AV+'WHY_Slide3_Partnership_2.png', AV+'WHY_Slide3_CloseFriends1.png' ],
+      ts:'9:03 PM', caption:'evening stretch · 9:03 pm',
+      glowColor:'#a855f7', bgClass:'proof-bg-4',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="108" height="104" viewBox="0 0 108 104" fill="none">
+        <circle cx="54" cy="13" r="12" fill="rgba(255,255,255,0.52)"/>
+        <line x1="54" y1="25" x2="54" y2="60" stroke="rgba(255,255,255,0.52)" stroke-width="7" stroke-linecap="round"/>
+        <line x1="54" y1="40" x2="20" y2="30" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="54" y1="40" x2="88" y2="54" stroke="rgba(255,255,255,0.46)" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="54" y1="60" x2="28" y2="84" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="54" y1="60" x2="82" y2="84" stroke="rgba(255,255,255,0.52)" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="28" y1="84" x2="10" y2="80" stroke="rgba(255,255,255,0.38)" stroke-width="4.5" stroke-linecap="round"/>
+        <line x1="82" y1="84" x2="100" y2="80" stroke="rgba(255,255,255,0.38)" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      emoji:'💪', name:'Close activity rings', time:'All day',
+      viewers:[ AV+'WHY_Slide3_Families6.png', AV+'WHY_Slide3_Families7-1.png', AV+'WHY_Slide3_Families7-3.png' ],
+      ts:'7:22 AM', caption:'all rings closed · 7:22 am',
+      glowColor:'#10b981', bgClass:'proof-bg-5',
+      mediaSrc: null, mediaType: 'image',
+      illo:`<svg width="110" height="110" viewBox="0 0 110 110" fill="none">
+        <circle cx="55" cy="55" r="48" stroke="rgba(255,80,80,0.72)"  stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="290" stroke-dashoffset="22" transform="rotate(-90 55 55)"/>
+        <circle cx="55" cy="55" r="35" stroke="rgba(80,255,140,0.72)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="212" stroke-dashoffset="12" transform="rotate(-90 55 55)"/>
+        <circle cx="55" cy="55" r="22" stroke="rgba(80,200,255,0.72)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="6"  transform="rotate(-90 55 55)"/>
+      </svg>`
+    }
+  ];
+
+  const clockSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#292D91" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/></svg>';
+
+  let pActive = 0;
+  let pTimer = null;
+  let pTransitioning = false;
+
+  function pMod(n, m){ return ((n % m) + m) % m; }
+
+  function buildCardInner(idx) {
+    const t = proofTasks[pMod(idx, proofTasks.length)];
+    const avs = t.viewers.slice(0, 4).map(src =>
+      `<div class="proof-av"><img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background='#CFD1FF';this.remove();"></div>`
+    ).join('');
+    return (
+      '<div class="proof-card-row1">' +
+        '<div class="proof-time-pill">' + clockSVG + t.time + '</div>' +
+        '<button class="proof-kdots" aria-label="More"><span></span><span></span><span></span></button>' +
+      '</div>' +
+      '<div class="proof-card-taskname">' + t.emoji + ' ' + t.name + '</div>' +
+      '<div class="proof-card-seenby">' +
+        '<div class="proof-seen-icon"></div>' +
+        '<span class="proof-seen-label">Seen by</span>' +
+        '<div class="proof-avatars">' + avs + '</div>' +
+      '</div>'
+    );
+  }
+
+  function buildScene(t, i) {
+    // Media slot — img or video — sits on top of gradient+illo fallback.
+    let mediaHtml = '';
+    if (t.mediaSrc) {
+      if (t.mediaType === 'video') {
+        mediaHtml = '<video class="proof-scene-media" src="' + t.mediaSrc + '" autoplay muted loop playsinline></video>';
+      } else {
+        mediaHtml = '<img class="proof-scene-media" src="' + t.mediaSrc + '" alt="" loading="lazy" decoding="async">';
+      }
+    }
+    return (
+      '<div class="proof-scene' + (i === pActive ? ' is-active' : '') + '" data-glow="' + t.glowColor + '">' +
+        '<div class="proof-scene-fallback ' + t.bgClass + '"></div>' +
+        mediaHtml +
+        '<div class="proof-scene-vignette"></div>' +
+        '<div class="proof-scene-inner">' +
+          '<span class="proof-scene-ts">' + t.ts + '</span>' +
+          '<div class="proof-scene-illo">' + (t.mediaSrc ? '' : t.illo) + '</div>' +
+          '<div class="proof-scene-badge">' +
+            '<div class="proof-scene-badge-label">Huddle Proof</div>' +
+            '<div class="proof-scene-badge-name">' + t.emoji + ' ' + t.name + '</div>' +
+            '<div class="proof-scene-badge-status">' +
+              '<div class="proof-scene-check">&#10003;</div>' +
+              'Proved · sent to your circle' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function initScenes() {
+    document.getElementById('proof-screen').innerHTML = proofTasks.map(buildScene).join('');
+  }
+
+  function renderScene() {
+    document.querySelectorAll('.proof-scene').forEach((el, i) =>
+      el.classList.toggle('is-active', i === pActive)
+    );
+    const t = proofTasks[pActive];
+    const glow = document.getElementById('proof-glow');
+    glow.style.background = t.glowColor;
+    glow.style.opacity = '0.22';
+    document.getElementById('proof-caption').textContent = t.caption;
+  }
+
+  function renderCards() {
+    [{id:'proof-card-fl',offset:-2},{id:'proof-card-nl',offset:-1},{id:'proof-card-nr',offset:1},{id:'proof-card-fr',offset:2}]
+      .forEach(({ id, offset }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = buildCardInner(pActive + offset);
+        el.className = 'proof-card ' + (Math.abs(offset) === 1 ? 'is-near' : 'is-far');
+      });
+  }
+
+  function renderDots() {
+    const el = document.getElementById('proof-dots');
+    el.innerHTML = proofTasks.map((_, i) =>
+      '<div class="proof-dot' + (i === pActive ? ' is-active' : '') + '" data-i="' + i + '"></div>'
+    ).join('');
+    el.querySelectorAll('.proof-dot').forEach(d =>
+      d.addEventListener('click', () => { stopProofAuto(); proofGoTo(parseInt(d.dataset.i, 10), 1); startProofAuto(); })
+    );
+  }
+
+  function proofGoTo(newIdx, dir) {
+    if (pTransitioning) return;
+    newIdx = pMod(newIdx, proofTasks.length);
+    if (newIdx === pActive) return;
+    pTransitioning = true;
+
+    const flashEl = document.getElementById(dir >= 0 ? 'proof-card-nr' : 'proof-card-nl');
+    if (flashEl) {
+      flashEl.classList.add('is-capturing');
+      setTimeout(() => flashEl.classList.remove('is-capturing'), 660);
+    }
+
+    setTimeout(() => { pActive = newIdx; renderScene(); }, 240);
+    setTimeout(() => { renderCards(); renderDots(); pTransitioning = false; }, 510);
+  }
+
+  function proofAdvance(dir) { proofGoTo(pActive + dir, dir); }
+  function startProofAuto() { stopProofAuto(); pTimer = setInterval(() => proofAdvance(1), 4000); }
+  function stopProofAuto() { clearInterval(pTimer); }
+
+  initScenes();
+  renderScene();
+  renderCards();
+  renderDots();
+
+  document.getElementById('proof-prev').addEventListener('click', () => { stopProofAuto(); proofAdvance(-1); startProofAuto(); });
+  document.getElementById('proof-next').addEventListener('click', () => { stopProofAuto(); proofAdvance( 1); startProofAuto(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft'  && isProofInView()) { stopProofAuto(); proofAdvance(-1); startProofAuto(); }
+    if (e.key === 'ArrowRight' && isProofInView()) { stopProofAuto(); proofAdvance( 1); startProofAuto(); }
+  });
+
+  // Only respond to arrow keys when the section is on screen — avoids hijacking
+  // keyboard navigation elsewhere on the page.
+  function isProofInView() {
+    const el = document.querySelector('.proof-sec');
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.bottom > 0 && r.top < window.innerHeight;
+  }
+
+  // Pause autoplay when the tab is hidden.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopProofAuto();
+    else startProofAuto();
+  });
+
+  startProofAuto();
+})();
 
 // =============================================================================
 // WHY slide-3 vignette — looping cluster animation
