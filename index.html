@@ -116,9 +116,6 @@
 
   /* CAROUSEL */
   .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:16px 0 20px;}
-  .fade-l,.fade-r{position:absolute;top:0;bottom:0;width:120px;z-index:10;pointer-events:none;}
-  .fade-l{left:0;background:var(--fade-l);}
-  .fade-r{right:0;background:var(--fade-r);}
   .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .32s cubic-bezier(.25,.46,.45,.94),box-shadow .32s cubic-bezier(.25,.46,.45,.94);}
   .pcard:hover{transform:translateY(-10px);box-shadow:var(--card-shadow);}
@@ -265,7 +262,6 @@
     .c-outer{padding:14px 0 18px;margin-top:18px;}
     .c-track{padding:0 14px;gap:12px;}
     .pcard{width:180px;height:240px;}
-    .fade-l,.fade-r{width:40px;}
 
     /* SECTIONS */
     .sec{padding:48px 16px 0;}
@@ -378,8 +374,6 @@
 
   <section>
     <div class="c-outer">
-      <div class="fade-l" id="fadeL"></div>
-      <div class="fade-r" id="fadeR"></div>
       <div class="c-track" id="ctrack"></div>
     </div>
     <div class="c-dots" id="cdots"></div>
@@ -572,8 +566,6 @@ function toggleMode() {
   document.getElementById('site').classList.toggle('light', light);
   document.getElementById('ticon').textContent = light ? '☀️' : '🌙';
   document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
-  document.getElementById('fadeL').style.background = light ? 'linear-gradient(to right,#f4f4f8 30%,transparent)' : 'linear-gradient(to right,#050510 30%,transparent)';
-  document.getElementById('fadeR').style.background = light ? 'linear-gradient(to left,#f4f4f8 30%,transparent)'  : 'linear-gradient(to left,#050510 30%,transparent)';
 }
 
 const cards = [
