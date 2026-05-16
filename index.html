@@ -115,12 +115,12 @@
   .hero-waitlist-note{margin-top:10px;font-size:12px;color:var(--text3);text-align:center;}
 
   /* CAROUSEL */
-  .c-outer{margin-top:52px;position:relative;overflow:hidden;padding:20px 0 32px;}
-  .fade-l,.fade-r{position:absolute;top:0;bottom:0;width:100px;z-index:10;pointer-events:none;}
+  .c-outer{margin-top:24px;position:relative;overflow:hidden;padding:16px 0 20px;}
+  .fade-l,.fade-r{position:absolute;top:0;bottom:0;width:120px;z-index:10;pointer-events:none;}
   .fade-l{left:0;background:var(--fade-l);}
   .fade-r{right:0;background:var(--fade-r);}
-  .c-track{display:flex;gap:16px;padding:0 80px;transition:transform .75s cubic-bezier(.65,0,.35,1);}
-  .pcard{flex-shrink:0;width:188px;height:250px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;transition:transform .32s cubic-bezier(.25,.46,.45,.94),box-shadow .32s cubic-bezier(.25,.46,.45,.94);}
+  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);}
+  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .32s cubic-bezier(.25,.46,.45,.94),box-shadow .32s cubic-bezier(.25,.46,.45,.94);}
   .pcard:hover{transform:translateY(-10px);box-shadow:var(--card-shadow);}
   .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:30px 12px 11px;}
@@ -262,9 +262,9 @@
     .hero-waitlist button{border-radius:12px;width:100%;}
 
     /* CAROUSEL */
-    .c-outer{padding:16px 0 24px;margin-top:36px;}
-    .c-track{padding:0 20px;gap:12px;}
-    .pcard{width:148px;height:198px;}
+    .c-outer{padding:14px 0 18px;margin-top:18px;}
+    .c-track{padding:0 14px;gap:12px;}
+    .pcard{width:180px;height:240px;}
     .fade-l,.fade-r{width:40px;}
 
     /* SECTIONS */
@@ -372,7 +372,7 @@
   </section>
 
   <!-- 2. PROOF CAROUSEL -->
-  <div class="sec">
+  <div class="sec" style="padding-top:48px;">
     <div class="slbl">Proof pics from the community</div>
   </div>
 
@@ -593,28 +593,58 @@ const cards = [
 
 const track = document.getElementById('ctrack');
 const dotsEl = document.getElementById('cdots');
-const N = cards.length, STEP = 188 + 16;
-let cur = 0, timer = null, hov = false;
+const N = cards.length;
+const CARD_W = 240, GAP = 18;          // keep in sync with .pcard width + .c-track gap
+const STEP = CARD_W + GAP;
+const SMOOTH = 'transform .65s cubic-bezier(.22,.61,.36,1)';
+let cur = N, timer = null, hov = false;
 
-cards.forEach(c => {
-  const el = document.createElement('div');
-  el.className = 'pcard';
-  el.innerHTML = `<div class="pc-scene" style="background:${c.bg};">${c.e}</div><div class="pc-ov"><div class="pc-task">${c.t}</div><div class="pc-user"><div class="pc-av" style="background:${c.ac};">${c.av}</div><div class="pc-name">@${c.u}</div></div></div><div class="pc-badge">${c.b}</div>`;
-  track.appendChild(el);
-});
+// Triple-render so we always have content on both sides; cur lives in the middle copy
+for (let copy = 0; copy < 3; copy++) {
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'pcard';
+    el.innerHTML = `<div class="pc-scene" style="background:${c.bg};">${c.e}</div><div class="pc-ov"><div class="pc-task">${c.t}</div><div class="pc-user"><div class="pc-av" style="background:${c.ac};">${c.av}</div><div class="pc-name">@${c.u}</div></div></div><div class="pc-badge">${c.b}</div>`;
+    track.appendChild(el);
+  });
+}
 
+// Dots represent the N underlying cards (cur % N)
 for (let i = 0; i < N; i++) {
   const d = document.createElement('div');
   d.className = 'dot' + (i === 0 ? ' on' : '');
-  d.onclick = () => { go(i); reset(); };
+  d.onclick = () => { go(N + i); reset(); };
   dotsEl.appendChild(d);
 }
 
+// Position immediately (no transition) to the starting offset
+track.style.transition = 'none';
+track.style.transform = `translateX(-${cur * STEP}px)`;
+// Force reflow, then re-enable the smooth transition
+void track.offsetWidth;
+track.style.transition = SMOOTH;
+
 function go(i) {
-  cur = ((i % N) + N) % N;
+  cur = i;
+  track.style.transition = SMOOTH;
   track.style.transform = `translateX(-${cur * STEP}px)`;
-  document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('on', j === cur));
+  const dotIdx = ((cur % N) + N) % N;
+  document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('on', j === dotIdx));
 }
+
+// When we cross into the 3rd copy (or before the 1st), snap back instantly
+// to the equivalent card in the middle copy. The cards look identical so it's seamless.
+track.addEventListener('transitionend', () => {
+  if (cur >= 2 * N || cur < N) {
+    const wrapped = ((cur - N) % N + N) % N + N;  // map cur back into [N, 2N)
+    cur = wrapped;
+    track.style.transition = 'none';
+    track.style.transform = `translateX(-${cur * STEP}px)`;
+    void track.offsetWidth;
+    track.style.transition = SMOOTH;
+  }
+});
+
 function reset() {
   clearTimeout(timer);
   if (!hov) timer = setTimeout(() => { go(cur + 1); reset(); }, 4000);
