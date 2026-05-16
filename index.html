@@ -1,3 +1,7 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huddle — Fitness accountability with your inner circle</title>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -207,6 +211,87 @@
   .hero-svg-wrap svg {
     width: 100%;
     height: auto;
+  }
+
+  /* ============ RESPONSIVE: tablet & smaller ============ */
+  @media (max-width: 900px) {
+    .nav{padding:16px 24px;}
+    .nav-links{gap:20px;}
+    .sec{padding:64px 20px 0;}
+    .steps-sec{padding:48px 24px;}
+    .phones{padding:16px 24px;flex-wrap:wrap;}
+    .ic-sec{padding:48px 24px;gap:36px;}
+    .waitlist-sec{padding:64px 24px;}
+    .footer{padding:28px 24px;}
+  }
+
+  /* ============ RESPONSIVE: mobile ============ */
+  @media (max-width: 640px) {
+    /* NAV */
+    .nav{padding:14px 16px;gap:10px;}
+    .nav-logo img{height:36px;}
+    .nav-links{display:none;}
+    .t-lbl{display:none;}
+    .toggle{padding:6px 10px;gap:6px;}
+    .nav-cta{padding:9px 16px;font-size:13px;}
+
+    /* HERO */
+    .hero{padding:32px 16px 0;}
+    .eyebrow{font-size:11px;padding:5px 14px;margin-bottom:24px;}
+    .hero-svg-wrap{max-width:94vw;}
+    .tagline{font-size:16px;margin-top:22px;}
+
+    /* CTAs stack */
+    .ctas{flex-direction:column;align-items:stretch;gap:10px;margin-top:20px;padding:0 8px;}
+    .store-btn{justify-content:center;padding:13px 18px;}
+
+    /* HERO WAITLIST stacks */
+    .hero-waitlist{flex-direction:column;gap:10px;max-width:100%;padding:0 8px;}
+    .hero-waitlist input{border-radius:12px;border-right:1px solid var(--input-border);}
+    .hero-waitlist button{border-radius:12px;width:100%;}
+
+    /* CAROUSEL */
+    .c-outer{padding:16px 0 24px;margin-top:36px;}
+    .c-track{padding:0 20px;gap:12px;}
+    .pcard{width:148px;height:198px;}
+    .fade-l,.fade-r{width:40px;}
+
+    /* SECTIONS */
+    .sec{padding:48px 16px 0;}
+    .stitle{font-size:30px;letter-spacing:-1px;}
+
+    /* STEPS stack vertically */
+    .steps-sec{padding:36px 16px;}
+    .steps{flex-direction:column;gap:12px;margin-top:28px;}
+    .step{padding:22px 18px;}
+    .step-c{display:none;}
+
+    /* PHONES — horizontal scroll */
+    .phones-sec{padding:36px 0;}
+    .phones{padding:16px;justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;flex-wrap:nowrap;}
+    .phone{scroll-snap-align:center;width:180px;height:380px;}
+
+    /* INNER CIRCLE stacks */
+    .ic-sec{padding:36px 16px;gap:28px;flex-direction:column;}
+    .ic-copy{max-width:100%;text-align:left;}
+    .ic-copy h2{font-size:26px;}
+
+    /* WAITLIST */
+    .waitlist-sec{padding:48px 16px;}
+    .waitlist-card{padding:26px 20px;border-radius:20px;}
+    .waitlist-form{flex-direction:column;gap:10px;}
+    .waitlist-form input{border-radius:12px;border-right:1px solid var(--input-border);}
+    .waitlist-form button{border-radius:12px;width:100%;}
+
+    /* FOOTER */
+    .footer{padding:24px 16px;flex-direction:column;text-align:center;gap:14px;justify-content:center;}
+    .flinks{justify-content:center;flex-wrap:wrap;}
+  }
+
+  /* Very small phones */
+  @media (max-width: 360px) {
+    .nav-cta{padding:8px 12px;font-size:12px;}
+    .nav-logo img{height:32px;}
   }
 </style>
 
