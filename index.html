@@ -629,6 +629,7 @@
       </form>
       <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
       <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
+      <div class="ref-callout" id="heroPerk" hidden></div>
       <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and you'll both get a free year of Huddle Pro at launch.</div>
     </div>
   </section>
@@ -1823,13 +1824,12 @@ async function recoverExisting(email) {
 function renderCount(n) {
   const word = n === 1 ? 'friend has' : 'friends have';
   shareCount.innerHTML = `<strong>${n}</strong> ${word} joined from your link`;
-  if (sharePerk) {
-    if (n > 0) {
-      sharePerk.innerHTML = `<strong>You're in!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
-    } else {
-      sharePerk.innerHTML = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
-    }
-  }
+  const perkHtml = n > 0
+    ? `<strong>You're in!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`
+    : `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
+  if (sharePerk) sharePerk.innerHTML = perkHtml;
+  const heroPerk = document.getElementById('heroPerk');
+  if (heroPerk) heroPerk.innerHTML = perkHtml;
 }
 
 function startCountPolling(code) {
@@ -1844,6 +1844,8 @@ function switchToSuccessState(record) {
   heroForm.hidden = true;
   heroNote.hidden = true;
   heroSuccess.hidden = false;
+  const heroPerk = document.getElementById('heroPerk');
+  if (heroPerk) heroPerk.hidden = false;
   const heroRefCallout = document.getElementById('heroRefCallout');
   if (heroRefCallout) heroRefCallout.hidden = true;
 
