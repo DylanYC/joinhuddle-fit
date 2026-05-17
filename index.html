@@ -193,15 +193,16 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
-  /* Right column = three stacked scene rows. Each row is sized so its
-     scene's vertical center naturally falls on the "anchor line" — the
-     vertical center of the sticky nav on the left — when the row's top
-     reaches the viewport top. Concretely the row height is driven by
-     --loop-row-h (set by JS to 2 × anchor-Y, so a centered scene lands
-     exactly on the anchor). The fallback (72vh) is what we'd get on a
-     ~900px viewport with the default nav height. */
+  /* Right column = three stacked scene rows. Each row is sized to
+     control the spacing between consecutive scenes — narrower row means
+     less scroll distance (and less visual gap) between scenes. Scenes
+     are then pulled onto the anchor line (center of left nav) by both
+     native scroll-snap and the JS soft-snap, so they always settle
+     correctly even though the row's natural midpoint sits above the
+     anchor. --loop-row-h is set by JS to ~1.25× anchor-Y; fallback below
+     is the value for a typical desktop viewport. */
   .loop-right{display:flex;flex-direction:column;}
-  .loop-row{display:flex;align-items:center;justify-content:center;padding:0;min-height:var(--loop-row-h,72vh);scroll-snap-stop:normal;}
+  .loop-row{display:flex;align-items:center;justify-content:center;padding:0;min-height:var(--loop-row-h,44vh);scroll-snap-stop:normal;}
   .loop-scene{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
   /* Subtle native scroll-snap, scoped to when the loop section is on
@@ -1912,6 +1913,10 @@ cOuter.addEventListener('click', (e) => {
   let scrollRaf = null;
   let snapTimer = null;
   let inView = false;
+  // Maximum distance (px) from the anchor at which soft-snap will pull a
+  // scene onto the anchor. Recomputed in syncAnchorVars so it always
+  // covers the row's natural rest position, regardless of viewport size.
+  let snapWindow = 0;
 
   function isDesktop() {
     // Matches CSS @media (max-width: 900px) collapse breakpoint.
@@ -1939,16 +1944,22 @@ cOuter.addEventListener('click', (e) => {
     }
     const vh = window.innerHeight;
     const anchorY = getAnchorY();
-    // Row height = 2 × anchor so a flex-centered scene sits at anchor
-    // when the row's top is at the viewport top. Floor at 60vh so very
-    // tall navs don't blow the layout out, ceiling at 92vh so very short
-    // navs don't make scenes feel stranded.
-    const rowH = Math.max(vh * 0.60, Math.min(vh * 0.92, 2 * anchorY));
+    // Row height controls scroll distance between scenes. ~1.25× anchorY
+    // gives a tight Dia-like cadence — the row's natural midpoint sits
+    // below the anchor by (anchorY − rowH/2), which the snap then pulls
+    // up. Clamped so very short / very tall navs don't get awkward.
+    const rowH = Math.max(vh * 0.38, Math.min(vh * 0.52, anchorY * 1.25));
     outer.style.setProperty('--loop-row-h', rowH + 'px');
-    // scroll-padding-bottom = vh - 2 × anchorY shifts the proximity-snap
-    // center from 50vh up to anchorY. Clamp to a sensible range.
+    // scroll-padding-bottom shifts the native proximity-snap center from
+    // 50vh up to anchorY. Derived: snap-area center = (vh − padBottom)/2,
+    // setting that = anchorY gives padBottom = vh − 2·anchorY.
     const snapPad = Math.max(0, Math.min(vh * 0.45, vh - 2 * anchorY));
     document.documentElement.style.setProperty('--loop-snap-pad', snapPad + 'px');
+    // Soft-snap window must reach from a scene's natural rest position
+    // (row-center, i.e. rowH/2 from row top) up to the anchor. Add a few
+    // vh of slack so user pauses just past natural rest still snap.
+    const naturalRestDelta = Math.max(0, anchorY - rowH / 2);
+    snapWindow = Math.max(vh * 0.12, naturalRestDelta + vh * 0.05);
   }
 
   function setStep(idx) {
@@ -2017,11 +2028,11 @@ cOuter.addEventListener('click', (e) => {
     if (lockedByClick || !inView || !isDesktop()) return;
     if (reduceMotion.matches) return;
     const { abs, delta } = closestRowToAnchor();
-    const vh = window.innerHeight;
     // Only nudge when the user has stopped close-ish to a scene's anchor
-    // position. The 18vh window leaves a comfortable free-scroll buffer
-    // between scenes so the page never feels "trapped".
-    if (abs < 2 || abs > vh * 0.18) return;
+    // position. The window scales with the row height so the natural rest
+    // position is always inside it, but mid-transition the page never
+    // feels "trapped" (the closest scene wins and the other falls away).
+    if (abs < 2 || abs > snapWindow) return;
     window.scrollBy({ top: delta, behavior: 'smooth' });
   }
 
