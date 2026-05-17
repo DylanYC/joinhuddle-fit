@@ -371,13 +371,17 @@
   .proof-stage{
     display:flex;align-items:center;justify-content:center;
     position:relative;max-width:1120px;margin:0 auto;
-    overflow:hidden;
+    /* No overflow:hidden here — the phone needs to render its drop-shadow below
+       the stage box. Horizontal card clipping lives on .proof-track instead. */
   }
-  /* Single track overlays the stage; cards are absolutely positioned within it. */
+  /* Single track overlays the stage; cards are absolutely positioned within it.
+     overflow:hidden clips cards that slide off-screen without affecting the
+     phone's drop-shadow (which lives outside the track). */
   .proof-track{
     position:absolute;inset:0;
     pointer-events:none;
     z-index:1;
+    overflow:hidden;
   }
   /* Phone sits above the cards so center-slot cards naturally hide behind it. */
   .proof-phone-anchor{position:relative;flex-shrink:0;z-index:5;}
@@ -415,6 +419,9 @@
   .proof-track .proof-card:hover{box-shadow:0 4px 10px rgba(0,0,0,0.14),0 14px 32px -6px rgba(0,0,0,0.10);}
   .proof-track .proof-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
   .proof-track .proof-card.is-inert{pointer-events:none;cursor:default;}
+  /* Snap-without-tween toggle. Class form is more reliable than inline style flips
+     when CSS transitions are mid-flight (avoids interleaved inline-style races). */
+  .proof-track .proof-card.no-transition{transition:none !important;}
   @keyframes proof-capture-glow{
     0%  {box-shadow:0px 2px 4px rgba(0,0,0,.10),0px 8px 20px -6px rgba(0,0,0,.04);border-color:rgba(0,0,0,0.05);}
     40% {box-shadow:0 10px 44px rgba(111,117,255,0.55),0 0 0 1.5px rgba(111,117,255,0.65);border-color:rgba(111,117,255,0.7);}
@@ -1212,6 +1219,7 @@ cOuter.addEventListener('click', (e) => {
   let pActive = 0;
   let pTimer = null;
   let pTransitioning = false;
+  let pPendingAction = null; // queued user intent to run once current transition finishes
 
   // Slot grid: -5..-3 are off-stage buffers used as "feeders" for multi-step slides
   // (taps on far cards), -2/+2 are the visible "far" cards, -1/+1 the "near" cards,
@@ -1325,8 +1333,9 @@ cOuter.addEventListener('click', (e) => {
   }
 
   function applyCardSlot(cardEl, slot, animate){
-    if (!animate) cardEl.style.transition = 'none';
-    else cardEl.style.transition = '';
+    // Animation control via class, not inline style — prevents races where the inline
+    // 'transition: none' gets cleared a frame later but the layout has already shifted.
+    cardEl.classList.toggle('no-transition', !animate);
     cardEl.style.setProperty('--tx', slotX(slot) + 'px');
     cardEl.style.setProperty('--scale', slotScale(slot));
     cardEl.style.opacity = slotOpacity(slot);
@@ -1339,6 +1348,12 @@ cOuter.addEventListener('click', (e) => {
     } else {
       cardEl.setAttribute('aria-hidden', 'true');
       cardEl.tabIndex = -1;
+    }
+    if (!animate) {
+      // Force a style flush so the snap commits before the next paint, then drop
+      // .no-transition on the next frame so subsequent slot changes animate normally.
+      void cardEl.offsetWidth;
+      requestAnimationFrame(() => cardEl.classList.remove('no-transition'));
     }
   }
 
@@ -1374,9 +1389,27 @@ cOuter.addEventListener('click', (e) => {
     el.innerHTML = proofTasks.map((_, i) =>
       '<div class="proof-dot' + (i === pActive ? ' is-active' : '') + '" data-i="' + i + '"></div>'
     ).join('');
-    el.querySelectorAll('.proof-dot').forEach(d =>
-      d.addEventListener('click', () => { stopProofAuto(); proofJumpTo(parseInt(d.dataset.i, 10)); startProofAuto(); })
-    );
+    // Delegation handled once in init (see attachDotsDelegation) — no per-dot listeners
+    // here, which avoids any chance of stale handlers reading the wrong data-i.
+  }
+
+  function attachDotsDelegation(){
+    const host = document.getElementById('proof-dots');
+    host.addEventListener('click', e => {
+      const dot = e.target.closest('.proof-dot');
+      if (!dot) return;
+      const i = parseInt(dot.dataset.i, 10);
+      if (Number.isNaN(i)) return;
+      stopProofAuto();
+      // If a slide is in flight, defer the jump until cleanup finishes instead of
+      // dropping it on the floor (this was the "indicator doesn't update" bug).
+      if (pTransitioning) {
+        pPendingAction = () => proofJumpTo(i);
+      } else {
+        proofJumpTo(i);
+      }
+      startProofAuto();
+    });
   }
 
   // Dot-driven jumps can be arbitrary distance — skip the slide, just cross-fade.
@@ -1400,7 +1433,7 @@ cOuter.addEventListener('click', (e) => {
       renderScene();
       refreshCardsContent();
       renderDots();
-      pTransitioning = false;
+      finishTransition();
       return;
     }
 
@@ -1412,8 +1445,11 @@ cOuter.addEventListener('click', (e) => {
       setTimeout(() => popCard.classList.remove('is-capturing'), 660);
     }
 
-    const slideDur = Math.abs(delta) === 2 ? 620 : 500;
-    const popLead  = 200; // let the pop start before motion kicks in
+    const popLead = 200; // let the pop start before motion kicks in
+    // CSS transition is .5s — use that as our budget. The safety-net timeout fires only
+    // if transitionend never arrives (e.g. element removed mid-flight).
+    const slideDur = 500;
+    const safetyTimeout = popLead + slideDur + 250;
 
     setTimeout(() => {
       cards.forEach(card => {
@@ -1424,19 +1460,52 @@ cOuter.addEventListener('click', (e) => {
       pActive = pMod(pActive + delta, proofTasks.length);
       renderScene();
       renderDots();
-    }, popLead);
 
-    // Cleanup: the slide already left every visible card showing the correct content
-    // for the new pActive (the slide IS the content shift). Only the cards that have
-    // drifted past ±5 need to be recycled to the opposite, still-invisible extreme so
-    // we keep a healthy off-stage buffer for the next slide.
-    setTimeout(() => {
-      recycleOffStageCards(cards, delta);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        cards.forEach(card => { card.style.transition = ''; });
-        pTransitioning = false;
-      }));
-    }, popLead + slideDur + 40);
+      // Wait for one of the sliding cards to finish its transform transition before
+      // recycling. Picking a card guaranteed to actually move: the one that started at
+      // slot 0 (it always animates by a non-zero distance).
+      const witnessSlot = -delta; // post-slide slot of the card that started at 0
+      const witness = cards.find(c => parseInt(c.dataset.slot, 10) === witnessSlot) || cards[0];
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        witness.removeEventListener('transitionend', onEnd);
+        clearTimeout(safetyTO);
+        recycleOffStageCards(cards, delta);
+        sanityCheckSlots(cards);
+        finishTransition();
+      };
+      const onEnd = (e) => { if (e.propertyName === 'transform') finish(); };
+      witness.addEventListener('transitionend', onEnd);
+      const safetyTO = setTimeout(finish, safetyTimeout - popLead);
+    }, popLead);
+  }
+
+  // Idempotent: marks the transition complete and drains any queued user action.
+  function finishTransition(){
+    pTransitioning = false;
+    if (pPendingAction) {
+      const action = pPendingAction;
+      pPendingAction = null;
+      action();
+    }
+  }
+
+  // Safety net — if the post-slide slot set isn't exactly {-5..+5}, snap every card
+  // back to its canonical SLOT_OFFSETS position with refreshed content. Beats leaving
+  // the carousel in a broken state.
+  function sanityCheckSlots(cards){
+    const slots = cards.map(c => parseInt(c.dataset.slot, 10)).sort((a,b) => a-b);
+    const expected = SLOT_OFFSETS.slice().sort((a,b) => a-b);
+    const ok = slots.length === expected.length && slots.every((s, i) => s === expected[i]);
+    if (!ok) {
+      // Surface in dev, but don't throw — production should self-heal.
+      if (typeof console !== 'undefined') {
+        console.warn('[proof carousel] slot set drifted; resetting. Got:', slots);
+      }
+      refreshCardsContent();
+    }
   }
 
   function recycleOffStageCards(cards, delta){
@@ -1472,9 +1541,14 @@ cOuter.addEventListener('click', (e) => {
   renderScene();
   buildTrack();
   renderDots();
+  attachDotsDelegation();
 
-  document.getElementById('proof-prev').addEventListener('click', () => { stopProofAuto(); proofAdvance(-1); startProofAuto(); });
-  document.getElementById('proof-next').addEventListener('click', () => { stopProofAuto(); proofAdvance( 1); startProofAuto(); });
+  function withQueue(fn){
+    if (pTransitioning) { pPendingAction = fn; return; }
+    fn();
+  }
+  document.getElementById('proof-prev').addEventListener('click', () => { stopProofAuto(); withQueue(() => proofAdvance(-1)); startProofAuto(); });
+  document.getElementById('proof-next').addEventListener('click', () => { stopProofAuto(); withQueue(() => proofAdvance( 1)); startProofAuto(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft'  && isProofInView()) { stopProofAuto(); proofAdvance(-1); startProofAuto(); }
     if (e.key === 'ArrowRight' && isProofInView()) { stopProofAuto(); proofAdvance( 1); startProofAuto(); }
