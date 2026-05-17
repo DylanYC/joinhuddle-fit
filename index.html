@@ -136,12 +136,14 @@
   .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .45s cubic-bezier(.22,.61,.36,1);user-select:none;-webkit-user-select:none;will-change:transform;}
   .c-track img,.c-track *{-webkit-user-drag:none;user-drag:none;}
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
-  /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
-  .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
-  /* Light-mode: indigo-tinted shadow (using brand color #1A165C) for that custom-built feel,
-     with a noticeable lift. Tinted shadows feel brand-aligned vs generic pure-black. */
+  /* Light-mode: indigo-tinted shadow (using brand color #1A165C) for that custom-built feel. */
   .light .pcard{box-shadow:0 2px 6px rgba(26,22,92,.08),0 8px 20px rgba(26,22,92,.10);}
-  .light .pcard:hover{transform:translate3d(0,-12px,0) scale(1.015);box-shadow:0 14px 32px rgba(26,22,92,.22),0 28px 56px rgba(26,22,92,.16);filter:brightness(1.02);}
+  /* Hover effects only apply on real pointer devices (mouse). Touch devices skip
+     the lift entirely — the :hover state sticking after a tap looks broken on mobile. */
+  @media (hover: hover) and (pointer: fine) {
+    .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
+    .light .pcard:hover{transform:translate3d(0,-12px,0) scale(1.015);box-shadow:0 14px 32px rgba(26,22,92,.22),0 28px 56px rgba(26,22,92,.16);filter:brightness(1.02);}
+  }
   .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:30px 12px 11px;}
   .pc-task{font-size:10px;color:rgba(255,255,255,.65);margin-bottom:3px;}
@@ -1126,22 +1128,13 @@ function endDrag(e) {
     reset();
     return;
   }
-  const step = getStep();
-  // Velocity from the recent samples only (last ~80ms), not from drag start.
-  // This is what makes a real flick feel like a flick and a slow drag feel like a drag.
-  let velocity = 0;
-  if (vSamples.length >= 2) {
-    const first = vSamples[0];
-    const last = vSamples[vSamples.length - 1];
-    const dt = Math.max(last.t - first.t, 1);
-    velocity = (last.x - first.x) / dt; // px per ms, signed
-  }
-  // Project where momentum would carry us, then snap to the nearest card.
-  // Coefficient is tuned so a casual flick moves ~1 card and a hard flick ~2.
-  const projected = dragDx + velocity * 110;
-  let move = Math.round(-projected / step);
-  // Guard against runaway flicks.
-  move = Math.max(-3, Math.min(3, move));
+  // Swipe always moves at most 1 card — same behavior as tapping the arrow.
+  // Drag goes left → advance (move = 1). Drag right → previous (move = -1).
+  // Tiny drags that don't clear a small threshold spring back to current.
+  const THRESH = 10; // px of horizontal movement to count as a swipe
+  let move = 0;
+  if (dragDx <= -THRESH) move = 1;
+  else if (dragDx >= THRESH) move = -1;
   track.style.transition = SMOOTH;
   go(cur + move);
   hov = false;
