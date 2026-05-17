@@ -1745,27 +1745,42 @@ async function fetchCount(code) {
   } catch { return 0; }
 }
 
+async function validateRefCode(code) {
+  if (!/^[A-Z0-9]{5}$/.test(code || '')) return false;
+  try {
+    const snap = await getDoc(doc(db, 'referralCodes', code));
+    return snap.exists();
+  } catch { return false; }
+}
+
 async function submitSignup(email, referredBy) {
   const normalized = email.trim().toLowerCase();
   const emailHash = await hashEmail(normalized);
   const referralCode = generateCode();
 
+  const validReferral = referredBy ? await validateRefCode(referredBy) : false;
+  const effectiveReferredBy = validReferral ? referredBy : '';
+
   const batch = writeBatch(db);
   batch.set(doc(db, 'waitlist', emailHash), {
     email: normalized,
     referralCode,
-    referredBy,
+    referredBy: effectiveReferredBy,
     joinedAt: serverTimestamp(),
   });
-  if (referredBy) {
+  batch.set(doc(db, 'referralCodes', referralCode), {
+    emailHash,
+    createdAt: serverTimestamp(),
+  });
+  if (effectiveReferredBy) {
     batch.set(
-      doc(db, 'waitlistCounts', referredBy),
+      doc(db, 'waitlistCounts', effectiveReferredBy),
       { count: increment(1), updatedAt: serverTimestamp() },
       { merge: true }
     );
   }
   await batch.commit();
-  return { email: normalized, referralCode, referredBy };
+  return { email: normalized, referralCode, referredBy: effectiveReferredBy };
 }
 
 // ---------- DOM wiring ----------
@@ -1831,17 +1846,17 @@ function renderCount(n) {
   const wasReferred = !!(currentRecord && currentRecord.referredBy);
   let perkHtml;
   if (wasReferred && n === 0) {
-    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of Huddle Pro at launch. Share your link to grow your inner circle.`;
+    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of Huddle Pro at launch. Share your link — it's the gift that keeps on giving.`;
   } else if (wasReferred && n === 1) {
-    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of Huddle Pro at launch. Share more to grow your inner circle.`;
+    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of Huddle Pro at launch. Keep sharing — it's the gift that keeps on giving.`;
   } else if (wasReferred && n > 1) {
-    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of Huddle Pro at launch. Keep growing your inner circle.`;
+    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of Huddle Pro at launch. Keep sharing — it's the gift that keeps on giving.`;
   } else if (n === 0) {
     perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
   } else if (n === 1) {
-    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
+    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Keep sharing — it's the gift that keeps on giving.`;
   } else {
-    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
+    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of Huddle Pro on us. Keep sharing — it's the gift that keeps on giving.`;
   }
   if (sharePerk) sharePerk.innerHTML = perkHtml;
   const heroPerk = document.getElementById('heroPerk');
@@ -1946,13 +1961,28 @@ mainForm.addEventListener('submit', (e) => {
   handleSubmit(mainForm.querySelector('input'));
 });
 
+const hasNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+if (hasNativeShare) shareCopyBtn.textContent = 'Share';
+
 shareCopyBtn.addEventListener('click', async () => {
+  if (hasNativeShare) {
+    try {
+      await navigator.share({
+        title: 'Join Huddle',
+        text: "Join my inner circle on Huddle — when you sign up, we both get a free year of Huddle Pro at launch.",
+        url: shareLinkInput.value,
+      });
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+  }
   try {
     await navigator.clipboard.writeText(shareLinkInput.value);
     shareCopyBtn.textContent = 'Copied!';
     shareCopyBtn.classList.add('copied');
     setTimeout(() => {
-      shareCopyBtn.textContent = 'Copy';
+      shareCopyBtn.textContent = hasNativeShare ? 'Share' : 'Copy';
       shareCopyBtn.classList.remove('copied');
     }, 2000);
   } catch {
@@ -1961,14 +1991,24 @@ shareCopyBtn.addEventListener('click', async () => {
 });
 
 // Initial state on load.
-(function init() {
+(async function init() {
   const saved = loadSaved();
   if (saved && /^[A-Z0-9]{5}$/.test(saved.referralCode || '')) {
     switchToSuccessState(saved);
+    // Self-heal: ensure this user's referralCodes lookup exists (for users who
+    // joined before the lookup table was introduced).
+    try {
+      const ref = doc(db, 'referralCodes', saved.referralCode);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        const emailHash = await hashEmail(saved.email);
+        await setDoc(ref, { emailHash, createdAt: serverTimestamp() });
+      }
+    } catch {}
     return;
   }
   const refCode = getRefFromUrl();
-  if (refCode) {
+  if (refCode && await validateRefCode(refCode)) {
     const heroRefCallout = document.getElementById('heroRefCallout');
     const mainRefCallout = document.getElementById('mainRefCallout');
     if (heroRefCallout) heroRefCallout.hidden = false;
