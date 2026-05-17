@@ -1787,6 +1787,7 @@ const shareCount = document.getElementById('shareCount');
 const sharePerk = document.getElementById('sharePerk');
 
 let countPollTimer = null;
+let currentRecord = null;
 
 function showError(msg) {
   waitlistError.textContent = msg;
@@ -1827,8 +1828,15 @@ async function recoverExisting(email) {
 function renderCount(n) {
   const word = n === 1 ? 'friend has' : 'friends have';
   shareCount.innerHTML = `<strong>${n}</strong> ${word} joined from your link`;
+  const wasReferred = !!(currentRecord && currentRecord.referredBy);
   let perkHtml;
-  if (n === 0) {
+  if (wasReferred && n === 0) {
+    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of Huddle Pro at launch. Share your link to grow your inner circle.`;
+  } else if (wasReferred && n === 1) {
+    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of Huddle Pro at launch. Share more to grow your inner circle.`;
+  } else if (wasReferred && n > 1) {
+    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of Huddle Pro at launch. Keep growing your inner circle.`;
+  } else if (n === 0) {
     perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
   } else if (n === 1) {
     perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
@@ -1848,6 +1856,7 @@ function startCountPolling(code) {
 }
 
 function switchToSuccessState(record) {
+  currentRecord = record;
   // Hero: compact "you're in" pointer down to the share UI
   heroForm.hidden = true;
   heroNote.hidden = true;
