@@ -129,11 +129,11 @@
 
   /* CAROUSEL */
   /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
-  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:14px 0 60px;cursor:grab;touch-action:pan-y;}
+  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:14px 0 60px;cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;}
   .c-outer.is-dragging{cursor:grabbing;}
   .c-outer.is-dragging .c-track{transition:none;}
   .c-outer.is-dragging .pcard{cursor:grabbing;pointer-events:none;}
-  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .65s cubic-bezier(.22,.61,.36,1);user-select:none;-webkit-user-select:none;}
+  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .45s cubic-bezier(.22,.61,.36,1);user-select:none;-webkit-user-select:none;will-change:transform;}
   .c-track img,.c-track *{-webkit-user-drag:none;user-drag:none;}
   .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
   /* Dark-mode hover: brand-tinted layered glow (black shadows vanish on dark bg) */
@@ -977,7 +977,7 @@ const dotsEl = document.getElementById('cdots');
 const N = cards.length;
 const CARD_W = 240, GAP = 18;          // keep in sync with .pcard width + .c-track gap
 const STEP = CARD_W + GAP;
-const SMOOTH = 'transform .65s cubic-bezier(.22,.61,.36,1)';
+const SMOOTH = 'transform .45s cubic-bezier(.22,.61,.36,1)';
 let cur = N, timer = null, hov = false;
 
 // Triple-render so we always have content on both sides; cur lives in the middle copy
@@ -1047,18 +1047,30 @@ function getStep() {
   const gap = parseFloat(cs.columnGap || cs.gap) || 0;
   return card.offsetWidth + gap;
 }
-let dragId = null, dragStartX = 0, dragStartY = 0, dragStartT = 0;
+let dragId = null, dragStartX = 0, dragStartY = 0;
 let baseTx = 0, dragDx = 0, dragLocked = false, didDrag = false;
+// Rolling velocity samples (last ~80ms) — averaging over full drag time
+// makes a slow hold + quick release register as a "flick" incorrectly.
+let vSamples = [];
+let pendingTx = null, rafId = 0;
+
+function flushDragFrame() {
+  rafId = 0;
+  if (pendingTx !== null) {
+    track.style.transform = `translate3d(${pendingTx}px,0,0)`;
+    pendingTx = null;
+  }
+}
 
 cOuter.addEventListener('pointerdown', (e) => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   dragId = e.pointerId;
   dragStartX = e.clientX;
   dragStartY = e.clientY;
-  dragStartT = performance.now();
   dragDx = 0;
   dragLocked = false;
   didDrag = false;
+  vSamples = [{ x: e.clientX, t: performance.now() }];
   baseTx = -cur * getStep();
   track.style.transition = 'none';
   hov = true;
@@ -1070,8 +1082,10 @@ cOuter.addEventListener('pointermove', (e) => {
   const dx = e.clientX - dragStartX;
   const dy = e.clientY - dragStartY;
   if (!dragLocked) {
-    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-    if (Math.abs(dx) <= Math.abs(dy)) {
+    // Smaller dead-zone so the carousel feels responsive to small finger moves,
+    // but require horizontal intent to clearly exceed vertical intent.
+    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+    if (Math.abs(dx) < Math.abs(dy) * 1.2) {
       // Vertical intent — release so the page can scroll.
       dragId = null;
       track.style.transition = SMOOTH;
@@ -1085,13 +1099,25 @@ cOuter.addEventListener('pointermove', (e) => {
   }
   didDrag = true;
   dragDx = dx;
-  track.style.transform = `translateX(${baseTx + dx}px)`;
+  const now = performance.now();
+  vSamples.push({ x: e.clientX, t: now });
+  // Keep only samples from the last 80ms — that's the window we use to detect a flick.
+  while (vSamples.length > 2 && now - vSamples[0].t > 80) vSamples.shift();
+  // Batch transform writes to the next animation frame to avoid jank on mobile.
+  pendingTx = baseTx + dx;
+  if (!rafId) rafId = requestAnimationFrame(flushDragFrame);
   e.preventDefault();
 });
 
 function endDrag(e) {
   if (e.pointerId !== dragId) return;
   dragId = null;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+  // Make sure the final dragged position is committed before we snap.
+  if (pendingTx !== null) {
+    track.style.transform = `translate3d(${pendingTx}px,0,0)`;
+    pendingTx = null;
+  }
   cOuter.classList.remove('is-dragging');
   if (!dragLocked) {
     // Drag never engaged — restore transition and resume autoplay.
@@ -1101,13 +1127,21 @@ function endDrag(e) {
     return;
   }
   const step = getStep();
-  const elapsed = Math.max(performance.now() - dragStartT, 1);
-  const velocity = dragDx / elapsed; // px per ms
-  let move = Math.round(-dragDx / step);
-  // Flick: short, fast swipe still advances one card.
-  if (Math.abs(velocity) > 0.5 && Math.abs(dragDx) > 15) {
-    move = dragDx < 0 ? Math.max(move, 1) : Math.min(move, -1);
+  // Velocity from the recent samples only (last ~80ms), not from drag start.
+  // This is what makes a real flick feel like a flick and a slow drag feel like a drag.
+  let velocity = 0;
+  if (vSamples.length >= 2) {
+    const first = vSamples[0];
+    const last = vSamples[vSamples.length - 1];
+    const dt = Math.max(last.t - first.t, 1);
+    velocity = (last.x - first.x) / dt; // px per ms, signed
   }
+  // Project where momentum would carry us, then snap to the nearest card.
+  // Coefficient is tuned so a casual flick moves ~1 card and a hard flick ~2.
+  const projected = dragDx + velocity * 110;
+  let move = Math.round(-projected / step);
+  // Guard against runaway flicks.
+  move = Math.max(-3, Math.min(3, move));
   track.style.transition = SMOOTH;
   go(cur + move);
   hov = false;
