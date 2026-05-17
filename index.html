@@ -32,6 +32,7 @@
     --card-shadow:0 28px 52px rgba(0,0,0,0.6),0 8px 18px rgba(0,0,0,0.3);
     --eyebrow-bg:rgba(91,82,232,0.15); --eyebrow-border:rgba(91,82,232,0.3);
     --waitlist-bg:rgba(91,82,232,0.08); --waitlist-border:rgba(91,82,232,0.25);
+    --pro-color:#E5B454;
   }
 
   .light {
@@ -57,6 +58,7 @@
     --card-shadow:0 16px 36px rgba(0,0,0,0.1),0 4px 12px rgba(0,0,0,0.07);
     --eyebrow-bg:rgba(91,82,232,0.1); --eyebrow-border:rgba(91,82,232,0.25);
     --waitlist-bg:rgba(91,82,232,0.06); --waitlist-border:rgba(91,82,232,0.2);
+    --pro-color:#A87810;
   }
 
   /* overflow-x: clip (not hidden) so position:sticky descendants still work.
@@ -98,7 +100,7 @@
   .hero-h{font-size:clamp(56px,8vw,100px);font-weight:900;line-height:.92;letter-spacing:-3px;text-transform:uppercase;}
   .hl1{display:block;color:var(--hl1);text-shadow:var(--sh1),var(--sh2);transition:color .4s,text-shadow .4s;}
   .hl2{display:block;color:var(--hl2);text-shadow:var(--sh3),var(--sh4);transition:color .4s,text-shadow .4s;}
-  .tagline{margin-top:12px;font-size:19px;color:var(--text2);}
+  .tagline{margin-top:12px;margin-bottom:22px;font-size:19px;color:var(--text2);}
   .tagline strong{color:#ECEAFD;font-weight:600;transition:color .4s;}
   .light .tagline strong{color:#0A0F81;}
   .domain-pill{margin-top:16px;display:inline-flex;align-items:center;background:var(--domain-bg);border:1px solid var(--domain-border);border-radius:100px;padding:7px 18px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .3s;}
@@ -123,6 +125,7 @@
   .hero-waitlist-note{margin-top:10px;font-size:12px;color:var(--text3);text-align:center;}
   .ref-callout{margin:14px auto 0;max-width:480px;padding:12px 14px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:10px;font-size:13px;color:var(--text1);line-height:1.5;text-align:center;}
   .ref-callout strong{color:var(--accent2);font-weight:700;}
+  .pro-tag{color:var(--pro-color);font-weight:700;letter-spacing:.1px;}
 
   /* CAROUSEL */
   /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
@@ -633,7 +636,7 @@
       <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
       <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
       <div class="ref-callout" id="heroPerk" hidden></div>
-      <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and you'll both get a free year of Huddle Pro at launch.</div>
+      <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and you'll both get a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
     </div>
   </section>
 
@@ -799,12 +802,12 @@
     <h2 class="stitle" style="max-width:460px;margin:0 auto;">Join the<br/><em>waitlist.</em></h2>
     <div class="waitlist-card">
       <p id="waitlistIntro">Huddle is almost here. Be first in your circle — get early access when we launch on iOS and Android.</p>
-      <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and you'll both get a free year of Huddle Pro at launch.</div>
+      <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and you'll both get a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
       <form class="waitlist-form" id="mainForm" novalidate>
         <input type="email" placeholder="your@email.com" required autocomplete="email"/>
         <button type="submit">Get early access</button>
       </form>
-      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — when a friend joins, you both get a free year of Huddle Pro on us.</div>
+      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — when a friend joins, you both get a free year of <span class="pro-tag">Huddle Pro</span> on us.</div>
       <div class="waitlist-social" id="waitlistSocial" hidden></div>
 
       <div class="waitlist-success" id="waitlistSuccess" hidden>
@@ -819,7 +822,7 @@
         </div>
         <div class="ws-count" id="shareCount">Loading your count…</div>
         <div class="ws-count-hint">Want to check back later? Just revisit this page and enter your email to see your latest count.</div>
-        <div class="ws-perk" id="sharePerk"><strong>Bonus:</strong> Refer just 1 friend who joins and we'll comp you a free year of Huddle Pro at launch.</div>
+        <div class="ws-perk" id="sharePerk"><strong>Bonus:</strong> Refer just 1 friend who joins and we'll comp you a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
       </div>
 
       <div class="waitlist-error" id="waitlistError" hidden></div>
@@ -1846,17 +1849,17 @@ function renderCount(n) {
   const wasReferred = !!(currentRecord && currentRecord.referredBy);
   let perkHtml;
   if (wasReferred && n === 0) {
-    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of Huddle Pro at launch. Share your link — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Share your link — it's the gift that keeps on giving.`;
   } else if (wasReferred && n === 1) {
-    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of Huddle Pro at launch. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Keep sharing — it's the gift that keeps on giving.`;
   } else if (wasReferred && n > 1) {
-    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of Huddle Pro at launch. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Keep sharing — it's the gift that keeps on giving.`;
   } else if (n === 0) {
-    perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
+    perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of <span class="pro-tag">Huddle Pro</span> at launch.`;
   } else if (n === 1) {
-    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of <span class="pro-tag">Huddle Pro</span> on us. Keep sharing — it's the gift that keeps on giving.`;
   } else {
-    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of Huddle Pro on us. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of <span class="pro-tag">Huddle Pro</span> on us. Keep sharing — it's the gift that keeps on giving.`;
   }
   if (sharePerk) sharePerk.innerHTML = perkHtml;
   const heroPerk = document.getElementById('heroPerk');
