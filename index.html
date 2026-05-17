@@ -193,14 +193,28 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
-  /* Right column = three stacked scene rows. Each row is just slightly
-     taller than its scene (~40vh card + ~10vh breathing room), with the
-     scene centered vertically so it doesn't slam against the top of the
-     column on entry. Click-to-jump (in JS) centers the row in viewport,
-     which puts the scene at exactly viewport-center. */
+  /* Right column = three stacked scene rows. Each row is sized so its
+     scene's vertical center naturally falls on the "anchor line" — the
+     vertical center of the sticky nav on the left — when the row's top
+     reaches the viewport top. Concretely the row height is driven by
+     --loop-row-h (set by JS to 2 × anchor-Y, so a centered scene lands
+     exactly on the anchor). The fallback (72vh) is what we'd get on a
+     ~900px viewport with the default nav height. */
   .loop-right{display:flex;flex-direction:column;}
-  .loop-row{display:flex;align-items:center;justify-content:center;padding:70px 0;min-height:min(40vh, 360px);}
-  .loop-scene{display:flex;align-items:center;justify-content:center;}
+  .loop-row{display:flex;align-items:center;justify-content:center;padding:0;min-height:var(--loop-row-h,72vh);scroll-snap-stop:normal;}
+  .loop-scene{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  /* Subtle native scroll-snap, scoped to when the loop section is on
+     screen. scroll-padding-bottom shifts the snap-center from 50vh up to
+     the anchor line (so .loop-row's scroll-snap-align:center settles each
+     scene at the nav's vertical center, not the viewport's). Proximity +
+     scroll-snap-stop:normal means the snap only kicks in when the user
+     stops near a scene — fast scroll-through is never trapped. */
+  html.loop-in-view{scroll-snap-type:y proximity;scroll-padding-bottom:var(--loop-snap-pad,30vh);}
+  html.loop-in-view .loop-row{scroll-snap-align:center;}
+  @media (prefers-reduced-motion: reduce){
+    html.loop-in-view{scroll-snap-type:none;}
+  }
 
   /* Scene 1 — commitment cards stacked.
      Width has 20px slack each side for the rotated cards; height = top
@@ -1882,16 +1896,60 @@ cOuter.addEventListener('click', (e) => {
     '</div>'
   );
 
-  // ── State + IntersectionObserver-driven active step ──
-  // Each scene row is min-h:78vh and visible in its own scroll position; the
-  // left nav is just sticky at top:18vh. We observe each row and update the
-  // active step when a row's center crosses the central band of the viewport.
+  // ── Anchor-driven active step + soft scroll-snap ──
+  // The user's eye locks to the vertical center of the sticky nav on the
+  // left (the "anchor line") — *not* the viewport center. So we drive the
+  // active step from whichever row's scene-center is closest to that
+  // anchor, and we shape the geometry (row height + scroll-padding) so
+  // each scene naturally lands on the anchor when it settles.
+  const nav   = outer.querySelector('.loop-sticky-nav');
   const steps = Array.from(document.querySelectorAll('.loop-step'));
   const rows  = Array.from(document.querySelectorAll('.loop-row'));
 
   let current = 0;
   let lockedByClick = false;
   let clickLockTimer = null;
+  let scrollRaf = null;
+  let snapTimer = null;
+  let inView = false;
+
+  function isDesktop() {
+    // Matches CSS @media (max-width: 900px) collapse breakpoint.
+    return window.matchMedia('(min-width: 901px)').matches;
+  }
+
+  // Anchor line = the Y coordinate (in viewport space) where the sticky
+  // nav's vertical center sits once it's pinned. CSS pins it at top:18vh,
+  // so we can compute this directly without depending on scroll state.
+  function getAnchorY() {
+    const vh = window.innerHeight;
+    const navH = nav ? (nav.offsetHeight || nav.getBoundingClientRect().height) : 0;
+    return vh * 0.18 + navH / 2;
+  }
+
+  // Push geometry into CSS so rows are *exactly* tall enough for a
+  // centered scene to land on the anchor when the row top hits viewport
+  // top, and scroll-snap-padding-bottom lifts the native snap center from
+  // 50vh up to the anchor.
+  function syncAnchorVars() {
+    if (!isDesktop()) {
+      outer.style.removeProperty('--loop-row-h');
+      document.documentElement.style.removeProperty('--loop-snap-pad');
+      return;
+    }
+    const vh = window.innerHeight;
+    const anchorY = getAnchorY();
+    // Row height = 2 × anchor so a flex-centered scene sits at anchor
+    // when the row's top is at the viewport top. Floor at 60vh so very
+    // tall navs don't blow the layout out, ceiling at 92vh so very short
+    // navs don't make scenes feel stranded.
+    const rowH = Math.max(vh * 0.60, Math.min(vh * 0.92, 2 * anchorY));
+    outer.style.setProperty('--loop-row-h', rowH + 'px');
+    // scroll-padding-bottom = vh - 2 × anchorY shifts the proximity-snap
+    // center from 50vh up to anchorY. Clamp to a sensible range.
+    const snapPad = Math.max(0, Math.min(vh * 0.45, vh - 2 * anchorY));
+    document.documentElement.style.setProperty('--loop-snap-pad', snapPad + 'px');
+  }
 
   function setStep(idx) {
     if (idx === current) return;
@@ -1901,11 +1959,30 @@ cOuter.addEventListener('click', (e) => {
       s.classList.toggle('is-active', on);
       s.setAttribute('aria-selected', on ? 'true' : 'false');
     });
+    // (We don't re-sync anchor vars here: the expanding sub-line transitions
+    // for 450ms, so reading offsetHeight mid-transition would yield a moving
+    // target. The three sub-lines are roughly equal height anyway — initial
+    // sync + resize listener keep geometry close enough.)
   }
 
-  function isDesktop() {
-    // Matches CSS @media (max-width: 900px) collapse breakpoint.
-    return window.matchMedia('(min-width: 901px)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Distance from a row's scene-center to the anchor line, in viewport
+  // pixels. Positive = scene is below the anchor; negative = above.
+  function sceneDeltaToAnchor(row) {
+    const scene = row.querySelector('.loop-scene') || row;
+    const r = scene.getBoundingClientRect();
+    return (r.top + r.height / 2) - getAnchorY();
+  }
+
+  function closestRowToAnchor() {
+    let bestIdx = 0, bestAbs = Infinity, bestDelta = 0;
+    rows.forEach((r, i) => {
+      const d = sceneDeltaToAnchor(r);
+      const ad = Math.abs(d);
+      if (ad < bestAbs) { bestAbs = ad; bestIdx = i; bestDelta = d; }
+    });
+    return { idx: bestIdx, abs: bestAbs, delta: bestDelta };
   }
 
   function jumpToStep(idx) {
@@ -1913,49 +1990,94 @@ cOuter.addEventListener('click', (e) => {
     if (!target) return;
     lockedByClick = true;
     clearTimeout(clickLockTimer);
-    clickLockTimer = setTimeout(() => { lockedByClick = false; }, 700);
+    clickLockTimer = setTimeout(() => { lockedByClick = false; }, 900);
     if (!isDesktop()) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
-    // Center the target row vertically in the viewport for a clean landing.
-    const rect = target.getBoundingClientRect();
-    const targetY = window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
-    window.scrollTo({ top: targetY, behavior: 'smooth' });
+    setStep(idx);
+    // Land scene-center exactly on the anchor line.
+    const delta = sceneDeltaToAnchor(target);
+    window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
   }
 
   steps.forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.step, 10);
-      setStep(idx);
-      jumpToStep(idx);
+      if (!isNaN(idx)) jumpToStep(idx);
     });
   });
 
-  // Watch which row's center is currently in the central band of viewport.
-  // rootMargin pulls in 38% from top and bottom — only a row whose center is
-  // in the middle ~24% of the viewport counts as "active". That keeps the
-  // active state aligned with where the user's eye actually is.
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      if (lockedByClick) return;
-      let best = null, bestRatio = 0;
-      entries.forEach(e => {
-        if (e.isIntersecting && e.intersectionRatio > bestRatio) {
-          bestRatio = e.intersectionRatio;
-          best = e.target;
-        }
-      });
-      if (best) {
-        const idx = parseInt(best.dataset.step, 10);
-        if (!isNaN(idx)) setStep(idx);
-      }
-    }, {
-      rootMargin: '-38% 0px -38% 0px',
-      threshold: [0, 0.25, 0.5, 0.75, 1]
-    });
-    rows.forEach(r => io.observe(r));
+  // Soft JS snap — a safety net for browsers that under-snap with native
+  // proximity (Safari is conservative here). After the user stops
+  // scrolling, if the nearest scene is within a small zone of the anchor,
+  // smoothly settle it onto the anchor. Outside that zone we leave the
+  // page exactly where the user left it.
+  function softSnap() {
+    if (lockedByClick || !inView || !isDesktop()) return;
+    if (reduceMotion.matches) return;
+    const { abs, delta } = closestRowToAnchor();
+    const vh = window.innerHeight;
+    // Only nudge when the user has stopped close-ish to a scene's anchor
+    // position. The 18vh window leaves a comfortable free-scroll buffer
+    // between scenes so the page never feels "trapped".
+    if (abs < 2 || abs > vh * 0.18) return;
+    window.scrollBy({ top: delta, behavior: 'smooth' });
   }
+
+  function onScroll() {
+    if (!isDesktop() || !inView) return;
+    if (!scrollRaf) {
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = null;
+        if (lockedByClick) return;
+        const { idx } = closestRowToAnchor();
+        setStep(idx);
+      });
+    }
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(softSnap, 180);
+  }
+
+  // Only enable scroll-snap CSS when the section is actually in view, so
+  // we don't influence scroll behavior elsewhere on the page.
+  if ('IntersectionObserver' in window) {
+    const sectionIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        inView = e.isIntersecting;
+        document.documentElement.classList.toggle('loop-in-view', inView && isDesktop());
+      });
+      if (inView) {
+        syncAnchorVars();
+        const { idx } = closestRowToAnchor();
+        setStep(idx);
+      }
+    }, { rootMargin: '15% 0px 15% 0px' });
+    sectionIO.observe(outer);
+  } else {
+    inView = true;
+    syncAnchorVars();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    syncAnchorVars();
+    document.documentElement.classList.toggle('loop-in-view', inView && isDesktop());
+    if (inView && isDesktop()) {
+      const { idx } = closestRowToAnchor();
+      setStep(idx);
+    }
+  });
+
+  // Initial pass: measure nav, push CSS vars, settle into the right step.
+  // Defer one frame so any web fonts / layout shifts have settled.
+  requestAnimationFrame(() => {
+    syncAnchorVars();
+    if (isDesktop()) {
+      const { idx } = closestRowToAnchor();
+      setStep(idx);
+    }
+  });
 })();
 </script>
 
