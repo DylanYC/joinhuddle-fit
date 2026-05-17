@@ -796,7 +796,7 @@
         <input type="email" placeholder="your@email.com" required autocomplete="email"/>
         <button type="submit">Get early access</button>
       </form>
-      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, you'll get a referral link — refer a friend and you'll enjoy Huddle Pro free for 1 year.</div>
+      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — when a friend joins, you both get a free year of Huddle Pro on us.</div>
       <div class="waitlist-social" id="waitlistSocial" hidden></div>
 
       <div class="waitlist-success" id="waitlistSuccess" hidden>
@@ -811,7 +811,7 @@
         </div>
         <div class="ws-count" id="shareCount">Loading your count…</div>
         <div class="ws-count-hint">Want to check back later? Just revisit this page and enter your email to see your latest count.</div>
-        <div class="ws-perk"><strong>Bonus:</strong> Refer just 1 friend who joins and we'll comp you a free year of Huddle Pro at launch.</div>
+        <div class="ws-perk" id="sharePerk"><strong>Bonus:</strong> Refer just 1 friend who joins and we'll comp you a free year of Huddle Pro at launch.</div>
       </div>
 
       <div class="waitlist-error" id="waitlistError" hidden></div>
@@ -1776,6 +1776,7 @@ const waitlistNotice = document.getElementById('waitlistNotice');
 const shareLinkInput = document.getElementById('shareLink');
 const shareCopyBtn = document.getElementById('shareCopy');
 const shareCount = document.getElementById('shareCount');
+const sharePerk = document.getElementById('sharePerk');
 
 let countPollTimer = null;
 
@@ -1818,6 +1819,13 @@ async function recoverExisting(email) {
 function renderCount(n) {
   const word = n === 1 ? 'friend has' : 'friends have';
   shareCount.innerHTML = `<strong>${n}</strong> ${word} joined from your link`;
+  if (sharePerk) {
+    if (n > 0) {
+      sharePerk.innerHTML = `<strong>You're in!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
+    } else {
+      sharePerk.innerHTML = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
+    }
+  }
 }
 
 function startCountPolling(code) {
