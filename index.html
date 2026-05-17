@@ -92,6 +92,9 @@
   .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;}
   .edot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes btn-spin{to{transform:rotate(360deg);}}
+  .btn-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:btn-spin .7s linear infinite;vertical-align:middle;}
+  .hero-waitlist button:disabled,.waitlist-form button:disabled{cursor:default;opacity:.85;background:var(--accent);}
   .hero-h{font-size:clamp(56px,8vw,100px);font-weight:900;line-height:.92;letter-spacing:-3px;text-transform:uppercase;}
   .hl1{display:block;color:var(--hl1);text-shadow:var(--sh1),var(--sh2);transition:color .4s,text-shadow .4s;}
   .hl2{display:block;color:var(--hl2);text-shadow:var(--sh3),var(--sh4);transition:color .4s,text-shadow .4s;}
@@ -1885,7 +1888,12 @@ async function handleSubmit(emailInput) {
   }
   const referredBy = getRefFromUrl();
   const submitBtns = document.querySelectorAll('#heroForm button, #mainForm button');
-  submitBtns.forEach(b => { b.disabled = true; });
+  const originalBtnHtml = new Map();
+  submitBtns.forEach(b => {
+    originalBtnHtml.set(b, b.innerHTML);
+    b.innerHTML = '<span class="btn-spinner" aria-label="Loading"></span>';
+    b.disabled = true;
+  });
 
   const scrollToCard = () =>
     document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1913,7 +1921,10 @@ async function handleSubmit(emailInput) {
       showError('Something went wrong. Please try again.');
     }
   } finally {
-    submitBtns.forEach(b => { b.disabled = false; });
+    submitBtns.forEach(b => {
+      if (originalBtnHtml.has(b)) b.innerHTML = originalBtnHtml.get(b);
+      b.disabled = false;
+    });
   }
 }
 
