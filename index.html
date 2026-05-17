@@ -1378,7 +1378,8 @@ cOuter.addEventListener('click', (e) => {
   }
 
   function refreshCardsContent(){
-    document.querySelectorAll('.proof-card').forEach((card, i) => {
+    // Scope to #proof-track — bare `.proof-card` also matches the LOOP section's stack.
+    document.querySelectorAll('#proof-track .proof-card').forEach((card, i) => {
       card.innerHTML = buildCardInner(pActive + SLOT_OFFSETS[i]);
       applyCardSlot(card, SLOT_OFFSETS[i], false);
     });
@@ -1437,7 +1438,7 @@ cOuter.addEventListener('click', (e) => {
       return;
     }
 
-    const cards = Array.from(document.querySelectorAll('.proof-card'));
+    const cards = Array.from(document.querySelectorAll('#proof-track .proof-card'));
     // Pop the card the user is moving TOWARD — the one that becomes the new featured proof.
     const popCard = cards.find(c => parseInt(c.dataset.slot, 10) === delta);
     if (popCard) {
@@ -1559,7 +1560,7 @@ cOuter.addEventListener('click', (e) => {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTO);
     resizeTO = setTimeout(() => {
-      document.querySelectorAll('.proof-card').forEach(card => {
+      document.querySelectorAll('#proof-track .proof-card').forEach(card => {
         const slot = parseInt(card.dataset.slot, 10);
         applyCardSlot(card, slot, false);
       });
