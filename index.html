@@ -976,6 +976,7 @@ const cards = [
 
 const track = document.getElementById('ctrack');
 const dotsEl = document.getElementById('cdots');
+const cOuter = document.querySelector('.c-outer');
 const N = cards.length;
 const CARD_W = 240, GAP = 18;          // keep in sync with .pcard width + .c-track gap
 const STEP = CARD_W + GAP;
@@ -1000,9 +1001,28 @@ for (let i = 0; i < N; i++) {
   dotsEl.appendChild(d);
 }
 
+// Live measurements — recomputed on each call to handle the 640px breakpoint and resizes.
+function getStep() {
+  const card = track.querySelector('.pcard');
+  if (!card) return STEP;
+  const cs = getComputedStyle(track);
+  const gap = parseFloat(cs.columnGap || cs.gap) || 0;
+  return card.offsetWidth + gap;
+}
+// Offset that centers the active card inside the viewport-width .c-outer container.
+// Without this, the active card sits flush-left against the track's padding.
+function getCenterOffset() {
+  const card = track.querySelector('.pcard');
+  if (!card) return 0;
+  const cs = getComputedStyle(track);
+  const padLeft = parseFloat(cs.paddingLeft) || 0;
+  return (cOuter.clientWidth - card.offsetWidth) / 2 - padLeft;
+}
+function targetTx(i) { return getCenterOffset() - i * getStep(); }
+
 // Position immediately (no transition) to the starting offset
 track.style.transition = 'none';
-track.style.transform = `translateX(-${cur * STEP}px)`;
+track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
 // Force reflow, then re-enable the smooth transition
 void track.offsetWidth;
 track.style.transition = SMOOTH;
@@ -1010,7 +1030,7 @@ track.style.transition = SMOOTH;
 function go(i) {
   cur = i;
   track.style.transition = SMOOTH;
-  track.style.transform = `translateX(-${cur * STEP}px)`;
+  track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
   const dotIdx = ((cur % N) + N) % N;
   document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('on', j === dotIdx));
 }
@@ -1022,10 +1042,18 @@ track.addEventListener('transitionend', () => {
     const wrapped = ((cur - N) % N + N) % N + N;  // map cur back into [N, 2N)
     cur = wrapped;
     track.style.transition = 'none';
-    track.style.transform = `translateX(-${cur * STEP}px)`;
+    track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
     void track.offsetWidth;
     track.style.transition = SMOOTH;
   }
+});
+
+// Re-center on resize / orientation change.
+window.addEventListener('resize', () => {
+  track.style.transition = 'none';
+  track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
+  void track.offsetWidth;
+  track.style.transition = SMOOTH;
 });
 
 function reset() {
@@ -1039,21 +1067,13 @@ track.addEventListener('mouseenter', () => { hov = true; clearTimeout(timer); })
 track.addEventListener('mouseleave', () => { hov = false; reset(); });
 reset();
 
-// ---- Drag / swipe (Zoom-style click+hold and drag) ----
-// Step width must be measured live: card size + gap change at the 640px breakpoint.
-const cOuter = document.querySelector('.c-outer');
-function getStep() {
-  const card = track.querySelector('.pcard');
-  if (!card) return STEP;
-  const cs = getComputedStyle(track);
-  const gap = parseFloat(cs.columnGap || cs.gap) || 0;
-  return card.offsetWidth + gap;
-}
+// ---- Drag / swipe ----
+// Swipe always moves at most 1 card (same as tapping the arrow). During the drag
+// itself we apply rubber-banding so the cards never visually travel more than ~1
+// card width, no matter how far the finger goes — that's what kills the "rapid
+// shuffling" effect of a long finger swipe.
 let dragId = null, dragStartX = 0, dragStartY = 0;
 let baseTx = 0, dragDx = 0, dragLocked = false, didDrag = false;
-// Rolling velocity samples (last ~80ms) — averaging over full drag time
-// makes a slow hold + quick release register as a "flick" incorrectly.
-let vSamples = [];
 let pendingTx = null, rafId = 0;
 
 function flushDragFrame() {
@@ -1064,6 +1084,17 @@ function flushDragFrame() {
   }
 }
 
+// Rubber-band: 1:1 follow up to ~60% of a card, then heavy damping past that.
+// The visual shift is capped well below one card width so the snap is always small.
+function rubberBand(dx, step) {
+  const soft = step * 0.6;
+  const a = Math.abs(dx);
+  if (a <= soft) return dx;
+  const extra = a - soft;
+  const damped = soft + extra * 0.18;
+  return Math.sign(dx) * damped;
+}
+
 cOuter.addEventListener('pointerdown', (e) => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   dragId = e.pointerId;
@@ -1072,8 +1103,7 @@ cOuter.addEventListener('pointerdown', (e) => {
   dragDx = 0;
   dragLocked = false;
   didDrag = false;
-  vSamples = [{ x: e.clientX, t: performance.now() }];
-  baseTx = -cur * getStep();
+  baseTx = targetTx(cur);
   track.style.transition = 'none';
   hov = true;
   clearTimeout(timer);
@@ -1084,8 +1114,6 @@ cOuter.addEventListener('pointermove', (e) => {
   const dx = e.clientX - dragStartX;
   const dy = e.clientY - dragStartY;
   if (!dragLocked) {
-    // Smaller dead-zone so the carousel feels responsive to small finger moves,
-    // but require horizontal intent to clearly exceed vertical intent.
     if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
     if (Math.abs(dx) < Math.abs(dy) * 1.2) {
       // Vertical intent — release so the page can scroll.
@@ -1101,12 +1129,8 @@ cOuter.addEventListener('pointermove', (e) => {
   }
   didDrag = true;
   dragDx = dx;
-  const now = performance.now();
-  vSamples.push({ x: e.clientX, t: now });
-  // Keep only samples from the last 80ms — that's the window we use to detect a flick.
-  while (vSamples.length > 2 && now - vSamples[0].t > 80) vSamples.shift();
-  // Batch transform writes to the next animation frame to avoid jank on mobile.
-  pendingTx = baseTx + dx;
+  const visualDx = rubberBand(dx, getStep());
+  pendingTx = baseTx + visualDx;
   if (!rafId) rafId = requestAnimationFrame(flushDragFrame);
   e.preventDefault();
 });
@@ -1115,23 +1139,16 @@ function endDrag(e) {
   if (e.pointerId !== dragId) return;
   dragId = null;
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
-  // Make sure the final dragged position is committed before we snap.
-  if (pendingTx !== null) {
-    track.style.transform = `translate3d(${pendingTx}px,0,0)`;
-    pendingTx = null;
-  }
+  pendingTx = null;
   cOuter.classList.remove('is-dragging');
   if (!dragLocked) {
-    // Drag never engaged — restore transition and resume autoplay.
     track.style.transition = SMOOTH;
     hov = false;
     reset();
     return;
   }
-  // Swipe always moves at most 1 card — same behavior as tapping the arrow.
-  // Drag goes left → advance (move = 1). Drag right → previous (move = -1).
-  // Tiny drags that don't clear a small threshold spring back to current.
-  const THRESH = 10; // px of horizontal movement to count as a swipe
+  // Swipe always moves at most 1 card — exactly like tapping the arrow.
+  const THRESH = 10;
   let move = 0;
   if (dragDx <= -THRESH) move = 1;
   else if (dragDx >= THRESH) move = -1;
