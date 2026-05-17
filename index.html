@@ -346,6 +346,8 @@
   .light .fl .logo-word{fill:#0A0F81;}
   .fd{font-size:13px;color:var(--text3);}
   .flinks{display:flex;gap:20px;font-size:13px;color:var(--text3);list-style:none;}
+  .flinks a{color:inherit;text-decoration:none;transition:color .2s;}
+  .flinks a:hover{color:var(--text1);}
   .fcopy{font-size:12px;color:var(--text3);}
 
   /* PROOF SECTION (The App — moment of proof) */
@@ -823,7 +825,7 @@
       </svg>
     </div>
     <div class="fd">joinhuddle.fit</div>
-    <ul class="flinks"><li>Privacy Policy</li><li>Terms</li><li>Contact</li></ul>
+    <ul class="flinks"><li><a href="/privacy">Privacy Policy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul>
     <div class="fcopy">© 2026 Huddle Fitness App</div>
   </footer>
 
@@ -867,12 +869,19 @@ function smoothScrollTo(id) {
   requestAnimationFrame(step);
 }
 
-let light = true;
+const THEME_KEY = 'huddle-theme';
+let light = localStorage.getItem(THEME_KEY) !== 'dark';
+(function applyInitialTheme(){
+  document.getElementById('site').classList.toggle('light', light);
+  document.getElementById('ticon').textContent = light ? '☀️' : '🌙';
+  document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
+})();
 function toggleMode() {
   light = !light;
   document.getElementById('site').classList.toggle('light', light);
   document.getElementById('ticon').textContent = light ? '☀️' : '🌙';
   document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
+  localStorage.setItem(THEME_KEY, light ? 'light' : 'dark');
 }
 
 const cards = [
