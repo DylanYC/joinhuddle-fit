@@ -1824,9 +1824,14 @@ async function recoverExisting(email) {
 function renderCount(n) {
   const word = n === 1 ? 'friend has' : 'friends have';
   shareCount.innerHTML = `<strong>${n}</strong> ${word} joined from your link`;
-  const perkHtml = n > 0
-    ? `<strong>You're in!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`
-    : `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
+  let perkHtml;
+  if (n === 0) {
+    perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of Huddle Pro at launch.`;
+  } else if (n === 1) {
+    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
+  } else {
+    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of Huddle Pro on us. Share more to grow your inner circle.`;
+  }
   if (sharePerk) sharePerk.innerHTML = perkHtml;
   const heroPerk = document.getElementById('heroPerk');
   if (heroPerk) heroPerk.innerHTML = perkHtml;
