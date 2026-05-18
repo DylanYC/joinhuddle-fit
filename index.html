@@ -2303,6 +2303,7 @@ function renderCount(n) {
   const remaining = Math.max(0, 12 - n - bonus);
   const atCap = (n + bonus) >= 12;
   const proTag = `<span class="pro-tag">Huddle Pro</span>`;
+  const proShort = `<span class="pro-tag">Pro</span>`;
   const monthWord = (x) => x === 1 ? 'month' : 'months';
   const friendWord = (x) => x === 1 ? 'friend' : 'friends';
 
@@ -2312,13 +2313,13 @@ function renderCount(n) {
       ? `<strong>Maxed out 🎉 You've earned a full year of ${proTag}.</strong> Thanks for spreading the word. Keep sharing if you want — you've already hit the ceiling.`
       : `<strong>Maxed out 🎉 A full year of ${proTag} is yours.</strong> ${n} friends joined via your link. Thanks for spreading the word.`;
   } else if (wasReferred && n === 0) {
-    perkHtml = `<strong>You're in — your first month of Pro is locked in.</strong> Thanks to your friend's invite. Now pay it forward — share your link and <strong>each friend who joins gets a free month of Pro too</strong>, plus another month for your stack. Up to 11 more to earn.`;
+    perkHtml = `<strong>You're in — your first month of ${proShort} is locked in.</strong> Thanks to your friend's invite. Now pay it forward — share your link and <strong>each friend who joins gets a free month of ${proShort} too</strong>, plus another month for your stack. Up to 11 more to earn.`;
   } else if (wasReferred) {
     perkHtml = `<strong>You're in — ${earned} months of ${proTag} locked in.</strong> 1 from your inviter, plus ${n} from ${n === 1 ? 'a friend who joined' : `${friendWord(n)} who joined`} via your link (each got a free month too). ${remaining} more ${monthWord(remaining)} to max out at 12.`;
   } else if (n === 0) {
     perkHtml = `<strong>Share your link.</strong> You'll gift each friend who joins the waitlist <strong>1 free month of ${proTag}</strong> — and rack up a free month for yourself with every one, up to 12 months.`;
   } else if (n === 1) {
-    perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link (and got a free month of Pro too). Keep sharing — 11 more up for grabs.`;
+    perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link (and got a free month of ${proShort} too). Keep sharing — 11 more up for grabs.`;
   } else {
     perkHtml = `<strong>${earned} months of ${proTag} earned!</strong> ${n} friends joined via your link (each got a free month too). ${remaining} more ${monthWord(remaining)} to hit a full year.`;
   }
