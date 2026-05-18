@@ -2316,7 +2316,7 @@ function renderCount(n) {
   } else if (wasReferred) {
     perkHtml = `<strong>You're in — ${earned} months of ${proTag} locked in.</strong> 1 from your inviter, plus ${n} from ${n === 1 ? 'a friend who joined' : `${friendWord(n)} who joined`} via your link (each got a free month too). ${remaining} more ${monthWord(remaining)} to max out at 12.`;
   } else if (n === 0) {
-    perkHtml = `<strong>Start earning ${proTag} — and gift it to your friends.</strong> Share your link: each friend who joins gets <strong>1 free month of Pro at launch</strong>, and you earn one too. Stack up to 12.`;
+    perkHtml = `<strong>Share your link.</strong> You'll gift each friend who joins the waitlist <strong>1 free month of ${proTag}</strong> — and rack up a free month for yourself with every one, up to 12 months.`;
   } else if (n === 1) {
     perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link (and got a free month of Pro too). Keep sharing — 11 more up for grabs.`;
   } else {
