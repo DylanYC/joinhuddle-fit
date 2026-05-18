@@ -703,7 +703,7 @@
       <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
       <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
       <div class="ref-callout" id="heroPerk" hidden></div>
-      <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and you'll <em>both</em> get a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
+      <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Huddle Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
     </div>
   </section>
 
@@ -861,12 +861,12 @@
     <h2 class="stitle" style="max-width:460px;margin:0 auto;">Join the<br/><em>waitlist.</em></h2>
     <div class="waitlist-card">
       <p id="waitlistIntro">Huddle is almost here. Be first in your circle — get early access when we launch on iOS and Android.</p>
-      <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and you'll <em>both</em> get a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
+      <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Huddle Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
       <form class="waitlist-form" id="mainForm" novalidate>
         <input type="email" placeholder="your@email.com" required autocomplete="email"/>
         <button type="submit">Get early access</button>
       </form>
-      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — when a friend joins, you both get a free year of <span class="pro-tag">Huddle Pro</span> on us.</div>
+      <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — <strong>earn 1 month of <span class="pro-tag">Huddle Pro</span> for each friend who joins</strong>, up to 12 months.</div>
       <div class="waitlist-social" id="waitlistSocial" hidden></div>
 
       <div class="waitlist-success" id="waitlistSuccess" hidden>
@@ -881,7 +881,7 @@
         </div>
         <div class="ws-count" id="shareCount">Loading your count…</div>
         <div class="ws-count-hint">Want to check back later? Just revisit this page and enter your email to see your latest count.</div>
-        <div class="ws-perk" id="sharePerk"><strong>Bonus:</strong> Refer just 1 friend who joins and we'll comp you a free year of <span class="pro-tag">Huddle Pro</span> at launch.</div>
+        <div class="ws-perk" id="sharePerk">Each friend who joins via your link earns you <strong>1 free month of <span class="pro-tag">Huddle Pro</span></strong>, up to 12. Share your link to start stacking.</div>
       </div>
 
       <div class="waitlist-error" id="waitlistError" hidden></div>
@@ -2296,21 +2296,33 @@ async function recoverExisting(email) {
 function renderCount(n) {
   const word = n === 1 ? 'friend has' : 'friends have';
   shareCount.innerHTML = `<strong>${n}</strong> ${word} joined from your link`;
+
   const wasReferred = !!(currentRecord && currentRecord.referredBy);
+  const bonus = wasReferred ? 1 : 0;
+  const earned = Math.min(n + bonus, 12);
+  const remaining = Math.max(0, 12 - n - bonus);
+  const atCap = (n + bonus) >= 12;
+  const proTag = `<span class="pro-tag">Huddle Pro</span>`;
+  const monthWord = (x) => x === 1 ? 'month' : 'months';
+  const friendWord = (x) => x === 1 ? 'friend' : 'friends';
+
   let perkHtml;
-  if (wasReferred && n === 0) {
-    perkHtml = `<strong>You're in — Pro is locked in!</strong> Thanks to your friend's invite, you both get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Share your link — it's the gift that keeps on giving.`;
-  } else if (wasReferred && n === 1) {
-    perkHtml = `<strong>You're in — and you've brought a friend!</strong> You, your friend, and the friend who invited you all get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Keep sharing — it's the gift that keeps on giving.`;
-  } else if (wasReferred && n > 1) {
-    perkHtml = `<strong>You're in — and you've brought friends!</strong> You, your invitees, and the friend who invited you all get a free year of <span class="pro-tag">Huddle Pro</span> at launch. Keep sharing — it's the gift that keeps on giving.`;
+  if (atCap) {
+    perkHtml = wasReferred
+      ? `<strong>Maxed out 🎉 You've earned a full year of ${proTag}.</strong> Thanks for spreading the word. Keep sharing if you want — you've already hit the ceiling.`
+      : `<strong>Maxed out 🎉 A full year of ${proTag} is yours.</strong> ${n} friends joined via your link. Thanks for spreading the word.`;
+  } else if (wasReferred && n === 0) {
+    perkHtml = `<strong>You're in — your first month of Pro is locked in.</strong> Thanks to your friend's invite. Share your link to stack up to 11 more months — each friend who joins adds another.`;
+  } else if (wasReferred) {
+    perkHtml = `<strong>You're in — ${earned} months of ${proTag} locked in.</strong> 1 from your inviter, plus ${n} from ${n === 1 ? 'a friend who joined' : `${friendWord(n)} who joined`} via your link. ${remaining} more ${monthWord(remaining)} to max out at 12.`;
   } else if (n === 0) {
-    perkHtml = `<strong>Gift your friends Pro.</strong> When a friend joins from your link, you both get a free year of <span class="pro-tag">Huddle Pro</span> at launch.`;
+    perkHtml = `<strong>Start earning ${proTag}.</strong> Each friend who joins via your link earns you <strong>1 month of Pro at launch</strong>, stackable up to 12. Share to start.`;
   } else if (n === 1) {
-    perkHtml = `<strong>You're in and someone used your referral link!</strong> When Huddle launches, you and your friend both get a free year of <span class="pro-tag">Huddle Pro</span> on us. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link. Keep sharing — 11 more months up for grabs.`;
   } else {
-    perkHtml = `<strong>You're in and friends have used your referral link!</strong> When Huddle launches, you and your friends will get a free year of <span class="pro-tag">Huddle Pro</span> on us. Keep sharing — it's the gift that keeps on giving.`;
+    perkHtml = `<strong>${earned} months of ${proTag} earned!</strong> ${n} friends joined via your link. ${remaining} more ${monthWord(remaining)} to hit a full year.`;
   }
+
   if (sharePerk) sharePerk.innerHTML = perkHtml;
   const heroPerk = document.getElementById('heroPerk');
   if (heroPerk) heroPerk.innerHTML = perkHtml;
@@ -2422,7 +2434,7 @@ shareCopyBtn.addEventListener('click', async () => {
     try {
       await navigator.share({
         title: 'Join Huddle',
-        text: "Join my inner circle on Huddle — when you sign up, we both get a free year of Huddle Pro at launch.",
+        text: "Join the Huddle waitlist with my link — you'll get a free month of Huddle Pro at launch just for joining, and I'll earn one too.",
         url: shareLinkInput.value,
       });
       return;
