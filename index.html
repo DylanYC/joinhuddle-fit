@@ -2312,15 +2312,15 @@ function renderCount(n) {
       ? `<strong>Maxed out 🎉 You've earned a full year of ${proTag}.</strong> Thanks for spreading the word. Keep sharing if you want — you've already hit the ceiling.`
       : `<strong>Maxed out 🎉 A full year of ${proTag} is yours.</strong> ${n} friends joined via your link. Thanks for spreading the word.`;
   } else if (wasReferred && n === 0) {
-    perkHtml = `<strong>You're in — your first month of Pro is locked in.</strong> Thanks to your friend's invite. Share your link to stack up to 11 more months — each friend who joins adds another.`;
+    perkHtml = `<strong>You're in — your first month of Pro is locked in.</strong> Thanks to your friend's invite. Now pay it forward — share your link and <strong>each friend who joins gets a free month of Pro too</strong>, plus another month for your stack. Up to 11 more to earn.`;
   } else if (wasReferred) {
-    perkHtml = `<strong>You're in — ${earned} months of ${proTag} locked in.</strong> 1 from your inviter, plus ${n} from ${n === 1 ? 'a friend who joined' : `${friendWord(n)} who joined`} via your link. ${remaining} more ${monthWord(remaining)} to max out at 12.`;
+    perkHtml = `<strong>You're in — ${earned} months of ${proTag} locked in.</strong> 1 from your inviter, plus ${n} from ${n === 1 ? 'a friend who joined' : `${friendWord(n)} who joined`} via your link (each got a free month too). ${remaining} more ${monthWord(remaining)} to max out at 12.`;
   } else if (n === 0) {
-    perkHtml = `<strong>Start earning ${proTag}.</strong> Each friend who joins via your link earns you <strong>1 month of Pro at launch</strong>, stackable up to 12. Share to start.`;
+    perkHtml = `<strong>Start earning ${proTag} — and gift it to your friends.</strong> Share your link: each friend who joins gets <strong>1 free month of Pro at launch</strong>, and you earn one too. Stack up to 12.`;
   } else if (n === 1) {
-    perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link. Keep sharing — 11 more months up for grabs.`;
+    perkHtml = `<strong>1 month of ${proTag} earned!</strong> Your first friend just joined via your link (and got a free month of Pro too). Keep sharing — 11 more up for grabs.`;
   } else {
-    perkHtml = `<strong>${earned} months of ${proTag} earned!</strong> ${n} friends joined via your link. ${remaining} more ${monthWord(remaining)} to hit a full year.`;
+    perkHtml = `<strong>${earned} months of ${proTag} earned!</strong> ${n} friends joined via your link (each got a free month too). ${remaining} more ${monthWord(remaining)} to hit a full year.`;
   }
 
   if (sharePerk) sharePerk.innerHTML = perkHtml;
