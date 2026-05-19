@@ -153,16 +153,25 @@
   ];
   const CLIMB_SMOOTH_END = 7;  // last index of the smooth section
 
-  /* The 4 blue balls — DISABLED FOR NOW. The balls will return in
-     Stage 2 as independently animated characters that move along the
-     climb line (Pixar-style), not as fixed line points. Indices here
-     are reserved targets for those animations. */
+  /* The 4 blue balls — statically placed on the climb line in stair-step
+     formation. Each one gets a subtle sine-based vertical bob with a
+     phase offset so they read as "alive in place" without distracting
+     ascent animation. Phase values lifted directly from
+     why_slide_one_animation.dart:159 (_floatPhases). */
   const BALL_INDICES = {
-    HESITATOR:  11,  // x=0.51 — lagging
-    FOLLOWER_B: 13,  // x=0.59
-    FOLLOWER_A: 16,  // x=0.71
-    LEADER:     20,  // x=0.90 — out front
+    HESITATOR:  11,
+    FOLLOWER_B: 13,
+    FOLLOWER_A: 16,
+    LEADER:     20,
   };
+  const BALL_FLOAT_PHASES = [0.0, 0.7, 1.1, 1.8];  // radians, per ball
+  const BALL_BOB_AMPLITUDE_PX = 4;                 // peak vertical drift
+  const BALL_BOB_PERIOD_MS    = 2400;              // one full sine cycle
+
+  /* Gray solo ball — placed at the bottom of the front mountain's right
+     slope (just past the steep cliff drop). Static — its stillness is
+     the metaphor: motivation fades, the solo journey doesn't complete. */
+  const GRAY_BALL_X_FRAC = 0.52;
 
   // FRONT mountain silhouette — SMALLER now (peak height 0.21, was 0.27).
   // This is the foreground bedrock mountain. The back mountain (climb
@@ -725,11 +734,11 @@
     ctx.restore();
   }
 
-  /* BLUE BALLS — the 4 Pixar-esque Huddle characters ascending the
-     back mountain's ridge line. Clustered on the right side
-     (x=0.53→0.92) in clean stair-step formation: each ball is
-     up-and-right from the previous. Static placement (Stage 1);
-     scroll-driven animation comes in Stage 2. */
+  /* BLUE BALLS — 4 Huddle-purple balls statically placed on the back
+     mountain's ridge line in stair-step formation. Each one bobs up
+     and down on a sine wave with its own phase offset so they feel
+     alive in place without animating along the path. Reduced-motion
+     users see them perfectly still. */
   function paintBlueBalls(state, geom, climb) {
     const ballR = Math.max(11, Math.min(h * 0.020, 24));
     const order = [
@@ -738,14 +747,122 @@
       BALL_INDICES.FOLLOWER_A,
       BALL_INDICES.LEADER,
     ];
+    const bobT = state.reduced ? 0 : (state.time / BALL_BOB_PERIOD_MS) * Math.PI * 2;
     ctx.save();
     ctx.fillStyle = '#6F75FF';
-    for (const idx of order) {
+    order.forEach((idx, i) => {
       const p = climb.pts[idx];
-      if (!p) continue;
+      if (!p) return;
+      const bob = state.reduced
+        ? 0
+        : Math.sin(bobT + BALL_FLOAT_PHASES[i]) * BALL_BOB_AMPLITUDE_PX;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, ballR, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y + bob, ballR, 0, Math.PI * 2);
       ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  /* Linear-interpolated front-mountain silhouette Y at a given x fraction.
+     Used by the gray ball + arc text to anchor to the visible slope. */
+  function silhouetteYAt(geom, xFrac) {
+    const x = xFrac * w;
+    const pts = geom.pts;
+    for (let i = 0; i < pts.length - 1; i++) {
+      if (x >= pts[i].x && x <= pts[i + 1].x) {
+        const t = (x - pts[i].x) / (pts[i + 1].x - pts[i].x);
+        return pts[i].y + (pts[i + 1].y - pts[i].y) * t;
+      }
+    }
+    return pts[pts.length - 1].y;
+  }
+
+  /* GRAY SOLO BALL — sits on the front mountain's slope just past the
+     steep right cliff. Color #C6C6C6 matches why_slide_one_animation.dart:146.
+     Static — no bob — the stillness is the message: the solo journey
+     stopped. Slightly smaller than the blue balls so it feels diminished. */
+  function paintGrayBall(state, geom) {
+    const ballR = Math.max(10, Math.min(h * 0.018, 22));
+    const cx = GRAY_BALL_X_FRAC * w;
+    // Rest the ball ON the silhouette curve (center one radius above the
+    // ridge surface so it visually sits on the slope).
+    const cy = silhouetteYAt(geom, GRAY_BALL_X_FRAC) - ballR * 0.85;
+    ctx.save();
+    ctx.fillStyle = '#C6C6C6';
+    ctx.beginPath();
+    ctx.arc(cx, cy, ballR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /* ARC TEXT — "motivation fades on a solo journey" curving along the
+     front mountain's silhouette, just above the ridge line in the sky
+     band. Subtle by design: italic, low opacity, color lerps with peace.
+     Implemented as character-by-character canvas text with each glyph
+     rotated by the local tangent angle of the sampled silhouette path. */
+  const ARC_TEXT = 'motivation fades on a solo journey';
+  const ARC_TEXT_START_X = 0.08;  // path start (left of front mountain ascent)
+  const ARC_TEXT_END_X   = 0.55;  // path end (just past the gray ball)
+  function paintMotivationText(state, geom) {
+    const peace = state.peaceT;
+
+    // Sample the silhouette densely across the arc, offset upward into
+    // the sky band so the text reads on the sky, not on the mountain.
+    const samples = 80;
+    const yOffset = -Math.max(16, Math.min(h * 0.025, 28));
+    const arcPts = [];
+    for (let i = 0; i <= samples; i++) {
+      const xFrac = ARC_TEXT_START_X
+                  + (ARC_TEXT_END_X - ARC_TEXT_START_X) * (i / samples);
+      arcPts.push({ x: xFrac * w, y: silhouetteYAt(geom, xFrac) + yOffset });
+    }
+
+    // Cumulative arc-length table for char placement.
+    const arcLens = [0];
+    for (let i = 1; i < arcPts.length; i++) {
+      const dx = arcPts[i].x - arcPts[i - 1].x;
+      const dy = arcPts[i].y - arcPts[i - 1].y;
+      arcLens.push(arcLens[i - 1] + Math.hypot(dx, dy));
+    }
+    const totalLen = arcLens[arcLens.length - 1];
+
+    ctx.save();
+    const fontSize = Math.max(12, Math.min(w * 0.011, 17));
+    ctx.font = `italic 500 ${fontSize}px Inter, system-ui, sans-serif`;
+    ctx.textBaseline = 'middle';
+
+    // Measure full text. If wider than the path, skip (viewport too narrow).
+    const textWidth = ctx.measureText(ARC_TEXT).width;
+    if (textWidth > totalLen) { ctx.restore(); return; }
+
+    // Color — cool gray at day → dusty mauve at sunset. Stays very subtle.
+    const baseColor = lerpColor('#56607A', '#8E6FAA', peace);
+    ctx.fillStyle = rgba(baseColor, 0.32);
+
+    // Center the text along the arc and walk character-by-character.
+    let cursor = (totalLen - textWidth) / 2;
+    for (let i = 0; i < ARC_TEXT.length; i++) {
+      const ch = ARC_TEXT[i];
+      const chW = ctx.measureText(ch).width;
+      const center = cursor + chW / 2;
+
+      // Find the arc segment containing this character's center.
+      let seg = 0;
+      while (seg < arcLens.length - 2 && arcLens[seg + 1] < center) seg++;
+      const segLen = arcLens[seg + 1] - arcLens[seg];
+      const t = segLen > 0 ? (center - arcLens[seg]) / segLen : 0;
+      const p1 = arcPts[seg];
+      const p2 = arcPts[seg + 1];
+      const px = p1.x + (p2.x - p1.x) * t;
+      const py = p1.y + (p2.y - p1.y) * t;
+      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(angle);
+      ctx.fillText(ch, -chW / 2, 0);
+      ctx.restore();
+      cursor += chW;
     }
     ctx.restore();
   }
@@ -799,11 +916,16 @@
     paintRoot(state, geom);
     paintStars(state, geom);
     // 5. The back mountain's RIDGE LINE (stroked smooth-left + jagged-
-    //    right). No dots and no balls right now — the 4 Pixar-style
-    //    blue balls will animate as independent characters along this
-    //    line in Stage 2; for now the line is bare.
+    //    right). Then the subtle "motivation fades…" arc text floats
+    //    in the sky band just above the front mountain silhouette.
+    //    Finally the 4 blue balls (bobbing in place on the right) and
+    //    the static gray ball (settled on the front slope) — the
+    //    contrast between the alive cluster and the still solo is the
+    //    visual core of the page.
     paintClimbLine(state, geom, climb);
-    paintOnboardingBalls(state, geom);
+    paintMotivationText(state, geom);
+    paintBlueBalls(state, geom, climb);
+    paintGrayBall(state, geom);
 
     if (debug) {
       $hud.textContent =
