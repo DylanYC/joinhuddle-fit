@@ -125,29 +125,38 @@
     { x:  0.28, dy: 0.23 },  //  5 — just above front mountain peak
     { x:  0.32, dy: 0.28 },  //  6 — diverges UP while front drops
     { x:  0.36, dy: 0.32 },  //  7 — end of smooth section
-    // ── Jagged right half — plot-graph stair-step with the 4 balls ──
-    { x:  0.40, dy: 0.30 },  //  8 — small dip
-    { x:  0.44, dy: 0.36 },  //  9 — up
-    { x:  0.48, dy: 0.34 },  // 10 — dip
-    { x:  0.53, dy: 0.40 },  // 11 — HESITATOR (up)
-    { x:  0.58, dy: 0.38 },  // 12 — dip
-    { x:  0.64, dy: 0.44 },  // 13 — FOLLOWER_B (up)
-    { x:  0.70, dy: 0.42 },  // 14 — dip
-    { x:  0.77, dy: 0.48 },  // 15 — FOLLOWER_A (up)
-    { x:  0.84, dy: 0.46 },  // 16 — dip
-    { x:  0.92, dy: 0.52 },  // 17 — LEADER (up, far right)
-    { x:  1.08, dy: 0.55 },  // 18 — off the right edge
+    // ── Jagged right half — VARIED amplitudes + VARIED x spacing so the
+    //    line reads as a natural mountain ridge AND a plotted chart at
+    //    the same time. No two consecutive segments are the same length
+    //    or rise; some peaks are tall, some are shoulders; some dips are
+    //    shallow saddles, some are deeper pullbacks. ──
+    { x: 0.39, dy: 0.30 },  //  8  — small dip
+    { x: 0.42, dy: 0.34 },  //  9  — short rise
+    { x: 0.47, dy: 0.31 },  // 10  — deeper dip (longer drop)
+    { x: 0.51, dy: 0.39 },  // 11  — bigger rise
+    { x: 0.54, dy: 0.37 },  // 12  — tiny pullback (small span)
+    { x: 0.59, dy: 0.43 },  // 13  — peak after a medium climb
+    { x: 0.63, dy: 0.40 },  // 14  — dip (medium)
+    { x: 0.66, dy: 0.41 },  // 15  — almost-flat plateau bump
+    { x: 0.71, dy: 0.47 },  // 16  — taller rise after the plateau
+    { x: 0.75, dy: 0.44 },  // 17  — pullback
+    { x: 0.81, dy: 0.50 },  // 18  — bigger rise (longer span)
+    { x: 0.85, dy: 0.47 },  // 19  — dip
+    { x: 0.90, dy: 0.51 },  // 20  — modest rise
+    { x: 0.96, dy: 0.50 },  // 21  — long flat-ish stretch
+    { x: 1.10, dy: 0.57 },  // 22  — final climb off the right edge
   ];
   const CLIMB_SMOOTH_END = 7;  // last index of the smooth section
 
-  /* The 4 blue balls — clustered on the RIGHT side of the page so they
-     read as a group ascending positively upward together. Each is on a
-     small step-up in the jagged segment, with the Leader furthest right. */
+  /* The 4 blue balls — DISABLED FOR NOW. The balls will return in
+     Stage 2 as independently animated characters that move along the
+     climb line (Pixar-style), not as fixed line points. Indices here
+     are reserved targets for those animations. */
   const BALL_INDICES = {
-    HESITATOR:  11,  // x=0.53 — lagging back, lowest of the group
-    FOLLOWER_B: 13,  // x=0.64
-    FOLLOWER_A: 15,  // x=0.77
-    LEADER:     17,  // x=0.92 — out front, near right edge
+    HESITATOR:  11,  // x=0.51 — lagging
+    FOLLOWER_B: 13,  // x=0.59
+    FOLLOWER_A: 16,  // x=0.71
+    LEADER:     20,  // x=0.90 — out front
   };
 
   // FRONT mountain silhouette — SMALLER now (peak height 0.21, was 0.27).
@@ -781,11 +790,10 @@
     paintRoot(state, geom);
     paintStars(state, geom);
     // 5. The back mountain's RIDGE LINE (stroked smooth-left + jagged-
-    //    right), plot-chart graph dots on the jagged segment, and the
-    //    4 blue balls cluster ascending up-and-right.
+    //    right). No dots and no balls right now — the 4 Pixar-style
+    //    blue balls will animate as independent characters along this
+    //    line in Stage 2; for now the line is bare.
     paintClimbLine(state, geom, climb);
-    paintClimbDots(state, geom, climb);
-    paintBlueBalls(state, geom, climb);
     paintOnboardingBalls(state, geom);
 
     if (debug) {
