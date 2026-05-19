@@ -81,11 +81,11 @@
      stays composed and gently alive (sun drift, sunset evolves). */
 
   // Ridge BASELINE position as a fraction of viewport height.
-  //   progress 0   →  1.05  (silhouette mostly off-screen below; peak peeks)
+  //   progress 0   →  1.08  (silhouette mostly off-screen below; peak peeks)
   //   progress 0.6 →  0.55  (silhouette peak at ~⅓ down — the payoff)
   //   progress >0.6 → locked at 0.55
   const RIDGE_LOCK_PROGRESS = 0.6;
-  const RIDGE_BASELINE_START = 1.05;
+  const RIDGE_BASELINE_START = 1.08;
   const RIDGE_BASELINE_LOCKED = 0.55;
 
   function ridgeBaselineFrac(progress) {
@@ -98,18 +98,27 @@
   // The ridge silhouette: control points relative to the baseline.
   //   x:    fraction of canvas width
   //   peak: how far above baseline (in viewport-h units)
-  // The summit is the highest point — the 4-dot logo cluster anchors there.
+  // Designed for the brand "purple mountain" feel — clearly asymmetric:
+  // a longer, gentler LEFT slope (where the climb line ascends) and a
+  // shorter, steeper RIGHT shoulder. Subtle saddles at x=0.20 and x=0.66
+  // give the silhouette character without breaking the singular summit.
   const RIDGE_PROFILE = [
-    { x: 0.00, peak: 0.04 },
-    { x: 0.10, peak: 0.08 },
-    { x: 0.22, peak: 0.13 },
-    { x: 0.35, peak: 0.17 },
-    { x: 0.48, peak: 0.20 },
-    { x: 0.55, peak: 0.22 }, // ← summit
-    { x: 0.66, peak: 0.11 },
-    { x: 0.78, peak: 0.07 },
-    { x: 0.90, peak: 0.05 },
-    { x: 1.00, peak: 0.03 },
+    { x: 0.00, peak: 0.00 },
+    { x: 0.05, peak: 0.02 },
+    { x: 0.12, peak: 0.05 },
+    { x: 0.20, peak: 0.07 },  // first shoulder
+    { x: 0.27, peak: 0.10 },
+    { x: 0.35, peak: 0.13 },
+    { x: 0.42, peak: 0.17 },
+    { x: 0.49, peak: 0.21 },
+    { x: 0.54, peak: 0.24 },
+    { x: 0.58, peak: 0.26 },  // ← summit
+    { x: 0.63, peak: 0.22 },
+    { x: 0.68, peak: 0.14 },
+    { x: 0.74, peak: 0.10 },
+    { x: 0.82, peak: 0.06 },
+    { x: 0.90, peak: 0.03 },
+    { x: 1.00, peak: 0.00 },
   ];
 
   function actFor(p) {
@@ -207,7 +216,10 @@
   }
 
   /* Ridge geometry — computed without touching the canvas path, so sky
-     painters (sun, clouds) can anchor to summit BEFORE bedrock paints. */
+     painters (sun, clouds) can anchor to summit BEFORE bedrock paints.
+     Returns reusable Path2D objects for the closed bedrock polygon and
+     the open ridge curve so the bedrock fill, mountain-face overlay,
+     and rim-light pass all share the same exact silhouette. */
   function computeRidgeGeometry(state) {
     const baselineY = h * ridgeBaselineFrac(state.progress);
     const pts = RIDGE_PROFILE.map(p => ({
@@ -216,34 +228,92 @@
     }));
     let summit = pts[0];
     for (const p of pts) if (p.y < summit.y) summit = p;
-    return { baselineY, summitX: summit.x, summitY: summit.y, pts };
-  }
 
-  /* Trace the closed bedrock polygon (ridge silhouette across, down right,
-     across bottom, up left) into the canvas path and fill with bedrock
-     gradient. Polygon edges follow smooth quadratic curves through ridge
-     control-point midpoints (same pattern as climb_card.dart:1011-1026). */
-  function paintBedrock(state, geom) {
-    const pts = geom.pts;
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
+    // Smooth ridge curve using quadratic beziers through midpoints
+    // (same pattern as climb_card.dart:1011-1026).
+    const polyPath = new Path2D();
+    const ridgePath = new Path2D();
+    polyPath.moveTo(pts[0].x, pts[0].y);
+    ridgePath.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < pts.length - 1; i++) {
       const mx = (pts[i].x + pts[i + 1].x) / 2;
       const my = (pts[i].y + pts[i + 1].y) / 2;
-      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+      polyPath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+      ridgePath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
     }
     const last = pts[pts.length - 1];
-    ctx.lineTo(last.x, last.y);
-    ctx.lineTo(w, h);
-    ctx.lineTo(0, h);
-    ctx.closePath();
+    polyPath.lineTo(last.x, last.y);
+    ridgePath.lineTo(last.x, last.y);
+    // Close the bedrock polygon down the right edge, across the bottom,
+    // up the left edge.
+    polyPath.lineTo(w, h);
+    polyPath.lineTo(0, h);
+    polyPath.closePath();
 
+    return {
+      baselineY,
+      summitX: summit.x,
+      summitY: summit.y,
+      pts,
+      polyPath,   // closed bedrock polygon (fillable)
+      ridgePath,  // open ridge curve (strokeable)
+    };
+  }
+
+  /* BEDROCK fill — deep navy gradient inside the closed ridge polygon. */
+  function paintBedrock(state, geom) {
     const grad = ctx.createLinearGradient(0, geom.summitY, 0, h);
     grad.addColorStop(0.00, rgb(BEDROCK.top));
     grad.addColorStop(0.55, rgb(BEDROCK.mid));
     grad.addColorStop(1.00, rgb(BEDROCK.bot));
     ctx.fillStyle = grad;
-    ctx.fill();
+    ctx.fill(geom.polyPath);
+  }
+
+  /* MOUNTAIN FACE — semi-transparent overlay near the ridge crest, lerped
+     from cool slate at day → deep warm purple at sunset. Same color stops
+     as climb_card.dart:1033-1037 (#B4C3E6 → #4A3A6E) but lifted into a
+     downward-fading gradient so the mountain top reads as catching sky
+     light while the deeper body fades into the bedrock fill below. */
+  function paintMountainFace(state, geom) {
+    const peace = state.peaceT;
+    const faceColor = lerpColor('#B4C3E6', '#4A3A6E', peace);
+    const faceTop = geom.summitY - 2;
+    const faceBot = geom.baselineY + h * 0.08;
+    if (faceBot <= faceTop) return;
+    ctx.save();
+    ctx.clip(geom.polyPath);
+    const grad = ctx.createLinearGradient(0, faceTop, 0, faceBot);
+    // Stronger at the crest, fading to transparent so the bedrock gradient
+    // takes over below. Alpha intensifies with peace so the silhouette
+    // reads darker at sunset (matches the app's "ridgeAlpha = 0.35 + 0.5 * peace").
+    const aTop = 0.55 + 0.35 * peace;
+    const aMid = 0.30 + 0.25 * peace;
+    grad.addColorStop(0.00, rgba(faceColor, aTop));
+    grad.addColorStop(0.50, rgba(faceColor, aMid));
+    grad.addColorStop(1.00, rgba(faceColor, 0));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, faceTop, w, faceBot - faceTop);
+    ctx.restore();
+  }
+
+  /* RIDGE RIM LIGHT — a soft warm halo along the crest at sunset. Mimics
+     the band of light that catches the top edge of a mountain when the
+     sun is just behind it. Painted as a blurred stroke of the open ridge
+     curve (geom.ridgePath), so it follows the actual silhouette including
+     all foothill bumps. */
+  function paintRidgeRimLight(state, geom) {
+    const peace = state.peaceT;
+    if (peace < 0.08) return;
+    const color = lerpColor('#FFB78A', '#FFE0B5', peace);
+    ctx.save();
+    ctx.strokeStyle = rgba(color, 0.45 * peace);
+    ctx.lineWidth = Math.max(2, w * 0.0035);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.filter = `blur(${Math.max(1.5, w * 0.002)}px)`;
+    ctx.stroke(geom.ridgePath);
+    ctx.restore();
   }
 
   // ── Stars (bedrock region only) ──────────────────────────────────────
@@ -418,51 +488,36 @@
     _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.72, cloudColor, baseAlpha * 0.85);
   }
 
-  /* BIRDS — upgraded with a soft glow underpass.
-     Same M-bird silhouette as climb_card.dart (lines 1314-1333), but a
-     wider blurred stroke is drawn underneath the crisp stroke. Gives the
-     bird visual weight at scale without making it look heavy or comic. */
-  function _drawBirdShape(cx, cy, bw, color, glowColor) {
+  /* BIRDS — direct port of climb_card.dart _drawBird (lines 1314-1333).
+     Two quadratic arcs forming the classic "M-bird" silhouette. Two
+     birds drift R→L at offset phases. Color lerps day → dusk with peace. */
+  function _drawBirdShape(cx, cy, bw, color) {
     const bh = bw * 0.45;
-    const buildPath = () => {
-      ctx.beginPath();
-      ctx.moveTo(cx - bw / 2, cy);
-      ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
-      ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
-    };
-    // Glow underpass — wider, lower opacity, blurred.
-    ctx.save();
-    ctx.filter = `blur(${Math.max(1.5, bw * 0.18)}px)`;
-    ctx.strokeStyle = glowColor;
-    ctx.lineWidth = Math.max(2.5, bw / 3);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    buildPath();
-    ctx.stroke();
-    ctx.restore();
-    // Crisp main stroke.
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = Math.max(1.2, bw / 6);
+    ctx.lineWidth = Math.max(1, bw / 7);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    buildPath();
+    ctx.beginPath();
+    ctx.moveTo(cx - bw / 2, cy);
+    ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
+    ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
     ctx.stroke();
     ctx.restore();
   }
   function paintBirds(state) {
     const peace = state.peaceT;
     const factor = appFactor();
-    const bw1 = 9.0 * factor;
-    const bw2 = 7.5 * factor;
-    const y1 = h * 0.075;
-    const y2 = h * 0.125;
+    const bw1 = 7.5 * factor;
+    const bw2 = 6.5 * factor;
+    const y1 = h * 0.07;
+    const y2 = h * 0.12;
     const base = lerpColor('#6B7FAA', '#3A2D55', peace);
     const span = driftSpan();
     const t1 = (state.driftT + 0.10) % 1.0;
     const t2 = (state.driftT + 0.55) % 1.0;
-    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.70), rgba(base, 0.30));
-    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.55), rgba(base, 0.22));
+    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.55));
+    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.40));
   }
 
   /* HORIZON GLOW — warm atmospheric band just above the ridge at sunset.
@@ -525,8 +580,13 @@
     paintClouds(state);
     paintBirds(state);
     // 3. Bedrock polygon covers everything below the ridge with the
-    //    bedrock gradient. Stars then paint on top, world-anchored.
+    //    bedrock gradient. Then a mountain-face overlay tints the area
+    //    near the ridge crest with cool-slate-to-warm-purple (peace),
+    //    and a rim-light pass adds a warm halo along the crest at
+    //    sunset. Stars paint last so they sit visually deepest.
     paintBedrock(state, geom);
+    paintMountainFace(state, geom);
+    paintRidgeRimLight(state, geom);
     paintRoot(state, geom);
     paintStars(state, geom);
     // 4. World-spanning elements: the climb line ascends through the sky,
