@@ -117,6 +117,35 @@ body {
 .why-nav-logo svg { height: 100%; width: auto; display: block; }
 .why-nav-word { fill: #ECEAFD; }
 .why-nav-mark { fill: var(--brand-primary); }
+
+/* Center nav links — mirrors the home page nav pattern. */
+.why-nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+.why-nav-links li { list-style: none; }
+.why-nav-links a {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+.why-nav-links a:hover { color: rgba(255, 255, 255, 0.95); }
+/* Active page indicator — Huddle blue + bold so the user knows where they are. */
+.why-nav-links a.is-current {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+/* Hide nav links on narrow viewports to keep the nav clean on mobile.
+   Logo + CTA still visible. */
+@media (max-width: 700px) {
+  .why-nav-links { display: none; }
+}
+
 .why-nav-cta {
   font-size: 13px; font-weight: 700; color: #fff;
   text-decoration: none;
@@ -196,7 +225,9 @@ body {
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -0.022em;
-  color: var(--brand-primary-deep);
+  /* Near-black for the top line — matches the home page's
+     `--text1: #0a0a18` token used on `.stitle` headers. */
+  color: #0a0a18;
   max-width: 720px;
   margin: 0 auto;
 }
