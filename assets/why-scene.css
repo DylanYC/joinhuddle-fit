@@ -184,9 +184,11 @@ body {
   pointer-events: auto;
 }
 
-/* TOP overlay · surface copy floating in the sky band. */
+/* TOP overlay · surface copy floating in the sky band.
+   Positioned to feel vertically balanced in the upper viewport at the
+   100% desktop zoom landing view. */
 .copy-overlay--top {
-  top: 18svh;
+  top: 26svh;
   text-align: center;
 }
 .overlay-h1 {
@@ -208,13 +210,15 @@ body {
 
 /* BOTTOM overlay · underneath copy in the bedrock dark band.
    Anchored to bottom of viewport so the whole block sits firmly in the
-   dark area below the locked ridge — never overlapping the mountain. */
+   dark area below the locked ridge — never overlapping the mountain.
+   Generous gap + bottom padding so the block has breathing room inside
+   the now-expanded bedrock area (ridge locks higher at ~35svh). */
 .copy-overlay--bottom {
-  bottom: 4svh;
+  bottom: 9svh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
   text-align: center;
 }
 .overlay-h2 {
@@ -303,12 +307,14 @@ body {
 .cta-btn:hover { opacity: 0.92; }
 .cta-btn:active { transform: translateY(1px); }
 
-/* Desktop adjustments — shorter scene, larger viewport, the same overlay
-   model works without per-breakpoint repositioning. */
+/* Desktop adjustments — shorter scene, larger viewport. Top headline
+   sits a bit higher in svh terms because desktop viewports are wider
+   than tall (the same svh translates to fewer absolute px above the
+   block). Bottom overlay gets more bottom padding + a larger gap. */
 @media (min-width: 900px) {
   :root { --scene-h: 200svh; }
-  .copy-overlay--top { top: 14svh; }
-  .copy-overlay--bottom { bottom: 6svh; gap: 16px; }
+  .copy-overlay--top { top: 22svh; }
+  .copy-overlay--bottom { bottom: 11svh; gap: 24px; }
 }
 
 /* ───────────────────────── Footer ─────────────────────────────────────── */

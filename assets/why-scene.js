@@ -84,11 +84,14 @@
 
   // Ridge BASELINE position as a fraction of viewport height.
   //   progress 0   →  1.08  (silhouette mostly off-screen below; peak peeks)
-  //   progress 0.6 →  0.55  (silhouette peak at ~⅓ down — the payoff)
-  //   progress >0.6 → locked at 0.55
+  //   progress 0.6 →  0.35  (locked HIGH so the bedrock area below the
+  //                          mountain takes up ~65% of the viewport,
+  //                          giving the bedrock copy block plenty of
+  //                          breathing room. We deliberately accept
+  //                          losing some of the sunset sky at the top.)
   const RIDGE_LOCK_PROGRESS = 0.6;
   const RIDGE_BASELINE_START = 1.08;
-  const RIDGE_BASELINE_LOCKED = 0.55;
+  const RIDGE_BASELINE_LOCKED = 0.35;
 
   function ridgeBaselineFrac(progress) {
     const t = Math.min(1, progress / RIDGE_LOCK_PROGRESS);
