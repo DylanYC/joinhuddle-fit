@@ -301,6 +301,19 @@ body {
 }
 .stats-row .stat {
   text-align: center;
+  max-width: 260px;
+}
+/* "Only" prefix above the lower stat — italic, muted so it qualifies the
+   number without competing with it. The slight vertical stagger it
+   creates between the two stats is intentional: visually reinforces
+   that 76% > 43%. */
+.stats-row .stat-prefix {
+  font-size: clamp(13px, 3.2vw, 15px);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink-night-quiet);
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
 }
 .stats-row .stat-num {
   font-size: clamp(44px, 13vw, 84px);
@@ -334,10 +347,22 @@ body {
   transform: translateX(-50%);
 }
 
+/* Now an <a> linking out to the study PDF — keep the muted styling but
+   add a subtle underline + hover lift so it reads as a citation link
+   without competing with the stats above. */
 .stats-source {
   font-size: clamp(10px, 2.4vw, 12px);
   color: var(--ink-night-quiet);
   letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.18);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+.stats-source:hover {
+  color: var(--ink-night-soft);
+  text-decoration-color: rgba(255, 255, 255, 0.4);
 }
 
 .cta-lede {
