@@ -153,18 +153,29 @@
   ];
   const CLIMB_SMOOTH_END = 7;  // last index of the smooth section
 
-  /* The 4 blue balls — statically placed on the climb line in stair-step
-     formation. Each one gets a subtle sine-based vertical bob with a
-     phase offset so they read as "alive in place" without distracting
-     ascent animation. Phase values lifted directly from
-     why_slide_one_animation.dart:159 (_floatPhases). */
-  const BALL_INDICES = {
-    HESITATOR:  11,
-    FOLLOWER_B: 13,
-    FOLLOWER_A: 16,
-    LEADER:     20,
-  };
-  const BALL_FLOAT_PHASES = [0.0, 0.7, 1.1, 1.8];  // radians, per ball
+  /* The 4 blue balls — each placed on a fractional position BETWEEN two
+     climb-line control points so they don't all sit at the perfect tip
+     of a peak/dip. Some are on up-steps, some on down-steps, varied
+     positions matching a Pixar-style cluster personality:
+       LEADER     — out front, on a strong ascending step
+       FOLLOWER_A — twin, close to Follower B on a shared upslope
+       FOLLOWER_B — other twin, paired tight with A
+       HESITATOR  — way back, on a descending step, being dragged along
+
+     Each entry: { idx, frac, phase }
+       idx   = climb-line segment START index (i, point pair is i → i+1)
+       frac  = 0..1 fraction along that segment
+       phase = sine-bob phase offset (radians) so balls bob out of sync */
+  const BALL_POSITIONS = [
+    // HESITATOR — lagging far back on a downslope (idx 13 → 14 descends)
+    { idx: 13, frac: 0.50, phase: 1.8 },
+    // FOLLOWER_B — twin, behind A on the shared upslope (idx 17 → 18 ascends)
+    { idx: 17, frac: 0.40, phase: 1.1 },
+    // FOLLOWER_A — twin, paired tight with B
+    { idx: 17, frac: 0.65, phase: 0.7 },
+    // LEADER — out front, climbing strongly (idx 19 → 20 ascends)
+    { idx: 19, frac: 0.65, phase: 0.0 },
+  ];
   const BALL_BOB_AMPLITUDE_PX = 4;                 // peak vertical drift
   const BALL_BOB_PERIOD_MS    = 2400;              // one full sine cycle
 
@@ -741,30 +752,28 @@
      users see them perfectly still. */
   function paintBlueBalls(state, geom, climb) {
     const ballR = Math.max(11, Math.min(h * 0.020, 24));
-    const order = [
-      BALL_INDICES.HESITATOR,
-      BALL_INDICES.FOLLOWER_B,
-      BALL_INDICES.FOLLOWER_A,
-      BALL_INDICES.LEADER,
-    ];
     const bobT = state.reduced ? 0 : (state.time / BALL_BOB_PERIOD_MS) * Math.PI * 2;
-    // Lift the ball center one radius above the line so the ball SITS
-    // ON TOP of the line (its bottom edge tangent to the line) — reads
-    // as 4 individual characters perched on the climb, not data points
-    // baked into the line itself.
-    const restOffset = ballR;
+    // Lift each ball clearly above the line (a hair more than tangent)
+    // so they read as individual characters perched ABOVE the climb,
+    // not points baked into the line.
+    const restOffset = ballR * 1.25;
     ctx.save();
     ctx.fillStyle = '#6F75FF';
-    order.forEach((idx, i) => {
-      const p = climb.pts[idx];
-      if (!p) return;
+    for (const pos of BALL_POSITIONS) {
+      const p1 = climb.pts[pos.idx];
+      const p2 = climb.pts[pos.idx + 1];
+      if (!p1 || !p2) continue;
+      // Linear interp along the segment so the ball can sit MID-SLOPE
+      // (on the rise or fall) rather than at a perfect graph vertex.
+      const x = p1.x + (p2.x - p1.x) * pos.frac;
+      const y = p1.y + (p2.y - p1.y) * pos.frac;
       const bob = state.reduced
         ? 0
-        : Math.sin(bobT + BALL_FLOAT_PHASES[i]) * BALL_BOB_AMPLITUDE_PX;
+        : Math.sin(bobT + pos.phase) * BALL_BOB_AMPLITUDE_PX;
       ctx.beginPath();
-      ctx.arc(p.x, p.y - restOffset + bob, ballR, 0, Math.PI * 2);
+      ctx.arc(x, y - restOffset + bob, ballR, 0, Math.PI * 2);
       ctx.fill();
-    });
+    }
     ctx.restore();
   }
 
