@@ -748,6 +748,11 @@
       BALL_INDICES.LEADER,
     ];
     const bobT = state.reduced ? 0 : (state.time / BALL_BOB_PERIOD_MS) * Math.PI * 2;
+    // Lift the ball center one radius above the line so the ball SITS
+    // ON TOP of the line (its bottom edge tangent to the line) — reads
+    // as 4 individual characters perched on the climb, not data points
+    // baked into the line itself.
+    const restOffset = ballR;
     ctx.save();
     ctx.fillStyle = '#6F75FF';
     order.forEach((idx, i) => {
@@ -757,7 +762,7 @@
         ? 0
         : Math.sin(bobT + BALL_FLOAT_PHASES[i]) * BALL_BOB_AMPLITUDE_PX;
       ctx.beginPath();
-      ctx.arc(p.x, p.y + bob, ballR, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y - restOffset + bob, ballR, 0, Math.PI * 2);
       ctx.fill();
     });
     ctx.restore();
@@ -801,8 +806,11 @@
      Implemented as character-by-character canvas text with each glyph
      rotated by the local tangent angle of the sampled silhouette path. */
   const ARC_TEXT = 'motivation fades on a solo journey';
-  const ARC_TEXT_START_X = 0.08;  // path start (left of front mountain ascent)
-  const ARC_TEXT_END_X   = 0.55;  // path end (just past the gray ball)
+  // Arc text only follows the DESCENDING right slope of the front
+  // mountain so it never crosses the climb line. Starts just past the
+  // peak (x=0.28) and curves down to the gray ball's footing (x=0.55).
+  const ARC_TEXT_START_X = 0.29;
+  const ARC_TEXT_END_X   = 0.55;
   function paintMotivationText(state, geom) {
     const peace = state.peaceT;
 
