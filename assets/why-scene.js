@@ -169,9 +169,11 @@
   const BALL_POSITIONS = [
     // HESITATOR — lagging far back on a downslope (idx 13 → 14 descends)
     { idx: 13, frac: 0.50, phase: 1.8 },
-    // FOLLOWER_B — twin, behind A on the shared upslope (idx 17 → 18 ascends)
-    { idx: 17, frac: 0.40, phase: 1.1 },
-    // FOLLOWER_A — twin, paired tight with B
+    // FOLLOWER_B — pulled back from FOLLOWER_A onto the small descending
+    // step at idx 16 → 17. Still ahead of Hesitator, but with a clear
+    // gap to A so the twins don't read as overlapping.
+    { idx: 16, frac: 0.30, phase: 1.1 },
+    // FOLLOWER_A — twin, on the shared upslope ahead of B
     { idx: 17, frac: 0.65, phase: 0.7 },
     // LEADER — out front, climbing strongly (idx 19 → 20 ascends)
     { idx: 19, frac: 0.65, phase: 0.0 },
