@@ -96,75 +96,79 @@
   }
 
   /* ─── Climb line geometry ─────────────────────────────────────────────
-     The Huddle climb line — the JAGGED RIDGE that reads simultaneously
-     as a plotted progress chart AND as a real mountain silhouette. Many
-     small step-ups and tiny step-downs (plot-chart character), with the
-     line's own peak roughly aligned with the main mountain summit at
-     x=0.30, then continuing up-right at a SHALLOWER angle and exiting
-     off the upper-right of the viewport.
+     The page's composition is TWO LAYERED MOUNTAINS:
 
-     A second "subtle lavender mountain" (paintLavenderRidge) is drawn
-     underneath this line, giving it the WHY-slide-1 layered-mountain
-     gravity. The 4 blue balls ride this line in stair-step formation.
+       FRONT mountain (RIDGE_PROFILE below): smaller, dark navy. This is
+         the "bedrock" — what fills the lower half of the screen. The
+         gray solo ball plunges down this one (Stage 3).
+       BACK mountain (CLIMB_LINE + paintLavenderRidge): larger, lavender
+         body, behind the front mountain. The 4 blue balls ascend this
+         one. The climb line is its visible ridge silhouette.
 
-     Points are { x, dy } where dy is viewport-h above ridge baseline.
-     Designed so the line ALWAYS sits above the main mountain silhouette
-     at every x — it reads as a ridge ON the mountain, not inside it. */
+     The CLIMB LINE has two halves:
+       LEFT (smooth)  — a smooth quadratic curve that hugs the front
+         mountain's slope, giving the impression that the back mountain
+         emerges from behind the front. Indices 0 → CLIMB_SMOOTH_END.
+       RIGHT (jagged) — a stair-step plot-graph polyline going up-right
+         with multiple small dips/peaks. The 4 balls cluster on this
+         side, with small "graph dots" at every data point making the
+         line read as both a plotted progress chart AND a mountain ridge.
+
+     Points are { x, dy } where dy is viewport-h above ridge baseline. */
   const CLIMB_LINE = [
-    { x: 0.02, dy: 0.07 },  //  0 — start, lower-left, just above ridge
-    { x: 0.05, dy: 0.11 },  //  1
-    { x: 0.08, dy: 0.10 },  //  2 — tiny dip
-    { x: 0.12, dy: 0.16 },  //  3
-    { x: 0.16, dy: 0.18 },  //  4
-    { x: 0.20, dy: 0.23 },  //  5
-    { x: 0.24, dy: 0.27 },  //  6
-    { x: 0.27, dy: 0.25 },  //  7 — HESITATOR (dip, lowest of the 4)
-    { x: 0.30, dy: 0.32 },  //  8 — climb-line peak (over main summit)
-    { x: 0.34, dy: 0.30 },  //  9 — FOLLOWER_B (small dip after peak)
-    { x: 0.38, dy: 0.36 },  // 10
-    { x: 0.43, dy: 0.34 },  // 11 — FOLLOWER_A (small dip)
-    { x: 0.48, dy: 0.39 },  // 12
-    { x: 0.54, dy: 0.37 },  // 13 — LEADER (small dip, out front)
-    { x: 0.62, dy: 0.41 },  // 14
-    { x: 0.72, dy: 0.42 },  // 15
-    { x: 0.84, dy: 0.44 },  // 16
-    { x: 0.96, dy: 0.45 },  // 17
-    { x: 1.08, dy: 0.48 },  // 18 — off the right edge, shallow trajectory
+    // ── Smooth left half — follows front mountain's curve, then diverges up ──
+    { x: -0.02, dy: 0.02 },  //  0 — off-canvas left start
+    { x:  0.05, dy: 0.06 },  //  1
+    { x:  0.12, dy: 0.10 },  //  2
+    { x:  0.18, dy: 0.15 },  //  3
+    { x:  0.24, dy: 0.20 },  //  4
+    { x:  0.28, dy: 0.23 },  //  5 — just above front mountain peak
+    { x:  0.32, dy: 0.28 },  //  6 — diverges UP while front drops
+    { x:  0.36, dy: 0.32 },  //  7 — end of smooth section
+    // ── Jagged right half — plot-graph stair-step with the 4 balls ──
+    { x:  0.40, dy: 0.30 },  //  8 — small dip
+    { x:  0.44, dy: 0.36 },  //  9 — up
+    { x:  0.48, dy: 0.34 },  // 10 — dip
+    { x:  0.53, dy: 0.40 },  // 11 — HESITATOR (up)
+    { x:  0.58, dy: 0.38 },  // 12 — dip
+    { x:  0.64, dy: 0.44 },  // 13 — FOLLOWER_B (up)
+    { x:  0.70, dy: 0.42 },  // 14 — dip
+    { x:  0.77, dy: 0.48 },  // 15 — FOLLOWER_A (up)
+    { x:  0.84, dy: 0.46 },  // 16 — dip
+    { x:  0.92, dy: 0.52 },  // 17 — LEADER (up, far right)
+    { x:  1.08, dy: 0.55 },  // 18 — off the right edge
   ];
+  const CLIMB_SMOOTH_END = 7;  // last index of the smooth section
 
-  /* The 4 blue balls in stair-step formation. Each one is up-and-right
-     from the previous, clustered tightly in x=[0.27, 0.54] so they read
-     as a group ascending together. Personality vocabulary matches the
-     splash story in why_slide_one_animation.dart:151. */
+  /* The 4 blue balls — clustered on the RIGHT side of the page so they
+     read as a group ascending positively upward together. Each is on a
+     small step-up in the jagged segment, with the Leader furthest right. */
   const BALL_INDICES = {
-    HESITATOR:  7,   // on the small dip just before the peak — lagging
-    FOLLOWER_B: 9,   // just past the peak, climbing
-    FOLLOWER_A: 11,  // one step ahead
-    LEADER:     13,  // out front, leading the formation
+    HESITATOR:  11,  // x=0.53 — lagging back, lowest of the group
+    FOLLOWER_B: 13,  // x=0.64
+    FOLLOWER_A: 15,  // x=0.77
+    LEADER:     17,  // x=0.92 — out front, near right edge
   };
 
-  // The ridge silhouette: control points relative to the baseline.
+  // FRONT mountain silhouette — SMALLER now (peak height 0.21, was 0.27).
+  // This is the foreground bedrock mountain. The back mountain (climb
+  // line + lavender) sits behind it and rises much higher.
   //   x:    fraction of canvas width
   //   peak: how far above baseline (in viewport-h units)
-  // Single dominant peak SHIFTED FURTHER LEFT (to x=0.30) — leaves a
-  // longer gentle ascent for the climb line and a steeper right cliff.
-  // The climb line and 4 balls live above this silhouette; the
-  // subtle lavender mountain fills the space between them.
   const RIDGE_PROFILE = [
     { x: 0.00, peak: 0.00 },
-    { x: 0.04, peak: 0.03 },
-    { x: 0.09, peak: 0.07 },
-    { x: 0.14, peak: 0.11 },
-    { x: 0.19, peak: 0.16 },
-    { x: 0.24, peak: 0.21 },
-    { x: 0.28, peak: 0.25 },
-    { x: 0.30, peak: 0.27 },  // ← summit (shifted LEFT to x=0.30)
-    { x: 0.34, peak: 0.23 },
-    { x: 0.40, peak: 0.16 },
-    { x: 0.47, peak: 0.09 },  // steep drop on right
-    { x: 0.55, peak: 0.04 },
-    { x: 0.65, peak: 0.02 },
-    { x: 0.78, peak: 0.01 },
+    { x: 0.05, peak: 0.03 },
+    { x: 0.10, peak: 0.07 },
+    { x: 0.15, peak: 0.11 },
+    { x: 0.20, peak: 0.15 },
+    { x: 0.25, peak: 0.19 },
+    { x: 0.28, peak: 0.21 },  // ← front summit (smaller)
+    { x: 0.32, peak: 0.18 },
+    { x: 0.37, peak: 0.13 },
+    { x: 0.43, peak: 0.07 },  // steep drop
+    { x: 0.50, peak: 0.03 },
+    { x: 0.60, peak: 0.01 },
+    { x: 0.75, peak: 0.00 },
     { x: 1.00, peak: 0.00 },
   ];
 
@@ -590,69 +594,85 @@
   // Bedrock features
   function paintRoot(state, geom) { /* TODO: subtle root/anchor where climb line enters bedrock */ }
 
-  /* Compute climb line points + open path once per frame. Shared by the
-     lavender ridge painter, climb-line stroke, and the 4 blue balls. */
+  /* Compute climb line geometry once per frame. Builds two Path2Ds:
+       linePath — open path used for stroking the climb line + graph dots.
+                  Smooth quadratic curves on the left (indices 0 →
+                  CLIMB_SMOOTH_END), then jagged lineTo segments on the
+                  right (CLIMB_SMOOTH_END → end).
+       polyPath — closed polygon with the SAME top edge, plus right side
+                  dropping to canvas bottom, across, and back up. This is
+                  the lavender BACK MOUNTAIN BODY's fillable shape.
+     Shared by paintLavenderRidge / paintClimbLine / paintClimbDots /
+     paintBlueBalls. */
   function computeClimbGeometry(state, geom) {
     const baselineY = geom.baselineY;
     const pts = CLIMB_LINE.map(p => ({
       x: p.x * w,
       y: baselineY - p.dy * h,
     }));
+
     const linePath = new Path2D();
+    const polyPath = new Path2D();
     linePath.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      linePath.lineTo(pts[i].x, pts[i].y);
+    polyPath.moveTo(pts[0].x, pts[0].y);
+
+    // ── Smooth section: quadratic through midpoints ──
+    for (let i = 1; i < CLIMB_SMOOTH_END; i++) {
+      const mx = (pts[i].x + pts[i + 1].x) / 2;
+      const my = (pts[i].y + pts[i + 1].y) / 2;
+      linePath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+      polyPath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
     }
-    let minY = pts[0].y;
-    let maxY = pts[0].y;
+    // Anchor at the transition point
+    linePath.lineTo(pts[CLIMB_SMOOTH_END].x, pts[CLIMB_SMOOTH_END].y);
+    polyPath.lineTo(pts[CLIMB_SMOOTH_END].x, pts[CLIMB_SMOOTH_END].y);
+    // ── Jagged section: straight lineTo (plot-graph character) ──
+    for (let i = CLIMB_SMOOTH_END + 1; i < pts.length; i++) {
+      linePath.lineTo(pts[i].x, pts[i].y);
+      polyPath.lineTo(pts[i].x, pts[i].y);
+    }
+    // Close polygon down to canvas bottom
+    const last = pts[pts.length - 1];
+    polyPath.lineTo(last.x, h);
+    polyPath.lineTo(pts[0].x, h);
+    polyPath.closePath();
+
+    let minY = pts[0].y, maxY = pts[0].y;
     for (const p of pts) {
       if (p.y < minY) minY = p.y;
       if (p.y > maxY) maxY = p.y;
     }
-    return { pts, linePath, minY, maxY };
+    return { pts, linePath, polyPath, minY, maxY };
   }
 
-  /* LAVENDER RIDGE — the "subtle mountain underneath the grid" from WHY
-     slide 1. A semi-transparent lavender body fills the area below the
-     jagged climb line, giving it the gravity of a real mountain rather
-     than a free-floating chart line. The fill fades vertically so it
-     doesn't wash out the bedrock at the bottom of the viewport. Color
-     lerps cool lavender → dusty purple with peace, matching the brand
-     sunset palette without going saturated. */
+  /* LAVENDER RIDGE — the BACK MOUNTAIN'S BODY. A semi-transparent
+     lavender fill that sits BEHIND the front mountain (the dark navy
+     bedrock polygon). The lavender extends down past the front mountain
+     silhouette into the bedrock area, where the dark navy paints OVER
+     it and occludes everything below the silhouette. The visible
+     lavender is therefore the area between the climb line (top) and
+     the front mountain silhouette (bottom-left) / bedrock (bottom-right).
+
+     Color: cool lavender → dusty purple with peace. More saturated and
+     less faded than the previous "subtle wash" so the back mountain
+     reads as a real second mountain, not a haze. */
   function paintLavenderRidge(state, geom, climb) {
     const peace = state.peaceT;
-    const last = climb.pts[climb.pts.length - 1];
-    const first = climb.pts[0];
-
-    // Closed polygon: top edge = climb line; bottom drops to canvas bottom.
-    const polyPath = new Path2D();
-    polyPath.moveTo(first.x, first.y);
-    for (let i = 1; i < climb.pts.length; i++) {
-      polyPath.lineTo(climb.pts[i].x, climb.pts[i].y);
-    }
-    polyPath.lineTo(last.x, h);
-    polyPath.lineTo(first.x, h);
-    polyPath.closePath();
-
-    const lavTop = lerpColor('#D4D2F2', '#C29DDE', peace);
-    const lavBot = lerpColor('#9F9DD2', '#6B4F87', peace);
-    // Gradient anchored to the climb line's highest visible point, fading
-    // to fully transparent by the canvas bottom so bedrock + stars come
-    // through unimpaired.
+    const lavTop = lerpColor('#B3B3E8', '#A989B8', peace);
+    const lavBot = lerpColor('#6F6FBA', '#56407A', peace);
     const grad = ctx.createLinearGradient(0, climb.minY, 0, h);
-    grad.addColorStop(0.00, rgba(lavTop, 0.42));
-    grad.addColorStop(0.30, rgba(lavTop, 0.30));
-    grad.addColorStop(0.60, rgba(lavBot, 0.14));
-    grad.addColorStop(0.85, rgba(lavBot, 0.04));
-    grad.addColorStop(1.00, rgba(lavBot, 0));
+    grad.addColorStop(0.00, rgba(lavTop, 0.85));
+    grad.addColorStop(0.45, rgba(lavTop, 0.78));
+    grad.addColorStop(0.80, rgba(lavBot, 0.62));
+    grad.addColorStop(1.00, rgba(lavBot, 0.50));
     ctx.fillStyle = grad;
-    ctx.fill(polyPath);
+    ctx.fill(climb.polyPath);
   }
 
-  /* CLIMB LINE — the page's through-line. A jagged polyline stroked in
-     Huddle-purple along the top edge of the lavender ridge body. The
-     line IS the ridge silhouette — its plot-chart character is what
-     makes the composition read as a mountain. */
+  /* CLIMB LINE — the back mountain's ridge silhouette. Stroked along
+     the top edge of the lavender body. Smooth quadratic on the left
+     half (where it hugs the front mountain's profile) and jagged
+     stair-step on the right half (plot-chart character + the 4 balls). */
   function paintClimbLine(state, geom, climb) {
     const strokeW = Math.max(3, w * 0.0035);
     ctx.save();
@@ -664,11 +684,34 @@
     ctx.restore();
   }
 
+  /* CLIMB DOTS — small Huddle-purple data points at every JAGGED-section
+     control point that doesn't already have a big blue ball. Reinforces
+     the "plotted progress chart" reading and gives the right-side ridge
+     line its dot-marker character à la WHY slide 1's Huddle line. */
+  function paintClimbDots(state, geom, climb) {
+    const dotR = Math.max(3.5, w * 0.0035);
+    const ballSet = new Set([
+      BALL_INDICES.HESITATOR, BALL_INDICES.FOLLOWER_B,
+      BALL_INDICES.FOLLOWER_A, BALL_INDICES.LEADER,
+    ]);
+    ctx.save();
+    ctx.fillStyle = '#6F75FF';
+    // Skip the off-canvas final point (index last) and ball positions.
+    for (let i = CLIMB_SMOOTH_END + 1; i < climb.pts.length - 1; i++) {
+      if (ballSet.has(i)) continue;
+      const p = climb.pts[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   /* BLUE BALLS — the 4 Pixar-esque Huddle characters ascending the
-     climb line in stair-step formation. Static placement (Stage 1);
-     scroll-driven animation along the path comes in Stage 2. Solid
-     #6F75FF circles per the splash visual vocabulary — Leader out
-     front, Twins in lockstep, Hesitator parked on the small dip. */
+     back mountain's ridge line. Clustered on the right side
+     (x=0.53→0.92) in clean stair-step formation: each ball is
+     up-and-right from the previous. Static placement (Stage 1);
+     scroll-driven animation comes in Stage 2. */
   function paintBlueBalls(state, geom, climb) {
     const ballR = Math.max(11, Math.min(h * 0.020, 24));
     const order = [
@@ -723,26 +766,25 @@
     paintSun(state, geom);
     paintClouds(state);
     paintBirds(state);
-    // 3. Bedrock polygon covers everything below the ridge with the
-    //    bedrock gradient. Then a mountain-face overlay tints the area
-    //    near the ridge crest with cool-slate-to-warm-purple (peace),
-    //    and a rim-light pass adds a warm halo along the crest at
-    //    sunset.
+    // 3. BACK MOUNTAIN (lavender body) — painted FIRST so the front
+    //    mountain occludes its lower portion. The visible lavender is
+    //    therefore the area above the front mountain silhouette: the
+    //    upper-right region where the climb line + 4 balls live.
+    const climb = computeClimbGeometry(state, geom);
+    paintLavenderRidge(state, geom, climb);
+    // 4. FRONT MOUNTAIN — dark navy bedrock polygon paints OVER the
+    //    lavender below its silhouette. Then mountain-face tint and
+    //    rim-light highlight the front summit. Stars in bedrock.
     paintBedrock(state, geom);
     paintMountainFace(state, geom);
     paintRidgeRimLight(state, geom);
     paintRoot(state, geom);
-    // 4. The "subtle mountain underneath the grid" — a soft lavender
-    //    body filling the area below the climb line, giving the jagged
-    //    ridge gravity à la WHY slide 1's lavender mountain backdrop.
-    //    Painted before stars so its lower fade doesn't tint them.
-    const climb = computeClimbGeometry(state, geom);
-    paintLavenderRidge(state, geom, climb);
     paintStars(state, geom);
-    // 5. The Huddle climb line + 4 blue balls in stair-step formation.
-    //    The line is stroked along the top of the lavender ridge; the
-    //    balls sit at specific indices in cluster formation.
+    // 5. The back mountain's RIDGE LINE (stroked smooth-left + jagged-
+    //    right), plot-chart graph dots on the jagged segment, and the
+    //    4 blue balls cluster ascending up-and-right.
     paintClimbLine(state, geom, climb);
+    paintClimbDots(state, geom, climb);
     paintBlueBalls(state, geom, climb);
     paintOnboardingBalls(state, geom);
 
