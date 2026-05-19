@@ -982,10 +982,12 @@
          while the dark area is on screen.
      Both also hide when the scene scrolls fully off the viewport so they
      don't float over the footer below. */
-  // Top text starts fading out at progress 0.30 — well before the mountain
-  // peak rises into the headline's vertical band (~progress 0.44), so the
-  // landing copy never clashes with the climb-line or ridge visuals.
-  const TOP_FADE_OUT = 0.30;
+  // Top text starts fading out at progress 0.18 — VERY early, well
+  // before the climb line's mid-segment rises into the headline's
+  // vertical band (~progress 0.28). With the 0.55s CSS transition this
+  // ensures the headline is fully gone by the time anything in the
+  // scene would intersect it. Generous safety margin for fast scrollers.
+  const TOP_FADE_OUT = 0.18;
   // Bottom text holds off until progress 0.75 — well past the ridge lock
   // (0.60), so the user has scrolled most of the way and the visual scene
   // is fully settled. The bedrock copy then arrives as the "landing" beat
