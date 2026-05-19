@@ -206,6 +206,37 @@ body {
   pointer-events: none;
 }
 
+/* ───────────────────────── Scroll-down hint ──────────────────────────
+   Subtle bouncing chevron at the bottom of the viewport on the landing
+   view. Fades out as soon as the user starts scrolling. */
+.scroll-hint {
+  position: fixed;
+  bottom: 6svh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  color: var(--ink-day-soft);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+}
+.scroll-hint.is-hidden { opacity: 0; }
+.scroll-hint-inner {
+  animation: scroll-hint-bounce 1.8s ease-in-out infinite;
+}
+.scroll-hint svg {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+@keyframes scroll-hint-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-inner { animation: none; }
+}
+
 /* ───────────────────────── Copy overlays ──────────────────────────────
    Two STATIC text overlays pinned to viewport positions via position:
    fixed. They fade in/out at the right scroll moments so the copy is

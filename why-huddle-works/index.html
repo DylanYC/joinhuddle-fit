@@ -50,6 +50,16 @@
   </div>
 </main>
 
+<!-- Scroll-down hint — bouncing chevron at the bottom of the landing
+     view, fades out the moment the user begins scrolling. -->
+<div class="scroll-hint" id="scrollHint" aria-hidden="true">
+  <div class="scroll-hint-inner">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</div>
+
 <!-- ─── TOP OVERLAY · the SURFACE copy ──────────────────────────────────
      Always pinned in the sky band of the viewport while the scene is in
      view. Fades out as the user scrolls past the landing band. -->

@@ -40,6 +40,7 @@
   const $hud     = document.getElementById('sceneHud');
   const $copyTop = document.getElementById('copyTop');
   const $copyBot = document.getElementById('copyBot');
+  const $scrollHint = document.getElementById('scrollHint');
   if (!$scene || !$canvas) return;
 
   const ctx = $canvas.getContext('2d');
@@ -988,6 +989,11 @@
   // ensures the headline is fully gone by the time anything in the
   // scene would intersect it. Generous safety margin for fast scrollers.
   const TOP_FADE_OUT = 0.18;
+  // Scroll-down hint hides the instant the user starts scrolling — it's
+  // an invitation for stationary visitors, not a persistent indicator.
+  // By the time the bottom text begins to appear (BOT_FADE_IN = 0.75)
+  // the hint is long gone, satisfying the "go away before reveal" goal.
+  const HINT_FADE_OUT = 0.04;
   // Bottom text holds off until progress 0.75 — well past the ridge lock
   // (0.60), so the user has scrolled most of the way and the visual scene
   // is fully settled. The bedrock copy then arrives as the "landing" beat
@@ -999,10 +1005,12 @@
     // we hide both overlays.
     const rect = $scene.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
-    const showTop = inView && progress < TOP_FADE_OUT;
-    const showBot = inView && progress > BOT_FADE_IN;
-    if ($copyTop) $copyTop.classList.toggle('is-visible', showTop);
-    if ($copyBot) $copyBot.classList.toggle('is-visible', showBot);
+    const showTop  = inView && progress < TOP_FADE_OUT;
+    const showBot  = inView && progress > BOT_FADE_IN;
+    const showHint = inView && progress < HINT_FADE_OUT;
+    if ($copyTop)    $copyTop   .classList.toggle('is-visible', showTop);
+    if ($copyBot)    $copyBot   .classList.toggle('is-visible', showBot);
+    if ($scrollHint) $scrollHint.classList.toggle('is-hidden', !showHint);
   }
 
   /* ─── rAF loop with visibility guard ──────────────────────────────── */
