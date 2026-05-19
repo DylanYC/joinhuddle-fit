@@ -121,15 +121,19 @@
 
      Points are { x, dy } where dy is viewport-h above ridge baseline. */
   const CLIMB_LINE = [
-    // ── Smooth left half — follows front mountain's curve, then diverges up ──
-    { x: -0.02, dy: 0.02 },  //  0 — off-canvas left start
-    { x:  0.05, dy: 0.06 },  //  1
-    { x:  0.12, dy: 0.10 },  //  2
-    { x:  0.18, dy: 0.15 },  //  3
-    { x:  0.24, dy: 0.20 },  //  4
-    { x:  0.28, dy: 0.23 },  //  5 — just above front mountain peak
-    { x:  0.32, dy: 0.28 },  //  6 — diverges UP while front drops
-    { x:  0.36, dy: 0.32 },  //  7 — end of smooth section
+    // ── Smooth left half — traces parallel to the front mountain's
+    //    ascent at a CONSTANT ~0.04 offset above each ridge control
+    //    point, so the climb line and the slope under it read as the
+    //    same arc (the "everyone is motivated at the beginning" story).
+    //    Then diverges UP at the peak while the front mountain drops. ──
+    { x: -0.02, dy: 0.03 },  //  0 — off-canvas, just above baseline
+    { x:  0.05, dy: 0.07 },  //  1 — 0.04 above front mtn peak (0.03)
+    { x:  0.12, dy: 0.13 },  //  2 — 0.04 above front mtn (~0.09)
+    { x:  0.18, dy: 0.17 },  //  3 — 0.04 above front mtn (~0.13)
+    { x:  0.24, dy: 0.22 },  //  4 — 0.04 above front mtn (~0.18)
+    { x:  0.28, dy: 0.25 },  //  5 — 0.04 above front mtn peak (0.21)
+    { x:  0.32, dy: 0.30 },  //  6 — diverges UP while front drops to 0.18
+    { x:  0.36, dy: 0.34 },  //  7 — end of smooth section
     // ── Jagged right half — VARIED amplitudes + VARIED x spacing so the
     //    line reads as a natural mountain ridge AND a plotted chart at
     //    the same time. No two consecutive segments are the same length

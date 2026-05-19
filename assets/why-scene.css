@@ -243,11 +243,10 @@ body {
   max-width: var(--col-max);
   margin: 20px auto 0;
 }
-/* Inline accent word inside the landing lede — coral-pink from the
-   Huddle brand palette (BRAND.md §3, defined as the destructive token
-   #F25D76 but reads as a warm, energetic accent on the light sky). */
+/* Inline accent word inside the landing lede — dark Huddle blue,
+   matching the home page's `.tagline strong` light-mode accent. */
 .overlay-lede-accent {
-  color: #F25D76;
+  color: var(--brand-primary-deep);
   font-weight: 600;
 }
 
