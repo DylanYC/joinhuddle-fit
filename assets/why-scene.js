@@ -96,48 +96,66 @@
   }
 
   /* ─── Climb line geometry ─────────────────────────────────────────────
-     The page's spine. One continuous stroke that ascends the gentle left
-     slope of the mountain (paralleling the ridge profile, offset slightly
-     above), crests at the summit where the 4-dot Huddle cluster sits,
-     and continues straight down through the mountain into the bedrock
-     where it dissolves into the depth.
-     Points are stored as { x, dy } where dy is viewport-h above ridge baseline. */
-  const CLIMB_ASCENT = [
-    { x: 0.04, dy: 0.02 },  // start — far left, just emerging from the ridge baseline
-    { x: 0.15, dy: 0.06 },
-    { x: 0.26, dy: 0.10 },
-    { x: 0.36, dy: 0.14 },
-    { x: 0.45, dy: 0.19 },
-    { x: 0.53, dy: 0.23 },
-    { x: 0.58, dy: 0.26 },  // summit endpoint — meets the 4-dot cluster
+     The Huddle climb line — adapted from why_slide_one_animation.dart's
+     Huddle path. A stair-step polyline that ascends the mountain's gentle
+     left slope and CONTINUES UP-RIGHT past the summit, exiting off the
+     upper-right of the viewport. The message: the journey continues
+     forever when you go together.
+
+     One downward kink at index 4 (the "hesitator step") gives the line
+     its WHY-slide-1 character — even the Huddle journey has small
+     setbacks, but the line keeps climbing past them.
+
+     Points are { x, dy } where dy is viewport-h above ridge baseline. */
+  const CLIMB_LINE = [
+    { x: 0.05, dy: 0.05 },  // start — lower-left, just above the ridge silhouette
+    { x: 0.13, dy: 0.10 },
+    { x: 0.20, dy: 0.14 },
+    { x: 0.27, dy: 0.19 },
+    { x: 0.32, dy: 0.18 },  // ← hesitator step (small downward kink)
+    { x: 0.38, dy: 0.27 },  // big step up past the summit
+    { x: 0.46, dy: 0.33 },
+    { x: 0.58, dy: 0.40 },
+    { x: 0.75, dy: 0.50 },
+    { x: 0.95, dy: 0.62 },
+    { x: 1.10, dy: 0.70 },  // off the right edge into upper-right open sky
   ];
-  // How deep into bedrock the descent reaches, in viewport-h units below
-  // the ridge baseline. Beyond this the line has faded fully transparent.
-  const CLIMB_DESCENT_END_DY = 0.50;
+
+  /* The 4 blue balls travel along the climb line at fixed indices in
+     stair-step formation (Leader out front, Twins in lockstep, Hesitator
+     parked on the dip). Personality vocabulary matches the splash story
+     in why_slide_one_animation.dart:151. Stage 1 places them statically
+     at these positions; Stage 2 will animate them along the path. */
+  const BALL_INDICES = {
+    HESITATOR:  4,  // sits on the downward kink
+    FOLLOWER_B: 5,  // just past the dip, climbing
+    FOLLOWER_A: 6,  // ahead of Follower B
+    LEADER:     7,  // out front, leading the climb
+  };
 
   // The ridge silhouette: control points relative to the baseline.
   //   x:    fraction of canvas width
   //   peak: how far above baseline (in viewport-h units)
-  // Designed for the brand "purple mountain" feel — clearly asymmetric:
-  // a longer, gentler LEFT slope (where the climb line ascends) and a
-  // shorter, steeper RIGHT shoulder. Subtle saddles at x=0.20 and x=0.66
-  // give the silhouette character without breaking the singular summit.
+  // Reshaped for the WHY-slide-1 story: single dominant peak SHIFTED LEFT
+  // (~38%) so the right side becomes a steep cliff (where the gray solo
+  // ball will plunge in stage 3), while the gentler left slope is where
+  // the blue line + 4 balls ascend together. The summit is followed by a
+  // sharp drop and a low-foothill tail to the right edge.
   const RIDGE_PROFILE = [
     { x: 0.00, peak: 0.00 },
-    { x: 0.05, peak: 0.02 },
-    { x: 0.12, peak: 0.05 },
-    { x: 0.20, peak: 0.07 },  // first shoulder
-    { x: 0.27, peak: 0.10 },
-    { x: 0.35, peak: 0.13 },
-    { x: 0.42, peak: 0.17 },
-    { x: 0.49, peak: 0.21 },
-    { x: 0.54, peak: 0.24 },
-    { x: 0.58, peak: 0.26 },  // ← summit
-    { x: 0.63, peak: 0.22 },
-    { x: 0.68, peak: 0.14 },
-    { x: 0.74, peak: 0.10 },
-    { x: 0.82, peak: 0.06 },
-    { x: 0.90, peak: 0.03 },
+    { x: 0.05, peak: 0.04 },
+    { x: 0.12, peak: 0.08 },
+    { x: 0.18, peak: 0.11 },
+    { x: 0.24, peak: 0.15 },
+    { x: 0.30, peak: 0.19 },
+    { x: 0.35, peak: 0.23 },
+    { x: 0.38, peak: 0.26 },  // ← summit (shifted LEFT from 0.58)
+    { x: 0.43, peak: 0.22 },
+    { x: 0.49, peak: 0.14 },  // ← steep drop begins here
+    { x: 0.55, peak: 0.07 },
+    { x: 0.62, peak: 0.03 },
+    { x: 0.72, peak: 0.02 },
+    { x: 0.85, peak: 0.01 },
     { x: 1.00, peak: 0.00 },
   ];
 
@@ -564,102 +582,57 @@
   function paintRoot(state, geom) { /* TODO: subtle root/anchor where climb line enters bedrock */ }
 
   /* CLIMB LINE — the page's through-line.
-     ASCENT: smooth quadratic-bezier curve through CLIMB_ASCENT control
-       points, drawn as a solid Huddle-purple stroke. Decorative "showed-up"
-       dots (a la the app's daily climb dots) mark intermediate points
-       along the ascent, fading in with x so they read as accumulating.
-     DESCENT: a straight vertical from the summit straight down to a
-       bedrock anchor point. Painted with a gradient stroke that fades
-       from solid purple at the summit to fully transparent at the
-       bottom — the line "dissolves into the depth" instead of ending
-       at a hard point.
-     The 4-dot cluster (paintSummitCluster, below) crowns the summit and
-     visually receives the ascent + emits the descent. */
+     A stair-step polyline (lineTo segments, no curves) ascending the
+     mountain's gentle left slope, with one downward "hesitator" kink,
+     continuing past the summit and exiting off the upper-right of the
+     viewport. The 4 blue balls (paintBlueBalls) ride this line in
+     formation. Same purple #6F75FF as the app's Huddle line. */
   function paintClimbLine(state, geom) {
     const baselineY = geom.baselineY;
-    const aPts = CLIMB_ASCENT.map(p => ({
+    const pts = CLIMB_LINE.map(p => ({
       x: p.x * w,
       y: baselineY - p.dy * h,
     }));
-    const strokeW = Math.max(2.5, w * 0.0028);
+    const strokeW = Math.max(3, w * 0.0035);
 
-    // ── ASCENT — smoothed quadratic curve via midpoints ──────────────
-    const ascentPath = new Path2D();
-    ascentPath.moveTo(aPts[0].x, aPts[0].y);
-    for (let i = 1; i < aPts.length - 1; i++) {
-      const mx = (aPts[i].x + aPts[i + 1].x) / 2;
-      const my = (aPts[i].y + aPts[i + 1].y) / 2;
-      ascentPath.quadraticCurveTo(aPts[i].x, aPts[i].y, mx, my);
+    const path = new Path2D();
+    path.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      path.lineTo(pts[i].x, pts[i].y);
     }
-    const last = aPts[aPts.length - 1];
-    ascentPath.lineTo(last.x, last.y);
+
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = strokeW;
     ctx.strokeStyle = '#6F75FF';
-    ctx.stroke(ascentPath);
-    ctx.restore();
-
-    // ── DESCENT — vertical stroke with linear-alpha fadeout ──────────
-    const sx = last.x;
-    const sy = last.y;
-    const anchorY = baselineY + CLIMB_DESCENT_END_DY * h;
-    if (anchorY > sy) {
-      const grad = ctx.createLinearGradient(0, sy, 0, anchorY);
-      grad.addColorStop(0.00, 'rgba(111, 117, 255, 1.00)');
-      grad.addColorStop(0.55, 'rgba(111, 117, 255, 0.85)');
-      grad.addColorStop(1.00, 'rgba(111, 117, 255, 0.00)');
-      ctx.save();
-      ctx.lineCap = 'round';
-      ctx.lineWidth = strokeW;
-      ctx.strokeStyle = grad;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(sx, anchorY);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // ── Ascent "showed-up" dots — skip start and summit; alpha grows ─
-    const dotR = Math.max(3.2, h * 0.0050);
-    ctx.save();
-    for (let i = 1; i < CLIMB_ASCENT.length - 1; i++) {
-      const p = CLIMB_ASCENT[i];
-      const px = p.x * w;
-      const py = baselineY - p.dy * h;
-      const t = (i - 1) / Math.max(1, CLIMB_ASCENT.length - 3);
-      const alpha = 0.55 + 0.45 * t;
-      ctx.fillStyle = `rgba(111, 117, 255, ${alpha})`;
-      ctx.beginPath();
-      ctx.arc(px, py, dotR, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.stroke(path);
     ctx.restore();
   }
 
-  /* SUMMIT CLUSTER — the Huddle 4-dot brand mark crowning the summit.
-     Diamond formation per BRAND.md §9 (top / right / bottom / left around
-     a center). The ascent line ends at the cluster center and the descent
-     begins from it, so the cluster reads as the receiver and origin of
-     the through-line. All four dots are solid #6F75FF — no halo, per
-     brand spec. */
-  function paintSummitCluster(state, geom) {
-    const cx = geom.summitX;
-    const cy = geom.summitY;
-    const spacing = Math.max(14, Math.min(h * 0.030, 32));
-    const dotR = spacing * 0.55;
+  /* BLUE BALLS — the 4 Pixar-esque Huddle characters ascending the climb
+     line in stair-step formation. Static placement at BALL_INDICES (Stage
+     1); scroll-driven animation along the path will come in Stage 2.
+     Solid #6F75FF circles per the splash visual vocabulary — Leader out
+     front, Twins in lockstep, Hesitator parked on the dip kink. */
+  function paintBlueBalls(state, geom) {
+    const baselineY = geom.baselineY;
+    const ballR = Math.max(11, Math.min(h * 0.020, 24));
+    const order = [
+      BALL_INDICES.HESITATOR,
+      BALL_INDICES.FOLLOWER_B,
+      BALL_INDICES.FOLLOWER_A,
+      BALL_INDICES.LEADER,
+    ];
     ctx.save();
     ctx.fillStyle = '#6F75FF';
-    const offsets = [
-      [ 0,        -spacing], // top
-      [ spacing,   0],       // right
-      [ 0,         spacing], // bottom — sits just below silhouette, reads as on the summit
-      [-spacing,   0],       // left
-    ];
-    for (const [dx, dy] of offsets) {
+    for (const idx of order) {
+      const p = CLIMB_LINE[idx];
+      if (!p) continue;
+      const px = p.x * w;
+      const py = baselineY - p.dy * h;
       ctx.beginPath();
-      ctx.arc(cx + dx, cy + dy, dotR, 0, Math.PI * 2);
+      ctx.arc(px, py, ballR, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -713,7 +686,7 @@
     //    crests at the summit-with-4-dots, continues straight down into
     //    bedrock. Painted last so it sits on top of both regions.
     paintClimbLine(state, geom);
-    paintSummitCluster(state, geom);
+    paintBlueBalls(state, geom);
     paintOnboardingBalls(state, geom);
 
     if (debug) {
