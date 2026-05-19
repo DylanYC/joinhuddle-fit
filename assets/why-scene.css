@@ -1,0 +1,360 @@
+/* ===========================================================================
+   why-huddle-works.css
+   The page is one tall vertical journey:
+
+     ┌──────────────┐  ← scroll y = 0
+     │   ACT 1      │   Sky · open, headline floats. Ridge hinted at bottom.
+     │   landing    │
+     ├──────────────┤
+     │   ACT 2      │   Climb · onboarding-style ball story plays here,
+     │   climb      │   anchored to the mountain face.
+     ├──────────────┤
+     │   ACT 3      │   Hinge · ridgeline crossover. Day → dusk → night.
+     │   hinge      │
+     ├──────────────┤
+     │   ACT 4      │   Bedrock · dark slab. Science, stat, CTA.
+     │   bedrock    │
+     └──────────────┘
+
+   Layout:
+   - .scene is a tall (≈360svh) container.
+   - .scene-stage inside is `position: sticky; top: 0; height: 100svh` so
+     the canvas stays pinned to the viewport while the user scrolls past
+     the rest of .scene.
+   - .slot blocks are absolutely positioned inside .scene at fixed
+     `top` offsets (in svh) so each copy block lives over its scene act.
+   - All slot vertical positions are kept in svh / dvh so iOS toolbar
+     resize doesn't shove copy onto the mountain face.
+
+   Tuning knobs:
+   - Total scene height:  --scene-h
+   - Hinge position:      --hinge-pct
+   ========================================================================= */
+
+:root {
+  /* Brand palette (from BRAND.md) */
+  --brand-primary:      #6F75FF;
+  --brand-primary-dark: #292D91;
+  --brand-primary-deep: #0A0F81;
+  --brand-primary-light:#CFD1FF;
+
+  /* Day-side sky (matches climb_card.dart blueTone for fidelity) */
+  --sky-top-day:    #DCE9FF;
+  --sky-mid-day:    #C9DAFA;
+  --sky-bot-day:    #B4D2FF;
+
+  /* Night-side bedrock (deep navy + purple family — per user) */
+  --bedrock-top:    #0F1340;
+  --bedrock-mid:    #090C2A;
+  --bedrock-bot:    #050816;
+
+  /* Text */
+  --ink-day:        #1C1C1C;
+  --ink-day-soft:   #5D5D6E;
+  --ink-night:      #FFFFFF;
+  --ink-night-soft: rgba(255,255,255,0.72);
+  --ink-night-quiet:rgba(255,255,255,0.45);
+
+  /* Scene geometry */
+  --scene-h:    360svh;   /* total scroll length (4 acts × ~90svh) */
+  --hinge-pct:  60%;      /* where the act-3 hinge sits in the scroll */
+
+  /* Type scale (mobile-first) */
+  --t-h1: clamp(34px, 8.5vw, 56px);
+  --t-h2: clamp(26px, 6.5vw, 42px);
+  --t-body: clamp(15px, 4vw, 18px);
+  --t-eyebrow: clamp(11px, 2.8vw, 13px);
+  --t-stat: clamp(56px, 16vw, 96px);
+
+  /* Layout */
+  --col-max: 560px;
+  --pad-x: clamp(20px, 5vw, 40px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--sky-top-day);
+  color: var(--ink-day);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  /* Prevent horizontal jitter; keep vertical scrolling natural. */
+  overflow-x: clip;
+}
+
+/* ───────────────────────── Floating nav ───────────────────────────────── */
+/* Hidden on the landing band so the open-sky feel isn't broken. Fades in
+   once the user crosses the hinge — toggled via data-visible by JS. */
+.why-nav {
+  position: fixed;
+  top: 12px; left: 12px; right: 12px;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 18px;
+  border-radius: 18px;
+  background: rgba(10, 12, 42, 0.55);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.10);
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.why-nav[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.why-nav-logo { display: inline-flex; height: 28px; }
+.why-nav-logo svg { height: 100%; width: auto; display: block; }
+.why-nav-word { fill: #ECEAFD; }
+.why-nav-mark { fill: var(--brand-primary); }
+.why-nav-cta {
+  font-size: 13px; font-weight: 700; color: #fff;
+  text-decoration: none;
+  padding: 9px 16px;
+  border: 2px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  transition: background .2s ease;
+}
+.why-nav-cta:hover { background: rgba(255,255,255,0.12); }
+
+/* ───────────────────────── Scene container ────────────────────────────── */
+.scene {
+  position: relative;
+  height: var(--scene-h);
+  width: 100%;
+}
+
+/* Sticky stage holds the canvas, pinned to the viewport for the scene's
+   entire height. */
+.scene-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.scene-hud {
+  position: absolute;
+  left: 12px; bottom: 12px;
+  z-index: 5;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 10px;
+  border-radius: 8px;
+  white-space: pre;
+  pointer-events: none;
+}
+
+/* ───────────────────────── Copy slots ─────────────────────────────────── */
+/* Slots are positioned absolutely inside .scene at specific svh offsets so
+   they slide past the sticky canvas as the user scrolls. Each slot sticks
+   to the sky band — never lands on the mountain face. */
+.slot {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 2;
+  padding: 0 var(--pad-x);
+  pointer-events: none; /* let the canvas behind catch any incidental clicks */
+}
+.slot > * { pointer-events: auto; } /* but actual elements (CTA, etc.) interact */
+
+.slot-eyebrow {
+  font-size: var(--t-eyebrow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--brand-primary-dark);
+  margin-bottom: 10px;
+}
+.slot-h1 {
+  font-size: var(--t-h1);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--brand-primary-deep);
+  max-width: var(--col-max);
+  margin: 0 auto;
+  text-align: center;
+}
+.slot-h2 {
+  font-size: var(--t-h2);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--brand-primary-deep);
+  max-width: var(--col-max);
+  margin: 0 auto;
+  text-align: center;
+}
+.slot-h2--dark { color: var(--ink-night); }
+.slot-body {
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-day-soft);
+  max-width: var(--col-max);
+  margin: 14px auto 0;
+  text-align: center;
+}
+.slot-body--dark { color: var(--ink-night-soft); }
+.slot-body--center { text-align: center; }
+.slot-hinge-line {
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink-night-soft);
+  max-width: var(--col-max);
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Per-slot positions. Anchored in svh so iOS Safari toolbar resizes don't
+   slide them onto the mountain. */
+.slot--landing      { top:  10svh; }
+.slot--climb-intro  { top: 100svh; }
+.slot--climb-mid    { top: 175svh; }
+.slot--hinge        { top: 230svh; }
+.slot--bedrock-intro{ top: 260svh; }
+.slot--bedrock-stat { top: 295svh; }
+.slot--cta          { top: 330svh; }
+
+/* ───────────────────────── Bedrock stats ──────────────────────────────── */
+.slot--bedrock-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-size: var(--t-stat);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #A09AF5, #6F75FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.stat-num--quiet {
+  background: none;
+  color: var(--ink-night-quiet);
+  -webkit-text-fill-color: var(--ink-night-quiet);
+}
+.stat-label {
+  margin-top: 8px;
+  font-size: var(--t-body);
+  color: var(--ink-night-soft);
+}
+.stat--quiet .stat-label { color: var(--ink-night-quiet); }
+.stat-source {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-night-quiet);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* On wider viewports, put the two stats side-by-side with a divider. */
+@media (min-width: 720px) {
+  .slot--bedrock-stat {
+    flex-direction: row;
+    justify-content: center;
+    gap: 64px;
+    align-items: flex-start;
+  }
+  .stat + .stat { position: relative; }
+  .stat + .stat::before {
+    content: "";
+    position: absolute;
+    left: -32px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: rgba(255,255,255,0.18);
+  }
+  .stat-source {
+    position: absolute;
+    left: 0; right: 0;
+    margin-top: 24px;
+    transform: translateY(120%);
+  }
+}
+
+/* ───────────────────────── CTA ────────────────────────────────────────── */
+.slot--cta { text-align: center; }
+.cta-btn {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 18px 32px;
+  background: var(--brand-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border: 3.5px solid var(--brand-primary-light);
+  border-radius: 15px;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.cta-btn:hover { opacity: 0.92; }
+.cta-btn:active { transform: translateY(1px); }
+
+/* ───────────────────────── Footer ─────────────────────────────────────── */
+.why-footer {
+  background: var(--bedrock-bot);
+  color: var(--ink-night-quiet);
+  padding: 32px var(--pad-x) 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+}
+.why-footer-home {
+  color: var(--ink-night-soft);
+  text-decoration: none;
+  font-weight: 600;
+}
+.why-footer-home:hover { color: var(--ink-night); }
+.why-footer-copy { font-size: 11px; }
+.why-footer-links {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+}
+.why-footer-links a {
+  color: var(--ink-night-quiet);
+  text-decoration: none;
+}
+.why-footer-links a:hover { color: var(--ink-night-soft); }
+
+@media (min-width: 720px) {
+  .why-footer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* ───────────────────────── Reduce motion ──────────────────────────────── */
+/* JS also honors this — see why-scene.js. */
+@media (prefers-reduced-motion: reduce) {
+  /* Future hook — currently nothing CSS-side needs to change because all
+     motion lives on the canvas, where the painter respects the same flag. */
+}
