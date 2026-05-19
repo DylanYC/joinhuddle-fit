@@ -206,52 +206,44 @@
     ctx.fillRect(0, 0, w, h);
   }
 
-  /* Build the ridge silhouette path. Returns:
-       baselineY — the y-coord (px) of the ridge baseline in viewport
-       peakY     — y-coord (px) of the highest point (summit), useful for
-                   anchoring the 4-dot logo cluster in later passes.
-     Builds the path as a closed polygon: ridge top, down right edge,
-     across the bottom, up left edge. Fillable directly as bedrock. */
-  function buildRidgePath(state) {
+  /* Ridge geometry — computed without touching the canvas path, so sky
+     painters (sun, clouds) can anchor to summit BEFORE bedrock paints. */
+  function computeRidgeGeometry(state) {
     const baselineY = h * ridgeBaselineFrac(state.progress);
     const pts = RIDGE_PROFILE.map(p => ({
       x: p.x * w,
       y: baselineY - p.peak * h,
     }));
+    let summit = pts[0];
+    for (const p of pts) if (p.y < summit.y) summit = p;
+    return { baselineY, summitX: summit.x, summitY: summit.y, pts };
+  }
+
+  /* Trace the closed bedrock polygon (ridge silhouette across, down right,
+     across bottom, up left) into the canvas path and fill with bedrock
+     gradient. Polygon edges follow smooth quadratic curves through ridge
+     control-point midpoints (same pattern as climb_card.dart:1011-1026). */
+  function paintBedrock(state, geom) {
+    const pts = geom.pts;
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
-    // Smooth ridge: quadratic curves through midpoints (climb_card.dart
-    // line 1011-1026 uses the same pattern).
     for (let i = 1; i < pts.length - 1; i++) {
-      const mid = {
-        x: (pts[i].x + pts[i + 1].x) / 2,
-        y: (pts[i].y + pts[i + 1].y) / 2,
-      };
-      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mid.x, mid.y);
+      const mx = (pts[i].x + pts[i + 1].x) / 2;
+      const my = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
     }
     const last = pts[pts.length - 1];
     ctx.lineTo(last.x, last.y);
-    // Close down the right edge, across the bottom, up the left edge.
     ctx.lineTo(w, h);
     ctx.lineTo(0, h);
     ctx.closePath();
 
-    // Summit = highest profile point (smallest y).
-    let summit = pts[0];
-    for (const p of pts) if (p.y < summit.y) summit = p;
-    return { baselineY, summitX: summit.x, summitY: summit.y };
-  }
-
-  function paintBedrock(state, ridge) {
-    // Gradient from "just-below-ridge" (slightly lighter) down to deep
-    // navy at the bottom of the viewport. Keeping it in the purple
-    // family per spec.
-    const grad = ctx.createLinearGradient(0, ridge.summitY, 0, h);
+    const grad = ctx.createLinearGradient(0, geom.summitY, 0, h);
     grad.addColorStop(0.00, rgb(BEDROCK.top));
     grad.addColorStop(0.55, rgb(BEDROCK.mid));
     grad.addColorStop(1.00, rgb(BEDROCK.bot));
     ctx.fillStyle = grad;
-    ctx.fill(); // fills the currently-set bedrock polygon
+    ctx.fill();
   }
 
   // ── Stars (bedrock region only) ──────────────────────────────────────
@@ -308,11 +300,126 @@
     ctx.restore();
   }
 
-  /* ─── Real-art hooks (empty in this pass) ──────────────────────────── */
-  // Sky layer (paints above the ridge, before the bedrock polygon)
-  function paintSun(state, colors) { /* TODO: port from climb_card.dart sun block */ }
-  function paintClouds(state, colors) { /* TODO: port _drawCloud + drift */ }
-  function paintBirds(state, colors) { /* TODO: port _drawBird + drift */ }
+  /* ─── Sky-layer art (ported from climb_card.dart) ────────────────────
+     The Dart painter is sized for a small card; we preserve the same
+     proportions and warm/cool sunset palette but scale all geometry by
+     APP_FACTOR so it reads at full-viewport size. App reference canvas
+     width ≈ 340; clamp sun radius so it stays sane on ultra-wide. */
+
+  function appFactor() { return Math.max(0.6, w / 340); }
+
+  // Drift cycles the cloud (L→R) and birds (R→L) over a wraparound span,
+  // exactly matching climb_card.dart's `span = size.width + 60.0`.
+  function driftSpan() { return w + 60 * appFactor(); }
+
+  /* SUN
+     Direct port of climb_card.dart lines 891–919.
+       sunYHigh = -sunR * 0.40   → sun mostly above top edge at peace=0
+       sunYLow  = summitY + sunR * 0.55  → just below summit at peace=1
+       sunY     = lerp(sunYHigh, sunYLow, peace)
+       sunX     = anchored to summitX (app anchors to today's column)
+     The disc warms from #FFD088 → #FF8A4C with peace, and a blurred halo
+     intensifies (0.15 + 0.40 * peace). The bedrock polygon paints AFTER
+     the sun, so any portion of the disc that has descended below the
+     ridge is naturally clipped — the sun visibly sets behind the mountain. */
+  function paintSun(state, geom) {
+    const peace = state.peaceT;
+    const factor = appFactor();
+    const sunR = Math.max(18, Math.min(14 * factor, 46));
+    const sunYHigh = -sunR * 0.40;
+    const sunYLow  = geom.summitY + sunR * 0.55;
+    const sunY = sunYHigh + (sunYLow - sunYHigh) * peace;
+    const sunX = geom.summitX;
+
+    // Halo (blurred).
+    ctx.save();
+    ctx.filter = 'blur(9px)';
+    ctx.fillStyle = `rgba(255, 203, 138, ${0.15 + 0.40 * peace})`;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR + 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Disc.
+    const disc = lerpColor('#FFD088', '#FF8A4C', peace);
+    ctx.fillStyle = rgba(disc, 0.78 + 0.18 * peace);
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  /* CLOUDS
+     Port of climb_card.dart _drawCloud (lines 1335–1360): three overlapping
+     blurred ovals. Cloud drifts left→right across `span` over the drift
+     cycle. Color lerps white → peach with peace, alpha thins slightly so
+     clouds become wispy at full sunset. */
+  function _drawCloudShape(cx, cy, cw, color) {
+    const ch = cw * 0.32;
+    ctx.save();
+    ctx.filter = 'blur(3px)';
+    ctx.fillStyle = color;
+    // Main body.
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, cw / 2, ch / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Right hump.
+    ctx.beginPath();
+    ctx.ellipse(cx + cw * 0.22, cy - ch * 0.25, (cw * 0.65) / 2, (ch * 0.85) / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Left hump.
+    ctx.beginPath();
+    ctx.ellipse(cx - cw * 0.22, cy + ch * 0.05, (cw * 0.55) / 2, (ch * 0.70) / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  function paintClouds(state) {
+    const peace = state.peaceT;
+    const factor = appFactor();
+    const cloudW = 38 * factor;
+    const cloudColor = lerpColor('#FFFFFF', '#FFD0A8', peace);
+    const alpha = 0.35 * (1 - 0.4 * peace);
+    const color = rgba(cloudColor, alpha);
+    const span = driftSpan();
+    // Two clouds at offset drift phases so the sky never feels static.
+    const t1 = state.driftT;
+    const t2 = (state.driftT + 0.45) % 1.0;
+    _drawCloudShape(-cloudW + t1 * (span + cloudW), h * 0.10, cloudW, color);
+    _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.7, color);
+  }
+
+  /* BIRDS
+     Port of climb_card.dart _drawBird (lines 1314–1333): two quadratic
+     arcs forming the classic "M-bird" silhouette. Two birds drift R→L
+     at offset phases. Color lerps day → dusk with peace, darkening into
+     silhouettes against the sunset. */
+  function _drawBirdShape(cx, cy, bw, color) {
+    const bh = bw * 0.45;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(1, bw / 7);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - bw / 2, cy);
+    ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
+    ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
+    ctx.stroke();
+    ctx.restore();
+  }
+  function paintBirds(state) {
+    const peace = state.peaceT;
+    const factor = appFactor();
+    const bw1 = 7.5 * factor;
+    const bw2 = 6.5 * factor;
+    const y1 = h * 0.07;
+    const y2 = h * 0.12;
+    const base = lerpColor('#6B7FAA', '#3A2D55', peace);
+    const span = driftSpan();
+    const t1 = (state.driftT + 0.10) % 1.0;
+    const t2 = (state.driftT + 0.55) % 1.0;
+    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.55));
+    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.40));
+  }
   // Story/world layer
   function paintClimbLine(state, ridge) { /* TODO: continuous climb line over ridge into bedrock */ }
   function paintOnboardingBalls(state, ridge) { /* TODO: port why_slide_one_animation.dart */ }
@@ -338,25 +445,29 @@
     const colors = computeColors(state);
     state.peaceT = colors.peaceT;
 
+    // Ridge geometry is computed up-front so sky painters (sun) can
+    // anchor to the summit before the bedrock polygon clips them.
+    const geom = computeRidgeGeometry(state);
+
     // 1. Sky gradient covers the full viewport.
     paintSky(state, colors);
-    // 2. Sky-layer art (sun, clouds, birds) before the bedrock mask.
-    paintSun(state, colors);
-    paintClouds(state, colors);
-    paintBirds(state, colors);
-    // 3. Build the ridge silhouette polygon — covers everything below
-    //    the ridge with the bedrock gradient. Stars then paint on top,
-    //    visually anchored to bedrock.
-    const ridge = buildRidgePath(state);
-    paintBedrock(state, ridge);
-    paintRoot(state, ridge);
-    paintStars(state, ridge);
+    // 2. Sky-layer art. Sun paints first so clouds/birds can fly in
+    //    front of it. Sun's lower half gets clipped by the bedrock
+    //    polygon later — that's how it "sets behind" the mountain.
+    paintSun(state, geom);
+    paintClouds(state);
+    paintBirds(state);
+    // 3. Bedrock polygon covers everything below the ridge with the
+    //    bedrock gradient. Stars then paint on top, world-anchored.
+    paintBedrock(state, geom);
+    paintRoot(state, geom);
+    paintStars(state, geom);
     // 4. World-spanning elements: the climb line ascends through the sky,
     //    crests at the summit-with-4-dots, continues straight down into
     //    bedrock. Painted last so it sits on top of both regions.
-    paintClimbLine(state, ridge);
-    paintSummitDots(state, ridge);
-    paintOnboardingBalls(state, ridge);
+    paintClimbLine(state, geom);
+    paintSummitDots(state, geom);
+    paintOnboardingBalls(state, geom);
 
     if (debug) {
       $hud.textContent =
@@ -364,20 +475,15 @@
         `act         ${state.act}\n` +
         `peaceT      ${state.peaceT.toFixed(2)}\n` +
         `ridge frac  ${ridgeBaselineFrac(progress).toFixed(2)}\n` +
-        `summit px   ${ridge.summitX.toFixed(0)}, ${ridge.summitY.toFixed(0)}\n` +
+        `summit px   ${geom.summitX.toFixed(0)}, ${geom.summitY.toFixed(0)}\n` +
         `driftT      ${driftT.toFixed(2)}\n` +
         `viewport    ${w}×${h} @${dpr}x`;
     }
   }
 
-  /* ─── Nav fade-in ─────────────────────────────────────────────────── */
-  // Show the nav once the ridge has locked into the payoff frame.
-  function updateNav() {
-    const visible = progress >= RIDGE_LOCK_PROGRESS;
-    if ($nav.dataset.visible !== String(visible)) {
-      $nav.dataset.visible = String(visible);
-    }
-  }
+  /* ─── Nav ─────────────────────────────────────────────────────────────
+     Always visible — the floating glass sits over both sky and bedrock so
+     the user feels connected to the rest of the site from the first frame. */
 
   /* ─── rAF loop with visibility guard ──────────────────────────────── */
   let rafId = 0;
@@ -425,7 +531,6 @@
   /* ─── Event wiring ────────────────────────────────────────────────── */
   function onScroll() {
     updateProgress();
-    updateNav();
     if (reduced) {
       // Force a single repaint per scroll event in reduced-motion mode.
       needsScrollRepaint = true;
@@ -435,7 +540,6 @@
   function onResize() {
     resize();
     updateProgress();
-    updateNav();
     needsScrollRepaint = true;
     if (!rafId && onscreen) rafId = requestAnimationFrame(tick);
   }
