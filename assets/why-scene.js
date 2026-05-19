@@ -70,23 +70,53 @@
     progress = Math.max(0, Math.min(1, (window.scrollY - sceneTop) / span));
   }
 
-  /* ─── Act bands (must match CSS slot positions) ─────────────────────── */
-  // Total scene is ~360svh. Acts:
-  //   sky:     0.00 – 0.22   (≈ 0–80svh)
-  //   climb:   0.22 – 0.55   (≈ 80–200svh)
-  //   hinge:   0.55 – 0.68   (≈ 200–245svh)
-  //   bedrock: 0.68 – 1.00   (≈ 245–360svh)
-  const BAND = {
-    skyEnd:     0.22,
-    climbEnd:   0.55,
-    hingeStart: 0.55,
-    hingeEnd:   0.68,
-  };
+  /* ─── World model ─────────────────────────────────────────────────────
+     The world has TWO spatial regions divided by a ridge silhouette:
+       • Sky region    — above the ridge.  Always sky.   Morphs day → sunset.
+       • Bedrock region — below the ridge. Always dark navy + stars.
+     Scrolling moves the camera DOWN. We model this by sliding the
+     ridge upward in the viewport as `progress` grows. Once the ridge
+     reaches the payoff position (≈ ⅓ down) it LOCKS — further scrolling
+     advances HTML copy slots through the bedrock half while the canvas
+     stays composed and gently alive (sun drift, sunset evolves). */
+
+  // Ridge BASELINE position as a fraction of viewport height.
+  //   progress 0   →  1.05  (silhouette mostly off-screen below; peak peeks)
+  //   progress 0.6 →  0.55  (silhouette peak at ~⅓ down — the payoff)
+  //   progress >0.6 → locked at 0.55
+  const RIDGE_LOCK_PROGRESS = 0.6;
+  const RIDGE_BASELINE_START = 1.05;
+  const RIDGE_BASELINE_LOCKED = 0.55;
+
+  function ridgeBaselineFrac(progress) {
+    const t = Math.min(1, progress / RIDGE_LOCK_PROGRESS);
+    const eased = easeInOutCubic(t);
+    return RIDGE_BASELINE_START
+         + (RIDGE_BASELINE_LOCKED - RIDGE_BASELINE_START) * eased;
+  }
+
+  // The ridge silhouette: control points relative to the baseline.
+  //   x:    fraction of canvas width
+  //   peak: how far above baseline (in viewport-h units)
+  // The summit is the highest point — the 4-dot logo cluster anchors there.
+  const RIDGE_PROFILE = [
+    { x: 0.00, peak: 0.04 },
+    { x: 0.10, peak: 0.08 },
+    { x: 0.22, peak: 0.13 },
+    { x: 0.35, peak: 0.17 },
+    { x: 0.48, peak: 0.20 },
+    { x: 0.55, peak: 0.22 }, // ← summit
+    { x: 0.66, peak: 0.11 },
+    { x: 0.78, peak: 0.07 },
+    { x: 0.90, peak: 0.05 },
+    { x: 1.00, peak: 0.03 },
+  ];
 
   function actFor(p) {
-    if (p < BAND.skyEnd)     return 'sky';
-    if (p < BAND.climbEnd)   return 'climb';
-    if (p < BAND.hingeEnd)   return 'hinge';
+    // Coarse act labels for the HUD and slot decisions, derived from ridge
+    // position rather than fixed bands.
+    if (p < 0.20) return 'sky';
+    if (p < RIDGE_LOCK_PROGRESS) return 'climb';
     return 'bedrock';
   }
 
@@ -140,65 +170,99 @@
   };
 
   /* ─── Painter ─────────────────────────────────────────────────────────
-     Structural pass: gradient sky lerped through 3 phases:
-       phase 1  (progress 0.00 → hingeStart) :  day → sunset (peaceT 0→1)
-       phase 2  (progress hingeStart → hingeEnd) : sunset → night (hingeT 0→1)
-       phase 3  (progress hingeEnd → 1) :  pure night
-
-     Real art layers (sun, mountain, ridge, balls, clouds, birds, stars)
-     plug into the marked hooks below — they're empty in this pass. */
+     World-space model:
+       1. Paint the sky gradient across the FULL viewport (day → sunset
+          based on peaceT). It doesn't matter that we paint sky behind
+          the bedrock area — the bedrock polygon covers it.
+       2. Build the ridge silhouette path. The polygon BELOW the ridge
+          (down to the bottom of the canvas) is the bedrock region.
+       3. Fill the bedrock polygon with a dark navy gradient.
+       4. Clip to that polygon and paint stars + (future) deep features.
+       5. Real-art hooks (sun, clouds, birds in sky; climb line over the
+          mountain; onboarding balls) plug in at the marked seams. */
 
   function computeColors(state) {
-    const { progress } = state;
-    // peaceT: 0 = bright morning, 1 = full sunset (saturates by hinge start)
-    const peaceT = easeInOutCubic(remap(progress, 0.0, BAND.hingeStart));
-    // hingeT: 0 just before the hinge, 1 just after. Crisp transition.
-    const hingeT = easeInOutCubic(remap(progress, BAND.hingeStart, BAND.hingeEnd));
-
-    // Day → sunset blend
-    const skyTop = lerpColor(SKY_DAY.top, SKY_SUNSET.top, peaceT);
-    const skyMid = lerpColor(SKY_DAY.mid, SKY_SUNSET.mid, peaceT);
-    const skyBot = lerpColor(SKY_DAY.bot, SKY_SUNSET.bot, peaceT);
-    // Sunset → night blend
-    const top = lerpColor(skyTop, BEDROCK.top, hingeT);
-    const mid = lerpColor(skyMid, BEDROCK.mid, hingeT);
-    const bot = lerpColor(skyBot, BEDROCK.bot, hingeT);
-    return { top, mid, bot, peaceT, hingeT };
+    // peaceT: scroll-driven sunset intensity. Saturates around progress 0.77
+    // (just past the payoff lock), then holds at 1.0 while bedrock copy
+    // scrolls past. Time-based drift can layer on top later.
+    const peaceT = easeInOutCubic(Math.min(1, state.progress / 0.77));
+    const sky = {
+      top: lerpColor(SKY_DAY.top, SKY_SUNSET.top, peaceT),
+      mid: lerpColor(SKY_DAY.mid, SKY_SUNSET.mid, peaceT),
+      bot: lerpColor(SKY_DAY.bot, SKY_SUNSET.bot, peaceT),
+    };
+    return { sky, peaceT };
   }
 
   function paintSky(state, colors) {
+    // Sky gradient spans the full viewport — bedrock polygon will mask
+    // out the lower portion. Stops compressed slightly so the warmest
+    // band sits just above the ridge, where the sun will set.
     const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0.00, rgb(colors.top));
-    grad.addColorStop(0.55, rgb(colors.mid));
-    grad.addColorStop(1.00, rgb(colors.bot));
+    grad.addColorStop(0.00, rgb(colors.sky.top));
+    grad.addColorStop(0.60, rgb(colors.sky.mid));
+    grad.addColorStop(1.00, rgb(colors.sky.bot));
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   }
 
-  // ── Structural ridge marker ──────────────────────────────────────────
-  // A faint horizontal band at the canonical ridgeline so we can see, in
-  // this pass, where the mountain SILHOUETTE will sit and how the copy
-  // slots align relative to it. Replaced by the real procedural ridge in
-  // the next pass.
-  function paintStructuralRidgeMarker(state, colors) {
-    if (state.progress >= BAND.hingeEnd) return; // ridge gone in bedrock
-    const ridgeY = h * 0.72;
-    ctx.fillStyle = rgba([0,0,0], 0.05 + 0.10 * (1 - state.hingeT));
-    ctx.fillRect(0, ridgeY - 1, w, 2);
-    if (debug) {
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.font = '11px ui-monospace, Menlo, monospace';
-      ctx.fillText('ridge marker (structural)', 8, ridgeY - 4);
+  /* Build the ridge silhouette path. Returns:
+       baselineY — the y-coord (px) of the ridge baseline in viewport
+       peakY     — y-coord (px) of the highest point (summit), useful for
+                   anchoring the 4-dot logo cluster in later passes.
+     Builds the path as a closed polygon: ridge top, down right edge,
+     across the bottom, up left edge. Fillable directly as bedrock. */
+  function buildRidgePath(state) {
+    const baselineY = h * ridgeBaselineFrac(state.progress);
+    const pts = RIDGE_PROFILE.map(p => ({
+      x: p.x * w,
+      y: baselineY - p.peak * h,
+    }));
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    // Smooth ridge: quadratic curves through midpoints (climb_card.dart
+    // line 1011-1026 uses the same pattern).
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mid = {
+        x: (pts[i].x + pts[i + 1].x) / 2,
+        y: (pts[i].y + pts[i + 1].y) / 2,
+      };
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mid.x, mid.y);
     }
+    const last = pts[pts.length - 1];
+    ctx.lineTo(last.x, last.y);
+    // Close down the right edge, across the bottom, up the left edge.
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+
+    // Summit = highest profile point (smallest y).
+    let summit = pts[0];
+    for (const p of pts) if (p.y < summit.y) summit = p;
+    return { baselineY, summitX: summit.x, summitY: summit.y };
   }
 
-  // ── Stars (night side only) ──────────────────────────────────────────
+  function paintBedrock(state, ridge) {
+    // Gradient from "just-below-ridge" (slightly lighter) down to deep
+    // navy at the bottom of the viewport. Keeping it in the purple
+    // family per spec.
+    const grad = ctx.createLinearGradient(0, ridge.summitY, 0, h);
+    grad.addColorStop(0.00, rgb(BEDROCK.top));
+    grad.addColorStop(0.55, rgb(BEDROCK.mid));
+    grad.addColorStop(1.00, rgb(BEDROCK.bot));
+    ctx.fillStyle = grad;
+    ctx.fill(); // fills the currently-set bedrock polygon
+  }
+
+  // ── Stars (bedrock region only) ──────────────────────────────────────
   // Deterministic — fixed seed so they don't shimmer-jump on resize.
-  const STAR_COUNT = 80;
+  // Positions are stored in (x, worldY) where worldY is in *viewport-h*
+  // units BELOW the locked ridge baseline. So as the ridge rises, more
+  // stars come into view from below.
+  const STAR_COUNT = 90;
   const stars = [];
   function seedStars() {
     stars.length = 0;
-    // Mulberry32 PRNG with fixed seed for reproducibility.
     let s = 0x6F75FF;
     const rnd = () => {
       s |= 0; s = (s + 0x6D2B79F5) | 0;
@@ -208,84 +272,108 @@
     };
     for (let i = 0; i < STAR_COUNT; i++) {
       stars.push({
-        x: rnd(),       // 0..1 of width
-        y: rnd() * 0.7, // upper 70% of canvas only
-        r: 0.4 + rnd() * 1.2,
-        tw: rnd() * Math.PI * 2,
+        x:       rnd(),               // 0..1 of width
+        worldY:  rnd() * 0.9,         // 0..0.9 below ridge baseline (viewport-h units)
+        r:       0.5 + rnd() * 1.3,
+        tw:      rnd() * Math.PI * 2,
       });
     }
   }
   seedStars();
 
-  function paintStars(state) {
-    // Fade in after hinge.
-    const alpha = state.hingeT;
-    if (alpha <= 0) return;
+  function paintStars(state, ridge) {
+    // Bedrock has to actually be in-frame for stars to show. As the ridge
+    // approaches the payoff, stars fade in.
+    const alpha = easeInOutCubic(Math.min(1, state.progress / 0.55));
+    if (alpha <= 0.02) return;
+    // Clip to the bedrock polygon (which is the current path set by
+    // buildRidgePath + already-filled paintBedrock). We need to re-build
+    // the path since fill() doesn't preserve it across draws.
     ctx.save();
+    // Stars are positioned relative to the locked ridge baseline so they
+    // feel anchored to the bedrock, not the viewport edge.
     for (const star of stars) {
-      const twinkle = 0.65 + 0.35 * Math.sin(state.time * 0.001 + star.tw);
-      ctx.globalAlpha = alpha * twinkle * 0.9;
+      const px = star.x * w;
+      const py = ridge.baselineY + star.worldY * h;
+      if (py < ridge.baselineY || py > h) continue;
+      const twinkle = state.reduced
+        ? 0.85
+        : 0.65 + 0.35 * Math.sin(state.time * 0.001 + star.tw);
+      ctx.globalAlpha = alpha * twinkle * 0.95;
       ctx.fillStyle = '#fff';
       ctx.beginPath();
-      ctx.arc(star.x * w, star.y * h, star.r, 0, Math.PI * 2);
+      ctx.arc(px, py, star.r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
   }
 
   /* ─── Real-art hooks (empty in this pass) ──────────────────────────── */
+  // Sky layer (paints above the ridge, before the bedrock polygon)
   function paintSun(state, colors) { /* TODO: port from climb_card.dart sun block */ }
   function paintClouds(state, colors) { /* TODO: port _drawCloud + drift */ }
   function paintBirds(state, colors) { /* TODO: port _drawBird + drift */ }
-  function paintMountain(state, colors) { /* TODO: procedural ridge */ }
-  function paintClimbLine(state) { /* TODO: continuous climb line */ }
-  function paintOnboardingBalls(state) { /* TODO: port why_slide_one_animation.dart */ }
+  // Story/world layer
+  function paintClimbLine(state, ridge) { /* TODO: continuous climb line over ridge into bedrock */ }
+  function paintOnboardingBalls(state, ridge) { /* TODO: port why_slide_one_animation.dart */ }
+  function paintSummitDots(state, ridge) { /* TODO: 4-dot logo cluster at ridge.summit */ }
+  // Bedrock features
+  function paintRoot(state, ridge) { /* TODO: subtle root/anchor where climb line enters bedrock */ }
 
   /* ─── Frame ───────────────────────────────────────────────────────── */
   let startTime = performance.now();
-  let lastDriftT = 0;
 
   function paintScene(now) {
     const time = now - startTime;
     // Cloud / bird drift cycles in ~24s. Independent of scroll.
     const driftPeriodMs = 24000;
     const driftT = reduced ? 0 : (time % driftPeriodMs) / driftPeriodMs;
-    lastDriftT = driftT;
 
     const state = {
       progress,
       act: actFor(progress),
       w, h, dpr, time, driftT, reduced,
-      hingeT: 0, peaceT: 0,
+      peaceT: 0,
     };
     const colors = computeColors(state);
     state.peaceT = colors.peaceT;
-    state.hingeT = colors.hingeT;
 
+    // 1. Sky gradient covers the full viewport.
     paintSky(state, colors);
+    // 2. Sky-layer art (sun, clouds, birds) before the bedrock mask.
     paintSun(state, colors);
     paintClouds(state, colors);
     paintBirds(state, colors);
-    paintMountain(state, colors);
-    paintStructuralRidgeMarker(state, colors);
-    paintClimbLine(state);
-    paintOnboardingBalls(state);
-    paintStars(state);
+    // 3. Build the ridge silhouette polygon — covers everything below
+    //    the ridge with the bedrock gradient. Stars then paint on top,
+    //    visually anchored to bedrock.
+    const ridge = buildRidgePath(state);
+    paintBedrock(state, ridge);
+    paintRoot(state, ridge);
+    paintStars(state, ridge);
+    // 4. World-spanning elements: the climb line ascends through the sky,
+    //    crests at the summit-with-4-dots, continues straight down into
+    //    bedrock. Painted last so it sits on top of both regions.
+    paintClimbLine(state, ridge);
+    paintSummitDots(state, ridge);
+    paintOnboardingBalls(state, ridge);
 
     if (debug) {
       $hud.textContent =
-        `progress  ${progress.toFixed(3)}\n` +
-        `act       ${state.act}\n` +
-        `peaceT    ${state.peaceT.toFixed(2)}\n` +
-        `hingeT    ${state.hingeT.toFixed(2)}\n` +
-        `driftT    ${driftT.toFixed(2)}\n` +
-        `viewport  ${w}×${h} @${dpr}x`;
+        `progress    ${progress.toFixed(3)}\n` +
+        `act         ${state.act}\n` +
+        `peaceT      ${state.peaceT.toFixed(2)}\n` +
+        `ridge frac  ${ridgeBaselineFrac(progress).toFixed(2)}\n` +
+        `summit px   ${ridge.summitX.toFixed(0)}, ${ridge.summitY.toFixed(0)}\n` +
+        `driftT      ${driftT.toFixed(2)}\n` +
+        `viewport    ${w}×${h} @${dpr}x`;
     }
   }
 
   /* ─── Nav fade-in ─────────────────────────────────────────────────── */
+  // Show the nav once the ridge has locked into the payoff frame.
   function updateNav() {
-    const visible = progress >= BAND.climbEnd;
+    const visible = progress >= RIDGE_LOCK_PROGRESS;
     if ($nav.dataset.visible !== String(visible)) {
       $nav.dataset.visible = String(visible);
     }

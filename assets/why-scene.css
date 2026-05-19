@@ -55,9 +55,12 @@
   --ink-night-soft: rgba(255,255,255,0.72);
   --ink-night-quiet:rgba(255,255,255,0.45);
 
-  /* Scene geometry */
-  --scene-h:    360svh;   /* total scroll length (4 acts × ~90svh) */
-  --hinge-pct:  60%;      /* where the act-3 hinge sits in the scroll */
+  /* Scene geometry — keep this short. The page is a held composition,
+     not a long pan. Mobile fits the story in ~2.2 viewports; desktop in
+     ~1.5 viewports. The ridge crosses the viewport in the first ~60%
+     of scroll, then locks at the payoff frame while bedrock content
+     scrolls past below it. */
+  --scene-h:    220svh;
 
   /* Type scale (mobile-first) */
   --t-h1: clamp(34px, 8.5vw, 56px);
@@ -223,15 +226,28 @@ body {
   text-align: center;
 }
 
-/* Per-slot positions. Anchored in svh so iOS Safari toolbar resizes don't
-   slide them onto the mountain. */
-.slot--landing      { top:  10svh; }
-.slot--climb-intro  { top: 100svh; }
-.slot--climb-mid    { top: 175svh; }
-.slot--hinge        { top: 230svh; }
-.slot--bedrock-intro{ top: 260svh; }
-.slot--bedrock-stat { top: 295svh; }
-.slot--cta          { top: 330svh; }
+/* Per-slot positions (mobile defaults).
+   Anchored in svh so iOS Safari toolbar resizes don't slide them onto
+   the mountain. Sky-band slots sit above the ridge crossing; bedrock
+   slots sit below it in the held payoff frame. */
+.slot--landing      { top:   8svh; }   /* sky · landing headline */
+.slot--climb-intro  { top:  50svh; }   /* sky · ridge starting to enter */
+.slot--climb-mid    { top:  85svh; }   /* sky · ridge near crossing */
+.slot--hinge        { display: none; } /* unused — ridge crossing IS the hinge */
+.slot--bedrock-intro{ top: 128svh; }   /* bedrock · payoff frame engaged */
+.slot--bedrock-stat { top: 162svh; }   /* bedrock · stat */
+.slot--cta          { top: 192svh; }   /* bedrock · CTA */
+
+/* Desktop: even shorter, denser packing. Total scene ≈ 1.5 viewports. */
+@media (min-width: 900px) {
+  :root { --scene-h: 150svh; }
+  .slot--landing      { top:   6svh; }
+  .slot--climb-intro  { top:  32svh; }
+  .slot--climb-mid    { top:  58svh; }
+  .slot--bedrock-intro{ top:  88svh; }
+  .slot--bedrock-stat { top: 112svh; }
+  .slot--cta          { top: 134svh; }
+}
 
 /* ───────────────────────── Bedrock stats ──────────────────────────────── */
 .slot--bedrock-stat {
