@@ -95,6 +95,26 @@
          + (RIDGE_BASELINE_LOCKED - RIDGE_BASELINE_START) * eased;
   }
 
+  /* ─── Climb line geometry ─────────────────────────────────────────────
+     The page's spine. One continuous stroke that ascends the gentle left
+     slope of the mountain (paralleling the ridge profile, offset slightly
+     above), crests at the summit where the 4-dot Huddle cluster sits,
+     and continues straight down through the mountain into the bedrock
+     where it dissolves into the depth.
+     Points are stored as { x, dy } where dy is viewport-h above ridge baseline. */
+  const CLIMB_ASCENT = [
+    { x: 0.04, dy: 0.02 },  // start — far left, just emerging from the ridge baseline
+    { x: 0.15, dy: 0.06 },
+    { x: 0.26, dy: 0.10 },
+    { x: 0.36, dy: 0.14 },
+    { x: 0.45, dy: 0.19 },
+    { x: 0.53, dy: 0.23 },
+    { x: 0.58, dy: 0.26 },  // summit endpoint — meets the 4-dot cluster
+  ];
+  // How deep into bedrock the descent reaches, in viewport-h units below
+  // the ridge baseline. Beyond this the line has faded fully transparent.
+  const CLIMB_DESCENT_END_DY = 0.50;
+
   // The ridge silhouette: control points relative to the baseline.
   //   x:    fraction of canvas width
   //   peak: how far above baseline (in viewport-h units)
@@ -539,11 +559,111 @@
     ctx.fillRect(0, glowTop, w, glowBot - glowTop);
   }
   // Story/world layer
-  function paintClimbLine(state, ridge) { /* TODO: continuous climb line over ridge into bedrock */ }
-  function paintOnboardingBalls(state, ridge) { /* TODO: port why_slide_one_animation.dart */ }
-  function paintSummitDots(state, ridge) { /* TODO: 4-dot logo cluster at ridge.summit */ }
+  function paintOnboardingBalls(state, geom) { /* TODO: port why_slide_one_animation.dart */ }
   // Bedrock features
-  function paintRoot(state, ridge) { /* TODO: subtle root/anchor where climb line enters bedrock */ }
+  function paintRoot(state, geom) { /* TODO: subtle root/anchor where climb line enters bedrock */ }
+
+  /* CLIMB LINE — the page's through-line.
+     ASCENT: smooth quadratic-bezier curve through CLIMB_ASCENT control
+       points, drawn as a solid Huddle-purple stroke. Decorative "showed-up"
+       dots (a la the app's daily climb dots) mark intermediate points
+       along the ascent, fading in with x so they read as accumulating.
+     DESCENT: a straight vertical from the summit straight down to a
+       bedrock anchor point. Painted with a gradient stroke that fades
+       from solid purple at the summit to fully transparent at the
+       bottom — the line "dissolves into the depth" instead of ending
+       at a hard point.
+     The 4-dot cluster (paintSummitCluster, below) crowns the summit and
+     visually receives the ascent + emits the descent. */
+  function paintClimbLine(state, geom) {
+    const baselineY = geom.baselineY;
+    const aPts = CLIMB_ASCENT.map(p => ({
+      x: p.x * w,
+      y: baselineY - p.dy * h,
+    }));
+    const strokeW = Math.max(2.5, w * 0.0028);
+
+    // ── ASCENT — smoothed quadratic curve via midpoints ──────────────
+    const ascentPath = new Path2D();
+    ascentPath.moveTo(aPts[0].x, aPts[0].y);
+    for (let i = 1; i < aPts.length - 1; i++) {
+      const mx = (aPts[i].x + aPts[i + 1].x) / 2;
+      const my = (aPts[i].y + aPts[i + 1].y) / 2;
+      ascentPath.quadraticCurveTo(aPts[i].x, aPts[i].y, mx, my);
+    }
+    const last = aPts[aPts.length - 1];
+    ascentPath.lineTo(last.x, last.y);
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = strokeW;
+    ctx.strokeStyle = '#6F75FF';
+    ctx.stroke(ascentPath);
+    ctx.restore();
+
+    // ── DESCENT — vertical stroke with linear-alpha fadeout ──────────
+    const sx = last.x;
+    const sy = last.y;
+    const anchorY = baselineY + CLIMB_DESCENT_END_DY * h;
+    if (anchorY > sy) {
+      const grad = ctx.createLinearGradient(0, sy, 0, anchorY);
+      grad.addColorStop(0.00, 'rgba(111, 117, 255, 1.00)');
+      grad.addColorStop(0.55, 'rgba(111, 117, 255, 0.85)');
+      grad.addColorStop(1.00, 'rgba(111, 117, 255, 0.00)');
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineWidth = strokeW;
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx, anchorY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // ── Ascent "showed-up" dots — skip start and summit; alpha grows ─
+    const dotR = Math.max(3.2, h * 0.0050);
+    ctx.save();
+    for (let i = 1; i < CLIMB_ASCENT.length - 1; i++) {
+      const p = CLIMB_ASCENT[i];
+      const px = p.x * w;
+      const py = baselineY - p.dy * h;
+      const t = (i - 1) / Math.max(1, CLIMB_ASCENT.length - 3);
+      const alpha = 0.55 + 0.45 * t;
+      ctx.fillStyle = `rgba(111, 117, 255, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(px, py, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* SUMMIT CLUSTER — the Huddle 4-dot brand mark crowning the summit.
+     Diamond formation per BRAND.md §9 (top / right / bottom / left around
+     a center). The ascent line ends at the cluster center and the descent
+     begins from it, so the cluster reads as the receiver and origin of
+     the through-line. All four dots are solid #6F75FF — no halo, per
+     brand spec. */
+  function paintSummitCluster(state, geom) {
+    const cx = geom.summitX;
+    const cy = geom.summitY;
+    const spacing = Math.max(14, Math.min(h * 0.030, 32));
+    const dotR = spacing * 0.55;
+    ctx.save();
+    ctx.fillStyle = '#6F75FF';
+    const offsets = [
+      [ 0,        -spacing], // top
+      [ spacing,   0],       // right
+      [ 0,         spacing], // bottom — sits just below silhouette, reads as on the summit
+      [-spacing,   0],       // left
+    ];
+    for (const [dx, dy] of offsets) {
+      ctx.beginPath();
+      ctx.arc(cx + dx, cy + dy, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 
   /* ─── Frame ───────────────────────────────────────────────────────── */
   let startTime = performance.now();
@@ -593,7 +713,7 @@
     //    crests at the summit-with-4-dots, continues straight down into
     //    bedrock. Painted last so it sits on top of both regions.
     paintClimbLine(state, geom);
-    paintSummitDots(state, geom);
+    paintSummitCluster(state, geom);
     paintOnboardingBalls(state, geom);
 
     if (debug) {
