@@ -214,7 +214,7 @@ body {
    Generous gap + bottom padding so the block has breathing room inside
    the now-expanded bedrock area (ridge locks higher at ~35svh). */
 .copy-overlay--bottom {
-  bottom: 9svh;
+  bottom: 6svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -314,7 +314,7 @@ body {
 @media (min-width: 900px) {
   :root { --scene-h: 200svh; }
   .copy-overlay--top { top: 22svh; }
-  .copy-overlay--bottom { bottom: 11svh; gap: 24px; }
+  .copy-overlay--bottom { bottom: 8svh; gap: 24px; }
 }
 
 /* ───────────────────────── Footer ─────────────────────────────────────── */
