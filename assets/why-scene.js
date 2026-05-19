@@ -33,11 +33,13 @@
 (() => {
   'use strict';
 
-  const $scene  = document.getElementById('scene');
-  const $stage  = document.querySelector('.scene-stage');
-  const $canvas = document.getElementById('sceneCanvas');
-  const $nav    = document.getElementById('whyNav');
-  const $hud    = document.getElementById('sceneHud');
+  const $scene   = document.getElementById('scene');
+  const $stage   = document.querySelector('.scene-stage');
+  const $canvas  = document.getElementById('sceneCanvas');
+  const $nav     = document.getElementById('whyNav');
+  const $hud     = document.getElementById('sceneHud');
+  const $copyTop = document.getElementById('copyTop');
+  const $copyBot = document.getElementById('copyBot');
   if (!$scene || !$canvas) return;
 
   const ctx = $canvas.getContext('2d');
@@ -812,6 +814,31 @@
      Always visible — the floating glass sits over both sky and bedrock so
      the user feels connected to the rest of the site from the first frame. */
 
+  /* ─── Static copy overlays ────────────────────────────────────────────
+     The two text blocks are position: fixed in CSS and toggled visible by
+     adding `.is-visible`. Thresholds map to the scroll progress where
+     each block belongs visually:
+       • Top overlay (surface) — visible while progress < 0.45, fades out
+         as the user starts climbing into the mountain reveal.
+       • Bottom overlay (underneath) — fades in past progress > 0.58
+         (just after the ridge locks at the payoff frame), stays on
+         while the dark area is on screen.
+     Both also hide when the scene scrolls fully off the viewport so they
+     don't float over the footer below. */
+  const TOP_FADE_OUT = 0.45;
+  const BOT_FADE_IN  = 0.58;
+  function updateCopyOverlays() {
+    // Cheap "is the scene actually in view" check — the .scene element
+    // is the scroll container; if its rect doesn't intersect the viewport
+    // we hide both overlays.
+    const rect = $scene.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    const showTop = inView && progress < TOP_FADE_OUT;
+    const showBot = inView && progress > BOT_FADE_IN;
+    if ($copyTop) $copyTop.classList.toggle('is-visible', showTop);
+    if ($copyBot) $copyBot.classList.toggle('is-visible', showBot);
+  }
+
   /* ─── rAF loop with visibility guard ──────────────────────────────── */
   let rafId = 0;
   let running = false;
@@ -858,6 +885,7 @@
   /* ─── Event wiring ────────────────────────────────────────────────── */
   function onScroll() {
     updateProgress();
+    updateCopyOverlays();
     if (reduced) {
       // Force a single repaint per scroll event in reduced-motion mode.
       needsScrollRepaint = true;
@@ -867,6 +895,7 @@
   function onResize() {
     resize();
     updateProgress();
+    updateCopyOverlays();
     needsScrollRepaint = true;
     if (!rafId && onscreen) rafId = requestAnimationFrame(tick);
   }
@@ -877,6 +906,6 @@
   /* ─── Boot ────────────────────────────────────────────────────────── */
   resize();
   updateProgress();
-  updateNav();
+  updateCopyOverlays();
   start();
 })();

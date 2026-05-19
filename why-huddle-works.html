@@ -34,36 +34,33 @@
   <a class="why-nav-cta" href="/#waitlist">Join Waitlist</a>
 </nav>
 
-<!-- The vertical journey. One tall scroll spacer holds a sticky full-viewport canvas
-     and absolutely-positioned copy slots that anchor over specific scene regions.
-     Total height ≈ 360svh (4 acts). Tune freely in why-scene.css. -->
+<!-- The visual scene. A tall scroll spacer holds the sticky full-viewport
+     canvas. Text content (below) is pinned to viewport positions via
+     position:fixed and fades in/out at the right scroll moments, so the
+     copy always sits exactly where we want — never on top of the mountain. -->
 <main class="scene" id="scene">
-
-  <!-- Sticky canvas: the entire scene paints here. -->
   <div class="scene-stage">
     <canvas class="scene-canvas" id="sceneCanvas" aria-hidden="true"></canvas>
-    <!-- Debug HUD (toggle with ?debug=1) -->
     <div class="scene-hud" id="sceneHud" hidden></div>
   </div>
+</main>
 
-  <!-- ─── ACT 1 · LANDING SKY ─────────────────────────────────────────── -->
-  <!-- Open sky. Headline floats. Ridge only hinted at bottom. -->
-  <section class="slot slot--landing" data-act="sky">
-    <h1 class="slot-h1">On the surface,<br>Huddle is fun.</h1>
-    <p class="slot-body slot-body--lede">You'll come back every day to capture the moment of showing up.</p>
-  </section>
+<!-- ─── TOP OVERLAY · the SURFACE copy ──────────────────────────────────
+     Always pinned in the sky band of the viewport while the scene is in
+     view. Fades out as the user scrolls past the landing band. -->
+<div class="copy-overlay copy-overlay--top is-visible" id="copyTop">
+  <h1 class="overlay-h1">On the surface,<br>Huddle is fun.</h1>
+  <p class="overlay-lede">You'll come back every day to capture the moment of showing up.</p>
+</div>
 
-  <!-- ─── ACT 2 · CLIMB ───────────────────────────────────────────────── -->
-  <!-- Intentionally empty — this is where the 4 blue balls will animate
-       up the back mountain's ridge line. Visuals do the talking here. -->
-
-  <!-- ─── ACT 3 · BEDROCK (the science, plain + factual) ──────────────── -->
-  <section class="slot slot--bedrock-intro" data-act="bedrock">
-    <h2 class="slot-h2 slot-h2--dark">Underneath, the science is rock solid.</h2>
-    <p class="slot-body slot-body--dark">You stay consistent when you decide what you'll do — and when — before the moment comes.</p>
-  </section>
-
-  <section class="slot slot--bedrock-stat" data-act="bedrock">
+<!-- ─── BOTTOM OVERLAY · the UNDERNEATH copy ────────────────────────────
+     Always pinned in the bedrock band of the viewport while the scene is
+     in view. Fades in as the user reaches the payoff frame, holds while
+     the dark area is on-screen, fades out when scene exits. -->
+<div class="copy-overlay copy-overlay--bottom" id="copyBot">
+  <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
+  <p class="overlay-lede overlay-lede--dark">You stay consistent when you decide what you'll do — and when — before the moment comes.</p>
+  <div class="stats-row">
     <div class="stat">
       <div class="stat-num">76%</div>
       <div class="stat-label">wrote it down + shared it</div>
@@ -72,15 +69,11 @@
       <div class="stat-num stat-num--quiet">43%</div>
       <div class="stat-label">kept it in their head</div>
     </div>
-    <p class="stat-source">Study of 267 people · Dr. Gail Matthews, Dominican University</p>
-  </section>
-
-  <section class="slot slot--cta" data-act="bedrock">
-    <p class="slot-body slot-body--dark slot-body--center">Coming later this year.</p>
-    <a class="cta-btn" href="/#waitlist">Join Waitlist</a>
-  </section>
-
-</main>
+  </div>
+  <p class="stats-source">Study of 267 people · Dr. Gail Matthews, Dominican University</p>
+  <p class="cta-lede">Coming later this year.</p>
+  <a class="cta-btn" href="/#waitlist">Join Waitlist</a>
+</div>
 
 <!-- Slim footer below the journey -->
 <footer class="why-footer">

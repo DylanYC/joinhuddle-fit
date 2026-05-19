@@ -164,182 +164,152 @@ body {
   pointer-events: none;
 }
 
-/* ───────────────────────── Copy slots ─────────────────────────────────── */
-/* Slots are positioned absolutely inside .scene at specific svh offsets so
-   they slide past the sticky canvas as the user scrolls. Each slot sticks
-   to the sky band — never lands on the mountain face. */
-.slot {
-  position: absolute;
+/* ───────────────────────── Copy overlays ──────────────────────────────
+   Two STATIC text overlays pinned to viewport positions via position:
+   fixed. They fade in/out at the right scroll moments so the copy is
+   always exactly where we want it — top overlay in the sky, bottom
+   overlay in the bedrock dark area. Visibility is toggled by JS based
+   on scroll progress (see why-scene.js → updateCopyOverlays). */
+.copy-overlay {
+  position: fixed;
   left: 0; right: 0;
-  z-index: 2;
+  z-index: 4;
   padding: 0 var(--pad-x);
-  pointer-events: none; /* let the canvas behind catch any incidental clicks */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.55s ease;
 }
-.slot > * { pointer-events: auto; } /* but actual elements (CTA, etc.) interact */
+.copy-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-.slot-eyebrow {
-  font-size: var(--t-eyebrow);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--brand-primary-dark);
-  margin-bottom: 10px;
+/* TOP overlay · surface copy floating in the sky band. */
+.copy-overlay--top {
+  top: 18svh;
+  text-align: center;
 }
-.slot-h1 {
-  font-size: var(--t-h1);
+.overlay-h1 {
+  font-size: clamp(40px, 11vw, 80px);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.04;
+  letter-spacing: -0.022em;
   color: var(--brand-primary-deep);
-  max-width: var(--col-max);
+  max-width: 720px;
   margin: 0 auto;
-  text-align: center;
 }
-.slot-h2 {
-  font-size: var(--t-h2);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
-  color: var(--brand-primary-deep);
-  max-width: var(--col-max);
-  margin: 0 auto;
-  text-align: center;
-}
-.slot-h2--dark { color: var(--ink-night); }
-.slot-body {
-  font-size: var(--t-body);
-  line-height: 1.5;
-  color: var(--ink-day-soft);
-  max-width: var(--col-max);
-  margin: 14px auto 0;
-  text-align: center;
-}
-.slot-body--dark { color: var(--ink-night-soft); }
-.slot-body--center { text-align: center; }
-/* Slightly larger, more prominent subtitle for the landing block —
-   sits directly under the big h1 and carries the second beat of the
-   "On the surface … / You'll come back every day …" thought. */
-.slot-body--lede {
-  font-size: clamp(16px, 4.4vw, 20px);
+.overlay-lede {
+  font-size: clamp(16px, 4.6vw, 22px);
   line-height: 1.45;
   color: var(--ink-day-soft);
-  margin-top: 18px;
-}
-.slot-hinge-line {
-  font-size: clamp(18px, 5vw, 24px);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink-night-soft);
   max-width: var(--col-max);
-  margin: 0 auto;
-  text-align: center;
+  margin: 20px auto 0;
 }
 
-/* Per-slot positions (mobile defaults).
-   - LANDING is offset enough from the top to clear the floating nav
-     glass bar above it.
-   - Climb-band area is intentionally empty (no copy slots) — that's
-     where the 4 blue balls will animate up the back mountain.
-   - Bedrock slots sit well past the ridge-lock point (~55% scroll) so
-     they appear cleanly in the dark area BELOW the mountain, never
-     overlapping the silhouette. */
-.slot--landing      { top:  16svh; }   /* sky · clear of the floating nav */
-.slot--hinge        { display: none; } /* unused — ridge crossing IS the hinge */
-.slot--bedrock-intro{ top: 165svh; }   /* bedrock · payoff frame engaged */
-.slot--bedrock-stat { top: 205svh; }   /* bedrock · stat */
-.slot--cta          { top: 240svh; }   /* bedrock · CTA */
-
-/* Desktop: shorter scene, denser packing — but still enough room for
-   bedrock content to settle below the locked mountain. */
-@media (min-width: 900px) {
-  :root { --scene-h: 200svh; }
-  .slot--landing      { top:  11svh; }
-  .slot--bedrock-intro{ top: 118svh; }
-  .slot--bedrock-stat { top: 148svh; }
-  .slot--cta          { top: 175svh; }
-}
-
-/* ───────────────────────── Bedrock stats ──────────────────────────────── */
-.slot--bedrock-stat {
+/* BOTTOM overlay · underneath copy in the bedrock dark band.
+   Anchored to bottom of viewport so the whole block sits firmly in the
+   dark area below the locked ridge — never overlapping the mountain. */
+.copy-overlay--bottom {
+  bottom: 4svh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-}
-.stat {
+  gap: 14px;
   text-align: center;
 }
-.stat-num {
-  font-size: var(--t-stat);
+.overlay-h2 {
+  font-size: clamp(22px, 5.8vw, 40px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink-night);
+  max-width: var(--col-max);
+}
+.overlay-lede--dark {
+  color: var(--ink-night-soft);
+  margin-top: 0;
+}
+
+/* Stats row — side-by-side at all sizes so the bottom block stays
+   compact enough to fit in the bedrock band. */
+.stats-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(28px, 8vw, 72px);
+  margin-top: 6px;
+  position: relative;
+}
+.stats-row .stat {
+  text-align: center;
+}
+.stats-row .stat-num {
+  font-size: clamp(44px, 13vw, 84px);
   font-weight: 800;
   line-height: 0.95;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   background: linear-gradient(135deg, #A09AF5, #6F75FF);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.stat-num--quiet {
+.stats-row .stat-num--quiet {
   background: none;
   color: var(--ink-night-quiet);
   -webkit-text-fill-color: var(--ink-night-quiet);
 }
-.stat-label {
-  margin-top: 8px;
-  font-size: var(--t-body);
+.stats-row .stat-label {
+  margin-top: 6px;
+  font-size: clamp(12px, 3.2vw, 14px);
   color: var(--ink-night-soft);
 }
-.stat--quiet .stat-label { color: var(--ink-night-quiet); }
-.stat-source {
-  margin-top: 8px;
-  font-size: 12px;
+.stats-row .stat--quiet .stat-label { color: var(--ink-night-quiet); }
+.stats-row .stat + .stat::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  bottom: 40%;
+  width: 1px;
+  background: rgba(255,255,255,0.18);
+  transform: translateX(-50%);
+}
+
+.stats-source {
+  font-size: clamp(10px, 2.4vw, 12px);
   color: var(--ink-night-quiet);
   letter-spacing: 0.04em;
-  text-align: center;
 }
 
-/* On wider viewports, put the two stats side-by-side with a divider. */
-@media (min-width: 720px) {
-  .slot--bedrock-stat {
-    flex-direction: row;
-    justify-content: center;
-    gap: 64px;
-    align-items: flex-start;
-  }
-  .stat + .stat { position: relative; }
-  .stat + .stat::before {
-    content: "";
-    position: absolute;
-    left: -32px; top: 8px; bottom: 8px;
-    width: 1px;
-    background: rgba(255,255,255,0.18);
-  }
-  .stat-source {
-    position: absolute;
-    left: 0; right: 0;
-    margin-top: 24px;
-    transform: translateY(120%);
-  }
+.cta-lede {
+  font-size: clamp(13px, 3.4vw, 15px);
+  color: var(--ink-night-soft);
+  margin-top: 4px;
 }
 
-/* ───────────────────────── CTA ────────────────────────────────────────── */
-.slot--cta { text-align: center; }
 .cta-btn {
   display: inline-block;
-  margin-top: 18px;
-  padding: 18px 32px;
+  padding: 14px 28px;
   background: var(--brand-primary);
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-decoration: none;
   border: 3.5px solid var(--brand-primary-light);
-  border-radius: 15px;
+  border-radius: 14px;
   transition: opacity .2s ease, transform .2s ease;
 }
 .cta-btn:hover { opacity: 0.92; }
 .cta-btn:active { transform: translateY(1px); }
+
+/* Desktop adjustments — shorter scene, larger viewport, the same overlay
+   model works without per-breakpoint repositioning. */
+@media (min-width: 900px) {
+  :root { --scene-h: 200svh; }
+  .copy-overlay--top { top: 14svh; }
+  .copy-overlay--bottom { bottom: 6svh; gap: 16px; }
+}
 
 /* ───────────────────────── Footer ─────────────────────────────────────── */
 .why-footer {
