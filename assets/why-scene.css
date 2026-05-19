@@ -275,9 +275,9 @@ body {
   max-width: 720px;
   margin: 0 auto;
 }
-/* Second line of the landing headline — DARK Huddle blue accent. */
+/* Second line of the landing headline — bright Huddle blue accent. */
 .overlay-h1-accent {
-  color: var(--brand-primary-deep);
+  color: var(--brand-primary);
 }
 .overlay-lede {
   font-size: clamp(16px, 4.6vw, 22px);
