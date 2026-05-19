@@ -121,19 +121,22 @@
 
      Points are { x, dy } where dy is viewport-h above ridge baseline. */
   const CLIMB_LINE = [
-    // ── Smooth left half — traces parallel to the front mountain's
-    //    ascent at a CONSTANT ~0.04 offset above each ridge control
-    //    point, so the climb line and the slope under it read as the
-    //    same arc (the "everyone is motivated at the beginning" story).
-    //    Then diverges UP at the peak while the front mountain drops. ──
+    // ── Smooth left half — uses the SAME x values as the front mountain's
+    //    ascending control points, each one offset by exactly 0.04 in dy
+    //    above the corresponding mountain point. Because both curves use
+    //    the same quadratic-through-midpoints smoothing AND identical x
+    //    cadence, the climb line traces an arc perfectly parallel to the
+    //    mountain ridge. Then diverges UP at the peak. ──
     { x: -0.02, dy: 0.03 },  //  0 — off-canvas, just above baseline
-    { x:  0.05, dy: 0.07 },  //  1 — 0.04 above front mtn peak (0.03)
-    { x:  0.12, dy: 0.13 },  //  2 — 0.04 above front mtn (~0.09)
-    { x:  0.18, dy: 0.17 },  //  3 — 0.04 above front mtn (~0.13)
-    { x:  0.24, dy: 0.22 },  //  4 — 0.04 above front mtn (~0.18)
-    { x:  0.28, dy: 0.25 },  //  5 — 0.04 above front mtn peak (0.21)
-    { x:  0.32, dy: 0.30 },  //  6 — diverges UP while front drops to 0.18
-    { x:  0.36, dy: 0.34 },  //  7 — end of smooth section
+    { x:  0.00, dy: 0.04 },  //  1 — 0.04 above front mtn (0.00, 0.00)
+    { x:  0.05, dy: 0.07 },  //  2 — 0.04 above front mtn (0.05, 0.03)
+    { x:  0.10, dy: 0.11 },  //  3 — 0.04 above front mtn (0.10, 0.07)
+    { x:  0.15, dy: 0.15 },  //  4 — 0.04 above front mtn (0.15, 0.11)
+    { x:  0.20, dy: 0.19 },  //  5 — 0.04 above front mtn (0.20, 0.15)
+    { x:  0.25, dy: 0.23 },  //  6 — 0.04 above front mtn (0.25, 0.19)
+    { x:  0.28, dy: 0.25 },  //  7 — 0.04 above front mtn peak (0.21)
+    { x:  0.32, dy: 0.30 },  //  8 — diverges UP while front drops to 0.18
+    { x:  0.36, dy: 0.34 },  //  9 — end of smooth section
     // ── Jagged right half — VARIED amplitudes + VARIED x spacing so the
     //    line reads as a natural mountain ridge AND a plotted chart at
     //    the same time. No two consecutive segments are the same length
@@ -155,7 +158,7 @@
     { x: 0.96, dy: 0.50 },  // 21  — long flat-ish stretch
     { x: 1.10, dy: 0.57 },  // 22  — final climb off the right edge
   ];
-  const CLIMB_SMOOTH_END = 7;  // last index of the smooth section
+  const CLIMB_SMOOTH_END = 9;  // last index of the smooth section
 
   /* The 4 blue balls — each placed on a fractional position BETWEEN two
      climb-line control points so they don't all sit at the perfect tip
@@ -171,16 +174,18 @@
        frac  = 0..1 fraction along that segment
        phase = sine-bob phase offset (radians) so balls bob out of sync */
   const BALL_POSITIONS = [
-    // HESITATOR — lagging far back on a downslope (idx 13 → 14 descends)
-    { idx: 13, frac: 0.50, phase: 1.8 },
+    // (Indices shifted +2 from earlier values because we added 2 control
+    //  points to the smooth section to match the mountain's cadence.)
+    // HESITATOR — lagging far back on a downslope (idx 15 → 16 descends)
+    { idx: 15, frac: 0.50, phase: 1.8 },
     // FOLLOWER_B — pulled back from FOLLOWER_A onto the small descending
-    // step at idx 16 → 17. Still ahead of Hesitator, but with a clear
+    // step at idx 18 → 19. Still ahead of Hesitator, but with a clear
     // gap to A so the twins don't read as overlapping.
-    { idx: 16, frac: 0.30, phase: 1.1 },
+    { idx: 18, frac: 0.30, phase: 1.1 },
     // FOLLOWER_A — twin, on the shared upslope ahead of B
-    { idx: 17, frac: 0.65, phase: 0.7 },
-    // LEADER — out front, climbing strongly (idx 19 → 20 ascends)
-    { idx: 19, frac: 0.65, phase: 0.0 },
+    { idx: 19, frac: 0.65, phase: 0.7 },
+    // LEADER — out front, climbing strongly (idx 21 → 22 ascends)
+    { idx: 21, frac: 0.65, phase: 0.0 },
   ];
   const BALL_BOB_AMPLITUDE_PX = 4;                 // peak vertical drift
   const BALL_BOB_PERIOD_MS    = 2400;              // one full sine cycle
@@ -977,8 +982,15 @@
          while the dark area is on screen.
      Both also hide when the scene scrolls fully off the viewport so they
      don't float over the footer below. */
-  const TOP_FADE_OUT = 0.45;
-  const BOT_FADE_IN  = 0.58;
+  // Top text starts fading out at progress 0.30 — well before the mountain
+  // peak rises into the headline's vertical band (~progress 0.44), so the
+  // landing copy never clashes with the climb-line or ridge visuals.
+  const TOP_FADE_OUT = 0.30;
+  // Bottom text holds off until progress 0.75 — well past the ridge lock
+  // (0.60), so the user has scrolled most of the way and the visual scene
+  // is fully settled. The bedrock copy then arrives as the "landing" beat
+  // when the user is naturally at rest near the bottom of the scroll.
+  const BOT_FADE_IN  = 0.75;
   function updateCopyOverlays() {
     // Cheap "is the scene actually in view" check — the .scene element
     // is the scroll container; if its rect doesn't intersect the viewport
