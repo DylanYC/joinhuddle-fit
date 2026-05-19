@@ -458,7 +458,11 @@
     const peace = state.peaceT;
     const factor = appFactor();
     const sunR = Math.max(22, Math.min(17 * factor, 56));
-    const sunYHigh = -sunR * 0.40;
+    // Sun starting Y (peace=0): just below the floating nav so it reads as
+    // a rising morning sun on landing, not a sliver hidden behind the nav.
+    // ~7svh from the top → sun center clears the nav glass on both mobile
+    // and desktop while still leaving room to descend toward sunYLow.
+    const sunYHigh = h * 0.07;
     const sunYLow  = geom.summitY + sunR * 0.55;
     const sunY = sunYHigh + (sunYLow - sunYHigh) * peace;
     const sunX = geom.summitX;
