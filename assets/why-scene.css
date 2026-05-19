@@ -135,10 +135,23 @@ body {
   font-weight: 500;
 }
 .why-nav-links a:hover { color: rgba(255, 255, 255, 0.95); }
-/* Active page indicator — Huddle blue + bold so the user knows where they are. */
+/* Active page indicator — bright white + bold with a Huddle-blue
+   underline below the text. The dark purple alone got lost against the
+   dark frosted-glass nav background; this combo reads clearly while
+   keeping the brand color as the actual "current page" marker. */
 .why-nav-links a.is-current {
-  color: var(--brand-primary);
+  color: #fff;
   font-weight: 600;
+  position: relative;
+}
+.why-nav-links a.is-current::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--brand-primary);
+  border-radius: 1px;
 }
 /* Hide nav links on narrow viewports to keep the nav clean on mobile.
    Logo + CTA still visible. */
