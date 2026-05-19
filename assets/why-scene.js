@@ -1024,6 +1024,34 @@
   }, { rootMargin: '0px' });
   io.observe($stage);
 
+  // ResizeObserver — fires immediately on observe AND every time the
+  // stage's actual rendered box changes (font swap, sticky activation,
+  // svh unit shifts, DPR settling late, viewport changes, ...). This
+  // is the cure for the "first-load wonky/stretched scene" bug: the
+  // initial `resize()` in boot can measure before layout fully settles,
+  // and without this observer we'd paint to a misshapen canvas backing
+  // buffer until the user triggered a manual resize.
+  const ro = new ResizeObserver(() => {
+    resize();
+    updateProgress();
+    updateCopyOverlays();
+    needsScrollRepaint = true;
+    if (!rafId && onscreen) rafId = requestAnimationFrame(tick);
+  });
+  ro.observe($stage);
+
+  // Belt-and-suspenders: after webfonts load, force one more measure +
+  // repaint. The ResizeObserver above usually catches this, but if the
+  // font-swap reflow doesn't change the stage's box (only e.g. nav text
+  // size), RO won't fire — this guarantees a clean post-font frame.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      resize();
+      needsScrollRepaint = true;
+      if (!rafId && onscreen) rafId = requestAnimationFrame(tick);
+    });
+  }
+
   // Pause when the tab is hidden.
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
