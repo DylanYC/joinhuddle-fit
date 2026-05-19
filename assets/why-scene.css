@@ -200,12 +200,23 @@ body {
   max-width: 720px;
   margin: 0 auto;
 }
+/* Second line of the landing headline — Huddle blue accent, matching
+   the home page's two-tone header treatment. */
+.overlay-h1-accent {
+  color: var(--brand-primary);
+}
 .overlay-lede {
   font-size: clamp(16px, 4.6vw, 22px);
   line-height: 1.45;
   color: var(--ink-day-soft);
   max-width: var(--col-max);
   margin: 20px auto 0;
+}
+/* Inline accent word inside the landing lede — same dark-deep + 600
+   weight emphasis the home page uses for `.tagline strong`. */
+.overlay-lede-accent {
+  color: var(--brand-primary-deep);
+  font-weight: 600;
 }
 
 /* BOTTOM overlay · underneath copy in the bedrock dark band.
