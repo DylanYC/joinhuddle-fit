@@ -610,8 +610,8 @@
     const factor = appFactor();
     const bw1 = 7.5 * factor;
     const bw2 = 6.5 * factor;
-    const y1 = h * 0.07;
-    const y2 = h * 0.12;
+    const y1 = h * 0.12;
+    const y2 = h * 0.17;
     const base = lerpColor('#6B7FAA', '#3A2D55', peace);
     const span = driftSpan();
     const t1 = (state.driftT + 0.10) % 1.0;
