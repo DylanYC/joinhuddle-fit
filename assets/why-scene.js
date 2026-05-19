@@ -312,113 +312,176 @@
   // exactly matching climb_card.dart's `span = size.width + 60.0`.
   function driftSpan() { return w + 60 * appFactor(); }
 
-  /* SUN
-     Direct port of climb_card.dart lines 891–919.
-       sunYHigh = -sunR * 0.40   → sun mostly above top edge at peace=0
-       sunYLow  = summitY + sunR * 0.55  → just below summit at peace=1
-       sunY     = lerp(sunYHigh, sunYLow, peace)
-       sunX     = anchored to summitX (app anchors to today's column)
-     The disc warms from #FFD088 → #FF8A4C with peace, and a blurred halo
-     intensifies (0.15 + 0.40 * peace). The bedrock polygon paints AFTER
-     the sun, so any portion of the disc that has descended below the
-     ridge is naturally clipped — the sun visibly sets behind the mountain. */
+  /* SUN — upgraded for full-viewport scale.
+     The app's flat disc + single blurred halo reads as "MS Paint" when
+     scaled up. We replace with three layered passes (all radial gradients,
+     which scale beautifully): wide outer bloom (sun-bleeding-into-sky),
+     tight inner halo, and a disc with a bright core fading to a warm rim.
+     Geometry math (sunYHigh/sunYLow/sunY/sunX) is unchanged from
+     climb_card.dart:891-919 — only the rendering technique changed. */
   function paintSun(state, geom) {
     const peace = state.peaceT;
     const factor = appFactor();
-    const sunR = Math.max(18, Math.min(14 * factor, 46));
+    const sunR = Math.max(22, Math.min(17 * factor, 56));
     const sunYHigh = -sunR * 0.40;
     const sunYLow  = geom.summitY + sunR * 0.55;
     const sunY = sunYHigh + (sunYLow - sunYHigh) * peace;
     const sunX = geom.summitX;
 
-    // Halo (blurred).
-    ctx.save();
-    ctx.filter = 'blur(9px)';
-    ctx.fillStyle = `rgba(255, 203, 138, ${0.15 + 0.40 * peace})`;
+    // Outer bloom — wide soft glow bleeding into the sky.
+    const outerR = sunR * 5.0;
+    const bloomColor = lerpColor('#FFE8B8', '#FF9E63', peace);
+    const outer = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, outerR);
+    outer.addColorStop(0.00, rgba(bloomColor, 0.32 + 0.32 * peace));
+    outer.addColorStop(0.35, rgba(bloomColor, 0.14 + 0.18 * peace));
+    outer.addColorStop(1.00, rgba(bloomColor, 0));
+    ctx.fillStyle = outer;
     ctx.beginPath();
-    ctx.arc(sunX, sunY, sunR + 8, 0, Math.PI * 2);
+    ctx.arc(sunX, sunY, outerR, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
 
-    // Disc.
-    const disc = lerpColor('#FFD088', '#FF8A4C', peace);
-    ctx.fillStyle = rgba(disc, 0.78 + 0.18 * peace);
+    // Inner halo — tighter, warmer, sits just outside the disc.
+    const innerR = sunR * 2.0;
+    const haloColor = lerpColor('#FFD088', '#FFA76A', peace);
+    const inner = ctx.createRadialGradient(sunX, sunY, sunR * 0.3, sunX, sunY, innerR);
+    inner.addColorStop(0.00, rgba(haloColor, 0.55 + 0.30 * peace));
+    inner.addColorStop(0.55, rgba(haloColor, 0.22));
+    inner.addColorStop(1.00, rgba(haloColor, 0));
+    ctx.fillStyle = inner;
     ctx.beginPath();
-    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+    ctx.arc(sunX, sunY, innerR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Disc — bright core fading to a warm rim. No hard edge.
+    const coreColor = lerpColor('#FFF6E0', '#FFE3B5', peace);
+    const rimColor  = lerpColor('#FFD088', '#FF8A4C', peace);
+    const disc = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunR);
+    disc.addColorStop(0.00, rgba(coreColor, 0.95));
+    disc.addColorStop(0.65, rgba(rimColor,  0.88));
+    disc.addColorStop(0.92, rgba(rimColor,  0.50));
+    disc.addColorStop(1.00, rgba(rimColor,  0));
+    ctx.fillStyle = disc;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR * 1.04, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  /* CLOUDS
-     Port of climb_card.dart _drawCloud (lines 1335–1360): three overlapping
-     blurred ovals. Cloud drifts left→right across `span` over the drift
-     cycle. Color lerps white → peach with peace, alpha thins slightly so
-     clouds become wispy at full sunset. */
-  function _drawCloudShape(cx, cy, cw, color) {
-    const ch = cw * 0.32;
+  /* CLOUDS — upgraded for full-viewport scale.
+     The app's three solid blurred ovals look like puddles when scaled up.
+     We replace each oval with a radial-gradient ellipse that fades from
+     opaque center to fully transparent edge — no hard boundaries — and
+     layer 5 of them per cloud at varied positions, sizes, and densities
+     so each cloud has volume and silhouette. Subtle scale-aware blur on
+     top adds atmospheric haze. */
+  function _drawCloudShape(cx, cy, cw, baseColor, baseAlpha) {
+    const ch = cw * 0.42;
+    // Per-blob: offset (units of cw/ch), size scale, alpha multiplier.
+    const blobs = [
+      { ox:  0.00, oy:  0.00, sw: 1.00, sh: 1.00, a: 0.95 },
+      { ox:  0.24, oy: -0.26, sw: 0.68, sh: 0.85, a: 0.85 },
+      { ox: -0.24, oy:  0.06, sw: 0.58, sh: 0.72, a: 0.85 },
+      { ox:  0.40, oy:  0.10, sw: 0.42, sh: 0.55, a: 0.65 },
+      { ox: -0.08, oy: -0.22, sw: 0.50, sh: 0.65, a: 0.78 },
+    ];
     ctx.save();
-    ctx.filter = 'blur(3px)';
-    ctx.fillStyle = color;
-    // Main body.
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, cw / 2, ch / 2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // Right hump.
-    ctx.beginPath();
-    ctx.ellipse(cx + cw * 0.22, cy - ch * 0.25, (cw * 0.65) / 2, (ch * 0.85) / 2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // Left hump.
-    ctx.beginPath();
-    ctx.ellipse(cx - cw * 0.22, cy + ch * 0.05, (cw * 0.55) / 2, (ch * 0.70) / 2, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.filter = `blur(${Math.max(1.5, cw * 0.035)}px)`;
+    for (const b of blobs) {
+      const ecx = cx + b.ox * cw;
+      const ecy = cy + b.oy * ch;
+      const erx = (cw / 2) * b.sw;
+      const ery = (ch / 2) * b.sh;
+      const r = Math.max(erx, ery);
+      const grad = ctx.createRadialGradient(ecx, ecy, 0, ecx, ecy, r);
+      const a = baseAlpha * b.a;
+      grad.addColorStop(0.00, rgba(baseColor, a));
+      grad.addColorStop(0.55, rgba(baseColor, a * 0.55));
+      grad.addColorStop(1.00, rgba(baseColor, 0));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(ecx, ecy, erx, ery, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.restore();
   }
   function paintClouds(state) {
     const peace = state.peaceT;
     const factor = appFactor();
-    const cloudW = 38 * factor;
+    const cloudW = 42 * factor;
     const cloudColor = lerpColor('#FFFFFF', '#FFD0A8', peace);
-    const alpha = 0.35 * (1 - 0.4 * peace);
-    const color = rgba(cloudColor, alpha);
+    const baseAlpha = 0.55 * (1 - 0.35 * peace);
     const span = driftSpan();
     // Two clouds at offset drift phases so the sky never feels static.
+    // Sizes/positions intentionally different so they don't read as twins.
     const t1 = state.driftT;
     const t2 = (state.driftT + 0.45) % 1.0;
-    _drawCloudShape(-cloudW + t1 * (span + cloudW), h * 0.10, cloudW, color);
-    _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.7, color);
+    _drawCloudShape(-cloudW + t1 * (span + cloudW), h * 0.11, cloudW,        cloudColor, baseAlpha);
+    _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.72, cloudColor, baseAlpha * 0.85);
   }
 
-  /* BIRDS
-     Port of climb_card.dart _drawBird (lines 1314–1333): two quadratic
-     arcs forming the classic "M-bird" silhouette. Two birds drift R→L
-     at offset phases. Color lerps day → dusk with peace, darkening into
-     silhouettes against the sunset. */
-  function _drawBirdShape(cx, cy, bw, color) {
+  /* BIRDS — upgraded with a soft glow underpass.
+     Same M-bird silhouette as climb_card.dart (lines 1314-1333), but a
+     wider blurred stroke is drawn underneath the crisp stroke. Gives the
+     bird visual weight at scale without making it look heavy or comic. */
+  function _drawBirdShape(cx, cy, bw, color, glowColor) {
     const bh = bw * 0.45;
+    const buildPath = () => {
+      ctx.beginPath();
+      ctx.moveTo(cx - bw / 2, cy);
+      ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
+      ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
+    };
+    // Glow underpass — wider, lower opacity, blurred.
     ctx.save();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = Math.max(1, bw / 7);
+    ctx.filter = `blur(${Math.max(1.5, bw * 0.18)}px)`;
+    ctx.strokeStyle = glowColor;
+    ctx.lineWidth = Math.max(2.5, bw / 3);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(cx - bw / 2, cy);
-    ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
-    ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
+    buildPath();
+    ctx.stroke();
+    ctx.restore();
+    // Crisp main stroke.
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(1.2, bw / 6);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    buildPath();
     ctx.stroke();
     ctx.restore();
   }
   function paintBirds(state) {
     const peace = state.peaceT;
     const factor = appFactor();
-    const bw1 = 7.5 * factor;
-    const bw2 = 6.5 * factor;
-    const y1 = h * 0.07;
-    const y2 = h * 0.12;
+    const bw1 = 9.0 * factor;
+    const bw2 = 7.5 * factor;
+    const y1 = h * 0.075;
+    const y2 = h * 0.125;
     const base = lerpColor('#6B7FAA', '#3A2D55', peace);
     const span = driftSpan();
     const t1 = (state.driftT + 0.10) % 1.0;
     const t2 = (state.driftT + 0.55) % 1.0;
-    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.55));
-    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.40));
+    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.70), rgba(base, 0.30));
+    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.55), rgba(base, 0.22));
+  }
+
+  /* HORIZON GLOW — warm atmospheric band just above the ridge at sunset.
+     Mimics the real-world scattering that makes the air near a setting sun
+     glow orange-pink. Fades in with peaceT, paints between sky and sun so
+     it can be partially overlapped by the sun's outer bloom. */
+  function paintHorizonGlow(state, geom) {
+    const peace = state.peaceT;
+    if (peace < 0.03) return;
+    const glowTop = Math.max(0, geom.summitY - h * 0.18);
+    const glowBot = geom.baselineY + h * 0.02;
+    if (glowBot <= glowTop) return;
+    const color = lerpColor('#FFE0B5', '#FF8E5C', peace);
+    const grad = ctx.createLinearGradient(0, glowTop, 0, glowBot);
+    grad.addColorStop(0.00, rgba(color, 0));
+    grad.addColorStop(0.55, rgba(color, 0.10 + 0.18 * peace));
+    grad.addColorStop(1.00, rgba(color, 0.22 + 0.30 * peace));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, glowTop, w, glowBot - glowTop);
   }
   // Story/world layer
   function paintClimbLine(state, ridge) { /* TODO: continuous climb line over ridge into bedrock */ }
@@ -451,7 +514,11 @@
 
     // 1. Sky gradient covers the full viewport.
     paintSky(state, colors);
-    // 2. Sky-layer art. Sun paints first so clouds/birds can fly in
+    // 2. Atmospheric horizon glow — warm band just above the ridge,
+    //    fades in with peace. Painted before the sun so the sun's
+    //    bloom lays on top of it naturally.
+    paintHorizonGlow(state, geom);
+    // 3. Sky-layer art. Sun paints first so clouds/birds can fly in
     //    front of it. Sun's lower half gets clipped by the bedrock
     //    polygon later — that's how it "sets behind" the mountain.
     paintSun(state, geom);
