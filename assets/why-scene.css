@@ -55,12 +55,12 @@
   --ink-night-soft: rgba(255,255,255,0.72);
   --ink-night-quiet:rgba(255,255,255,0.45);
 
-  /* Scene geometry — keep this short. The page is a held composition,
-     not a long pan. Mobile fits the story in ~2.2 viewports; desktop in
-     ~1.5 viewports. The ridge crosses the viewport in the first ~60%
-     of scroll, then locks at the payoff frame while bedrock content
-     scrolls past below it. */
-  --scene-h:    220svh;
+  /* Scene geometry — held composition with enough scroll room for the
+     bedrock copy to settle CLEARLY in the dark area below the mountain.
+     The ridge crosses the viewport in the first ~55% of scroll, then
+     locks at the payoff frame while bedrock content (headline, stats,
+     CTA) scrolls past inside the dark half. */
+  --scene-h:    290svh;
 
   /* Type scale (mobile-first) */
   --t-h1: clamp(34px, 8.5vw, 56px);
@@ -216,6 +216,15 @@ body {
 }
 .slot-body--dark { color: var(--ink-night-soft); }
 .slot-body--center { text-align: center; }
+/* Slightly larger, more prominent subtitle for the landing block —
+   sits directly under the big h1 and carries the second beat of the
+   "On the surface … / You'll come back every day …" thought. */
+.slot-body--lede {
+  font-size: clamp(16px, 4.4vw, 20px);
+  line-height: 1.45;
+  color: var(--ink-day-soft);
+  margin-top: 18px;
+}
 .slot-hinge-line {
   font-size: clamp(18px, 5vw, 24px);
   font-weight: 600;
@@ -227,26 +236,27 @@ body {
 }
 
 /* Per-slot positions (mobile defaults).
-   Anchored in svh so iOS Safari toolbar resizes don't slide them onto
-   the mountain. Sky-band slots sit above the ridge crossing; bedrock
-   slots sit below it in the held payoff frame. */
-.slot--landing      { top:   8svh; }   /* sky · landing headline */
-.slot--climb-intro  { top:  50svh; }   /* sky · ridge starting to enter */
-.slot--climb-mid    { top:  85svh; }   /* sky · ridge near crossing */
+   - LANDING is offset enough from the top to clear the floating nav
+     glass bar above it.
+   - Climb-band area is intentionally empty (no copy slots) — that's
+     where the 4 blue balls will animate up the back mountain.
+   - Bedrock slots sit well past the ridge-lock point (~55% scroll) so
+     they appear cleanly in the dark area BELOW the mountain, never
+     overlapping the silhouette. */
+.slot--landing      { top:  16svh; }   /* sky · clear of the floating nav */
 .slot--hinge        { display: none; } /* unused — ridge crossing IS the hinge */
-.slot--bedrock-intro{ top: 128svh; }   /* bedrock · payoff frame engaged */
-.slot--bedrock-stat { top: 162svh; }   /* bedrock · stat */
-.slot--cta          { top: 192svh; }   /* bedrock · CTA */
+.slot--bedrock-intro{ top: 165svh; }   /* bedrock · payoff frame engaged */
+.slot--bedrock-stat { top: 205svh; }   /* bedrock · stat */
+.slot--cta          { top: 240svh; }   /* bedrock · CTA */
 
-/* Desktop: even shorter, denser packing. Total scene ≈ 1.5 viewports. */
+/* Desktop: shorter scene, denser packing — but still enough room for
+   bedrock content to settle below the locked mountain. */
 @media (min-width: 900px) {
-  :root { --scene-h: 150svh; }
-  .slot--landing      { top:   6svh; }
-  .slot--climb-intro  { top:  32svh; }
-  .slot--climb-mid    { top:  58svh; }
-  .slot--bedrock-intro{ top:  88svh; }
-  .slot--bedrock-stat { top: 112svh; }
-  .slot--cta          { top: 134svh; }
+  :root { --scene-h: 200svh; }
+  .slot--landing      { top:  11svh; }
+  .slot--bedrock-intro{ top: 118svh; }
+  .slot--bedrock-stat { top: 148svh; }
+  .slot--cta          { top: 175svh; }
 }
 
 /* ───────────────────────── Bedrock stats ──────────────────────────────── */
