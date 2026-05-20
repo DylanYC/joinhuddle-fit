@@ -990,11 +990,11 @@
   // ensures the headline is fully gone by the time anything in the
   // scene would intersect it. Generous safety margin for fast scrollers.
   const TOP_FADE_OUT = 0.18;
-  // Scroll-down hint hides the instant the user starts scrolling — it's
-  // an invitation for stationary visitors, not a persistent indicator.
-  // By the time the bottom text begins to appear (BOT_FADE_IN = 0.75)
-  // the hint is long gone, satisfying the "go away before reveal" goal.
-  const HINT_FADE_OUT = 0.04;
+  // Scroll-down hint stays visible through the entire mountain-reveal
+  // scroll. It disappears exactly when the science section starts to
+  // fade in (SCIENCE_REVEAL = 0.55), so the user never feels lost about
+  // what to do next.
+  const HINT_FADE_OUT = 0.55;
   // Science section fades in just before the ridge fully locks (0.6).
   // The section is also pulled up via negative margin so it overlaps
   // the canvas's bedrock area — the reveal makes it visually replace

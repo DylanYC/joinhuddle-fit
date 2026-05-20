@@ -216,16 +216,18 @@ body {
 }
 
 /* ───────────────────────── Scroll-down hint ──────────────────────────
-   Subtle bouncing chevron at the bottom of the viewport on the landing
-   view. Fades out as soon as the user starts scrolling. */
+   Bouncing chevron sitting just below the landing lede, holding visible
+   through the whole mountain-reveal scroll. Brand-purple so it stays
+   readable on both the light sky and the dark bedrock as the canvas
+   transitions underneath it. Fades out at the science-reveal moment. */
 .scroll-hint {
   position: fixed;
-  bottom: 6svh;
+  top: 58svh;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  color: var(--ink-day-soft);
-  opacity: 0.55;
+  color: var(--brand-primary);
+  opacity: 0.75;
   pointer-events: none;
   transition: opacity 0.55s ease;
 }
@@ -234,13 +236,14 @@ body {
   animation: scroll-hint-bounce 1.8s ease-in-out infinite;
 }
 .scroll-hint svg {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: block;
+  stroke-width: 2.4;
 }
 @keyframes scroll-hint-bounce {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(8px); }
+  50%      { transform: translateY(10px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint-inner { animation: none; }
