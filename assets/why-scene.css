@@ -184,22 +184,33 @@ body {
   /* Height auto — derived from sticky stage + spacer + science section. */
 }
 
-/* Sticky stage — sized to just the mountain composition (sky + ridge +
-   mountain visual). NOT full viewport — below it, the science section
-   extends downward as a tall bedrock area that the user scrolls through
-   while the mountain stays pinned at the top of the viewport. */
+/* Sticky stage — clipped to just the mountain portion of the canvas
+   (the top ~45svh). The CANVAS itself is still a full-viewport
+   composition (100svh) painted as designed; the stage's overflow:hidden
+   crops it so only the sky + mountain + ridge + sliver-of-bedrock show.
+   Below the stage in document flow, the science section continues the
+   bedrock visual with matching dark navy + CSS stars. */
 .scene-stage {
   position: sticky;
   top: 0;
   height: 45svh;
   width: 100%;
   overflow: hidden;
+  /* HIGHER z-index than the science section so the mountain stays
+     visually on top — section content scrolls past UNDERNEATH the
+     mountain rather than over it. */
+  z-index: 5;
 }
 .scene-canvas {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  /* Explicit 100svh so the painter draws the full composition at its
+     original proportions — only the top 45svh is visible through the
+     stage's overflow clip, but the canvas paints the entire mountain
+     scene as if it had the full viewport. */
+  height: 100svh;
   display: block;
 }
 .scene-hud {
@@ -484,7 +495,10 @@ body {
   background-repeat: repeat;
   padding: clamp(56px, 9vw, 96px) var(--pad-x) clamp(64px, 10vw, 104px);
   position: relative;
-  z-index: 3;
+  /* Lower z-index than the sticky mountain stage — section content
+     scrolls past UNDERNEATH the mountain (which stays anchored at the
+     top of viewport via the stage's higher z-index). */
+  z-index: 1;
   color: var(--ink-night-soft);
 }
 

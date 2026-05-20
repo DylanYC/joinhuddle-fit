@@ -55,8 +55,11 @@
   let w = 0, h = 0, dpr = 1;
   function resize() {
     dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
-    w = $stage.clientWidth;
-    h = $stage.clientHeight;
+    // Use the CANVAS's own dimensions (100svh) — not the stage's (45svh).
+    // The stage clips the canvas visually, but the painter still draws
+    // the full 100svh composition at its original proportions.
+    w = $canvas.clientWidth;
+    h = $canvas.clientHeight;
     $canvas.width  = Math.round(w * dpr);
     $canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -88,16 +91,18 @@
      advances HTML copy slots through the bedrock half while the canvas
      stays composed and gently alive (sun drift, sunset evolves). */
 
-  // Ridge BASELINE position as a fraction of CANVAS height (canvas is now
-  // 45svh tall — just the mountain composition).
-  //   progress 0   →  1.20  (silhouette off-screen below canvas; peak peeks)
-  //   progress 0.6 →  0.90  (ridge baseline near canvas bottom — mountain
-  //                          occupies most of the short canvas, with just a
-  //                          sliver of bedrock that blends seamlessly into
-  //                          the long bedrock section that lives below.)
+  // Ridge BASELINE position as a fraction of CANVAS height. The canvas
+  // itself is 100svh tall (painting the full composition) — only the
+  // top 45svh is visible through the stage's overflow clip, but the
+  // painter draws with original proportions.
+  //   progress 0   →  1.08  (silhouette mostly off-screen below; peak peeks)
+  //   progress 0.6 →  0.35  (locked HIGH so the bedrock area takes up
+  //                          ~65% of the canvas; most of that bedrock is
+  //                          below the stage's 45svh clip, blending
+  //                          seamlessly into the science section below.)
   const RIDGE_LOCK_PROGRESS = 0.6;
-  const RIDGE_BASELINE_START = 1.20;
-  const RIDGE_BASELINE_LOCKED = 0.90;
+  const RIDGE_BASELINE_START = 1.08;
+  const RIDGE_BASELINE_LOCKED = 0.35;
 
   function ridgeBaselineFrac(progress) {
     const t = Math.min(1, progress / RIDGE_LOCK_PROGRESS);
