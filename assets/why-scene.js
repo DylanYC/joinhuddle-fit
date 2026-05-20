@@ -41,6 +41,7 @@
   const $copyTop = document.getElementById('copyTop');
   const $copyBot = document.getElementById('copyBot');
   const $scrollHint = document.getElementById('scrollHint');
+  const $scienceHeader = document.getElementById('scienceHeader');
   if (!$scene || !$canvas) return;
 
   const ctx = $canvas.getContext('2d');
@@ -999,6 +1000,19 @@
   // is fully settled. The bedrock copy then arrives as the "landing" beat
   // when the user is naturally at rest near the bottom of the scroll.
   const BOT_FADE_IN  = 0.75;
+  // Width of the fade band (as a fraction of the canvas progress range)
+  // over which the fixed copyBot fades up from 0 → 1 starting at
+  // BOT_FADE_IN. Narrow so the headline appears decisively rather than
+  // creeping in.
+  const BOT_FADE_IN_BAND = 0.04;
+  // Fade band (in pixels) at the END of the .scene container's scroll
+  // range, during which the fixed copyBot hands off to the natural-flow
+  // mirror at the top of .science-section. Computed per-frame from
+  // window.innerHeight so it scales with viewport size. Kept small (5svh)
+  // so the user moves through the crossfade quickly — pairs with the
+  // translate trick below that keeps both versions at the same viewport
+  // y throughout the band, making any residual offset invisible.
+  function getHandoffBandPx() { return 0.05 * window.innerHeight; }
   function updateCopyOverlays() {
     // Cheap "is the scene actually in view" check — the .scene element
     // is the scroll container; if its rect doesn't intersect the viewport
@@ -1006,11 +1020,52 @@
     const rect = $scene.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
     const showTop  = inView && progress < TOP_FADE_OUT;
-    const showBot  = inView && progress > BOT_FADE_IN;
     const showHint = inView && progress < HINT_FADE_OUT;
-    if ($copyTop)    $copyTop   .classList.toggle('is-visible', showTop);
-    if ($copyBot)    $copyBot   .classList.toggle('is-visible', showBot);
+
+    // ─── Handoff math ────────────────────────────────────────────────
+    // The fixed copyBot fades out as the natural-flow header (inside
+    // .science-section's .science-anchor) fades in, over a 5svh band
+    // ending at the moment .scene's bottom edge crosses the viewport
+    // top. At that moment the natural-flow header's BOTTOM sits at the
+    // same viewport y (84svh from top) as the fixed copyBot's BOTTOM
+    // anchor, so the crossfade is visually invisible.
+    //
+    // To eliminate the tiny y-offset that exists DURING the band (the
+    // natural-flow element is moving with the page; the fixed one isn't),
+    // we translate the natural-flow header upward by the remaining band
+    // distance — at the band's start it's lifted by the full band, at
+    // the band's end it's at its natural position. Both elements stay
+    // perfectly aligned throughout.
+    const sceneBottomPageY = rect.bottom + window.scrollY;
+    const bandPx = getHandoffBandPx();
+    const handoffT = bandPx > 0
+      ? Math.max(0, Math.min(1, (window.scrollY - (sceneBottomPageY - bandPx)) / bandPx))
+      : 0;
+
+    // copyBot fade-in: tiny ramp starting at BOT_FADE_IN. Combined with
+    // (1 - handoffT) so the fixed version cleanly fades back out at the
+    // handoff regardless of where progress is currently sitting.
+    const fadeIn = Math.max(0, Math.min(1, (progress - BOT_FADE_IN) / BOT_FADE_IN_BAND));
+    const copyBotOpacity = inView ? fadeIn * (1 - handoffT) : 0;
+    // Natural-flow header opacity tracks the handoff directly.
+    const headerOpacity = handoffT;
+    // Lift the natural-flow header up by the remaining band so it lines
+    // up with the fixed copyBot for the entire fade. translate = 0 once
+    // handoff completes (after which it scrolls naturally with the page).
+    const headerLiftPx = (1 - handoffT) * bandPx;
+
+    if ($copyTop)    $copyTop.classList.toggle('is-visible', showTop);
     if ($scrollHint) $scrollHint.classList.toggle('is-hidden', !showHint);
+    if ($copyBot) {
+      $copyBot.style.opacity = String(copyBotOpacity);
+      // Keep the .is-visible class in sync for pointer-events (so the
+      // citation link is only clickable while the bot is actually visible).
+      $copyBot.classList.toggle('is-visible', copyBotOpacity > 0.5);
+    }
+    if ($scienceHeader) {
+      $scienceHeader.style.opacity = String(headerOpacity);
+      $scienceHeader.style.transform = `translateY(${-headerLiftPx}px)`;
+    }
   }
 
   /* ─── rAF loop with visibility guard ──────────────────────────────── */

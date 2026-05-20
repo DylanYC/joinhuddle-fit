@@ -92,6 +92,94 @@
   <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
 </div>
 
+<!-- ─── SCIENCE SECTION · natural-flow content below the .scene container ─
+     Picks up where the sticky mountain canvas leaves off. Background
+     matches the canvas's bedrock-bot (#050816) so the seam between the
+     canvas's bottom edge and the section's top is invisible — both are
+     painted the same dark navy.
+
+     The .science-anchor block at the top has min-height:84svh so the
+     natural-flow header's BOTTOM lands at exactly the same viewport y
+     as the fixed copyBot's bottom anchor (bottom:16svh → 84svh from
+     viewport top). At scroll = .scene-bottom-exit, the natural-flow
+     header is visually identical-positioned to the fixed copyBot, and
+     JS opacity-crossfades the two so the handoff is imperceptible.
+     After the handoff, the natural-flow header scrolls up with the page
+     as part of normal flow, revealing the core finding card + 3
+     supporting sub-cards beneath it. -->
+<section class="science-section" id="scienceSection">
+  <div class="science-inner">
+    <!-- Anchor block: 84svh tall, header sits at its bottom so the
+         natural-flow header's bottom edge lines up with the fixed
+         copyBot's bottom edge at the handoff moment. -->
+    <div class="science-anchor">
+      <div class="science-header" id="scienceHeader" aria-hidden="true">
+        <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
+        <p class="overlay-lede overlay-lede--dark">Consistency improves when you make a plan — and, more importantly, share it.</p>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-prefix" aria-hidden="true" style="visibility:hidden">Only</div>
+            <div class="stat-num">76%</div>
+            <div class="stat-label">succeeded when they wrote it down + shared it</div>
+          </div>
+          <div class="stat stat--quiet">
+            <div class="stat-prefix">Only</div>
+            <div class="stat-num stat-num--quiet">43%</div>
+            <div class="stat-label">succeeded when they kept it in their head</div>
+          </div>
+        </div>
+        <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener" tabindex="-1">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
+      </div>
+    </div>
+
+    <!-- Core finding — the headline research result. Larger, more
+         visually prominent than the 3 supporting sub-cards below. -->
+    <article class="finding-card">
+      <span class="finding-tag"><span class="finding-tag-dot"></span>CORE FINDING</span>
+      <h3 class="finding-title">Telling the right people you're going to do something makes you more likely to actually do it.</h3>
+      <p class="finding-body">Four longitudinal studies. 1,035 people. Sharing a goal with friends, family, or a partner — before you do it — increases the support you get and how hard you work toward it.</p>
+      <p class="finding-body">The key word is <em>who</em>. The research found that audience matters. Telling everyone isn't the same as telling the right people.</p>
+      <p class="finding-body">Huddle is built around the right people.</p>
+      <div class="finding-meta">
+        <div class="finding-stats">
+          <div class="finding-stat"><div class="finding-stat-num">1,035</div><div class="finding-stat-label">participants</div></div>
+          <div class="finding-stat"><div class="finding-stat-num">4</div><div class="finding-stat-label">longitudinal studies</div></div>
+          <div class="finding-stat"><div class="finding-stat-num">2025</div><div class="finding-stat-label">peer&#8209;reviewed</div></div>
+        </div>
+        <div class="finding-citation">
+          <div><strong>Peetz, Buehler &amp; Wells</strong></div>
+          <div>Personality and Social</div>
+          <div>Psychology Bulletin</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 supporting sub-findings — laid out as a row on desktop,
+         stacked on mobile. Each card cites a different research thread
+         that informs a specific Huddle design choice. -->
+    <div class="sub-cards">
+      <article class="sub-card">
+        <div class="sub-card-tag"><span class="sub-card-num">01</span> SPECIFICITY</div>
+        <h4 class="sub-card-title">"Work out more" isn't a plan.</h4>
+        <p class="sub-card-body">94 studies. 8,000+ people. Specifying exactly when, where, and how you'll show up — not just that you want to — makes a measurable difference. In Huddle, you start with a schedule.</p>
+        <p class="sub-card-cite"><strong>Gollwitzer &amp; Sheeran</strong> · Advances in Experimental Social Psychology · 94 studies, 8,000+ participants</p>
+      </article>
+      <article class="sub-card">
+        <div class="sub-card-tag"><span class="sub-card-num">02</span> STAKES</div>
+        <h4 class="sub-card-title">Skipping feels different when people you care about can see it.</h4>
+        <p class="sub-card-body">It's not surveillance. It's just that when the right people know your plan, the cost of bailing isn't purely personal anymore. That changes things.</p>
+        <p class="sub-card-cite"><strong>Lerner &amp; Tetlock</strong> · Psychological Bulletin · Carnegie Mellon &amp; Ohio State</p>
+      </article>
+      <article class="sub-card">
+        <div class="sub-card-tag"><span class="sub-card-num">03</span> BELONGING</div>
+        <h4 class="sub-card-title">A feed of strangers won't make you show up. The right 12 people will.</h4>
+        <p class="sub-card-body">Belonging to a small group of people who actually know you is one of the most basic human needs. That's the science. The cap of 12 is our call — but it's not arbitrary.</p>
+        <p class="sub-card-cite"><strong>Baumeister &amp; Leary</strong> · Psychological Bulletin · The need to belong as a fundamental human motivation</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- Slim footer below the journey -->
 <footer class="why-footer">
   <div class="why-footer-copy">© 2026 Huddle Fitness App · joinhuddle.fit</div>

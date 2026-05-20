@@ -297,7 +297,11 @@ body {
    Anchored to bottom of viewport so the whole block sits firmly in the
    dark area below the locked ridge — never overlapping the mountain.
    Generous gap + bottom padding so the block has breathing room inside
-   the now-expanded bedrock area (ridge locks higher at ~35svh). */
+   the now-expanded bedrock area (ridge locks higher at ~35svh).
+
+   Transition disabled — opacity is JS-driven by scroll position so the
+   fade-in (at progress 0.75) and the handoff to the natural-flow mirror
+   in .science-section feel immediate, not laggy. */
 .copy-overlay--bottom {
   bottom: 16svh;
   display: flex;
@@ -305,6 +309,7 @@ body {
   align-items: center;
   gap: 20px;
   text-align: center;
+  transition: none;
 }
 .overlay-h2 {
   font-size: clamp(22px, 5.8vw, 40px);
@@ -425,6 +430,195 @@ body {
   :root { --scene-h: 200svh; }
   .copy-overlay--top { top: 22svh; }
   .copy-overlay--bottom { bottom: 20svh; gap: 24px; }
+}
+
+/* ───────────────────────── Science section ─────────────────────────────
+   Natural-flow content that picks up where the sticky .scene container
+   leaves off. Background matches the canvas's bedrock-bot color exactly
+   (#050816) so the seam between the canvas's bottom edge and the
+   section's top is invisible.
+
+   The .science-anchor block at the top is min-height:84svh with the
+   header flexed to its bottom — this puts the natural-flow header's
+   bottom edge at the same viewport y as the fixed copyBot's bottom
+   anchor (bottom:16svh from viewport bottom = 84svh from viewport top)
+   at the handoff moment (scrollY = .scene's bottom-exit). JS then runs
+   a fast opacity crossfade between the two so the user perceives one
+   continuous headline that scrolls up with the page. */
+.science-section {
+  background: var(--bedrock-bot);
+  color: var(--ink-night);
+  position: relative;
+  z-index: 1;
+}
+.science-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 var(--pad-x) clamp(60px, 10vw, 120px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 6vw, 56px);
+}
+
+/* Anchor block — height tuned so the header's bottom lands at viewport
+   84svh (matching the fixed copyBot) at the moment .scene exits the
+   viewport. Header sits at its bottom via justify-content:flex-end. */
+.science-anchor {
+  min-height: 84svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.science-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  opacity: 0; /* JS-driven during the handoff fade band */
+  will-change: opacity, transform;
+}
+
+/* ───── Core finding card ─────
+   The headline research result. Larger and visually more prominent than
+   the 3 supporting sub-cards. Subtle white-on-navy card with a brand-
+   colored tag at the top calling out its status. */
+.finding-card {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 20px;
+  padding: clamp(24px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.finding-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(111,117,255,0.14);
+  color: var(--brand-primary-light);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  align-self: flex-start;
+}
+.finding-tag-dot {
+  width: 6px; height: 6px;
+  background: var(--brand-primary);
+  border-radius: 50%;
+}
+.finding-title {
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--ink-night);
+  margin-top: 4px;
+}
+.finding-body {
+  font-size: clamp(14px, 1.8vw, 16px);
+  line-height: 1.6;
+  color: var(--ink-night-soft);
+}
+.finding-body em {
+  font-style: italic;
+  color: var(--ink-night);
+}
+.finding-meta {
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.finding-stats {
+  display: flex;
+  gap: clamp(20px, 4vw, 48px);
+}
+.finding-stat-num {
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 700;
+  color: var(--brand-primary);
+  line-height: 1;
+}
+.finding-stat-label {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--ink-night-quiet);
+  letter-spacing: 0.02em;
+}
+.finding-citation {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-night-quiet);
+  text-align: right;
+}
+.finding-citation strong { font-weight: 600; color: var(--ink-night-soft); }
+
+/* ───── 3 supporting sub-cards ─────
+   Each cites a different research thread that informs a specific Huddle
+   design choice. Grid: stacked on mobile, 3-up on desktop. */
+.sub-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 760px) {
+  .sub-cards { grid-template-columns: repeat(3, 1fr); }
+}
+.sub-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: clamp(20px, 2vw, 26px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sub-card-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-night-soft);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sub-card-tag::before {
+  content: "";
+  width: 16px;
+  height: 2px;
+  background: var(--brand-primary);
+  border-radius: 1px;
+  margin-right: 2px;
+}
+.sub-card-num {
+  color: var(--brand-primary);
+  margin-right: 2px;
+}
+.sub-card-title {
+  font-size: clamp(15px, 1.6vw, 17px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink-night);
+}
+.sub-card-body {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-night-soft);
+}
+.sub-card-cite {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-night-quiet);
+  margin-top: auto;
+  padding-top: 8px;
 }
 
 /* ───────────────────────── Footer ─────────────────────────────────────── */
