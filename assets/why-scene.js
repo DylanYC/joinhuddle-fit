@@ -364,11 +364,12 @@
 
   /* BEDROCK fill — deep navy gradient inside the closed ridge polygon. */
   function paintBedrock(state, geom) {
-    const grad = ctx.createLinearGradient(0, geom.summitY, 0, h);
-    grad.addColorStop(0.00, rgb(BEDROCK.top));
-    grad.addColorStop(0.55, rgb(BEDROCK.mid));
-    grad.addColorStop(1.00, rgb(BEDROCK.bot));
-    ctx.fillStyle = grad;
+    // Solid BEDROCK.bot fill — must match the CSS background of
+    // .science-deep below so the canvas's bedrock and the section's
+    // bedrock are the SAME color and form a single continuous starry
+    // space. Any gradient here creates a visible color seam where the
+    // section starts to cover the canvas.
+    ctx.fillStyle = rgb(BEDROCK.bot);
     ctx.fill(geom.polyPath);
   }
 
