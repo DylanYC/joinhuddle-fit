@@ -41,6 +41,7 @@
   const $copyTop = document.getElementById('copyTop');
   const $copyBot = document.getElementById('copyBot');
   const $scrollHint = document.getElementById('scrollHint');
+  const $scienceDeep = document.getElementById('scienceDeep');
   if (!$scene || !$canvas) return;
 
   const ctx = $canvas.getContext('2d');
@@ -994,6 +995,11 @@
   // By the time the bottom text begins to appear (BOT_FADE_IN = 0.75)
   // the hint is long gone, satisfying the "go away before reveal" goal.
   const HINT_FADE_OUT = 0.04;
+  // Science section fades in just before the ridge fully locks (0.6).
+  // The section is also pulled up via negative margin so it overlaps
+  // the canvas's bedrock area — the reveal makes it visually replace
+  // that dark void as the mountain settles into place.
+  const SCIENCE_REVEAL = 0.55;
   // Bottom text holds off until progress 0.75 — well past the ridge lock
   // (0.60), so the user has scrolled most of the way and the visual scene
   // is fully settled. The bedrock copy then arrives as the "landing" beat
@@ -1005,12 +1011,17 @@
     // we hide both overlays.
     const rect = $scene.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
-    const showTop  = inView && progress < TOP_FADE_OUT;
-    const showBot  = inView && progress > BOT_FADE_IN;
-    const showHint = inView && progress < HINT_FADE_OUT;
-    if ($copyTop)    $copyTop   .classList.toggle('is-visible', showTop);
-    if ($copyBot)    $copyBot   .classList.toggle('is-visible', showBot);
-    if ($scrollHint) $scrollHint.classList.toggle('is-hidden', !showHint);
+    const showTop     = inView && progress < TOP_FADE_OUT;
+    const showBot     = inView && progress > BOT_FADE_IN;
+    const showHint    = inView && progress < HINT_FADE_OUT;
+    // Science section stays revealed once shown — even when user scrolls
+    // past .scene (inView=false), the section should remain visible since
+    // it's now the primary content. Reveal is purely scroll-progress-gated.
+    const showScience = progress > SCIENCE_REVEAL;
+    if ($copyTop)     $copyTop    .classList.toggle('is-visible', showTop);
+    if ($copyBot)     $copyBot    .classList.toggle('is-visible', showBot);
+    if ($scrollHint)  $scrollHint .classList.toggle('is-hidden', !showHint);
+    if ($scienceDeep) $scienceDeep.classList.toggle('is-revealed', showScience);
   }
 
   /* ─── rAF loop with visibility guard ──────────────────────────────── */

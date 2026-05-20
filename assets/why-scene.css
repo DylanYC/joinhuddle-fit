@@ -456,7 +456,24 @@ body {
   background: var(--bedrock-bot);
   padding: clamp(56px, 9vw, 96px) var(--pad-x) clamp(64px, 10vw, 104px);
   position: relative;
+  /* Pull the section UP so it overlaps the canvas's bedrock area. Without
+     this, there's a giant dark void between the locked mountain and the
+     section start (because the canvas is full-viewport and the canvas's
+     dark bedrock fills 65svh below the ridge). z-index above the canvas
+     so the section visually replaces that bedrock area when revealed. */
+  margin-top: -75svh;
+  z-index: 3;
+  /* Hidden until the user is at the payoff / lock moment, so it doesn't
+     show through during the landing/climb scroll. Fades in smoothly at
+     progress > 0.55, just before the ridge fully locks. */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
   color: var(--ink-night-soft);
+}
+.science-deep.is-revealed {
+  opacity: 1;
+  pointer-events: auto;
 }
 .science-inner {
   max-width: 920px;
