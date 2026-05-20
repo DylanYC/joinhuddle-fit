@@ -184,12 +184,14 @@ body {
   /* Height auto — derived from sticky stage + spacer + science section. */
 }
 
-/* Sticky stage holds the canvas, pinned to the viewport for the scene's
-   entire height. */
+/* Sticky stage — sized to just the mountain composition (sky + ridge +
+   mountain visual). NOT full viewport — below it, the science section
+   extends downward as a tall bedrock area that the user scrolls through
+   while the mountain stays pinned at the top of the viewport. */
 .scene-stage {
   position: sticky;
   top: 0;
-  height: 100svh;
+  height: 45svh;
   width: 100%;
   overflow: hidden;
 }
@@ -486,14 +488,8 @@ body {
   color: var(--ink-night-soft);
 }
 
-/* Spacer — transparent now, so it just provides flow spacing without
-   painting a visible dark strip over the canvas. The canvas (sticky)
-   shows through this region while the user scrolls through the
-   mountain reveal. */
-.scene-spacer {
-  height: 40svh;
-  background: transparent;
-}
+/* (Scene-spacer removed — no longer needed now that the canvas is short
+   and the science section flows directly below it as the bedrock area.) */
 .science-inner {
   max-width: 920px;
   margin: 0 auto;

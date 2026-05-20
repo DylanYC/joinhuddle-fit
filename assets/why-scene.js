@@ -88,16 +88,16 @@
      advances HTML copy slots through the bedrock half while the canvas
      stays composed and gently alive (sun drift, sunset evolves). */
 
-  // Ridge BASELINE position as a fraction of viewport height.
-  //   progress 0   →  1.08  (silhouette mostly off-screen below; peak peeks)
-  //   progress 0.6 →  0.35  (locked HIGH so the bedrock area below the
-  //                          mountain takes up ~65% of the viewport,
-  //                          giving the bedrock copy block plenty of
-  //                          breathing room. We deliberately accept
-  //                          losing some of the sunset sky at the top.)
+  // Ridge BASELINE position as a fraction of CANVAS height (canvas is now
+  // 45svh tall — just the mountain composition).
+  //   progress 0   →  1.20  (silhouette off-screen below canvas; peak peeks)
+  //   progress 0.6 →  0.90  (ridge baseline near canvas bottom — mountain
+  //                          occupies most of the short canvas, with just a
+  //                          sliver of bedrock that blends seamlessly into
+  //                          the long bedrock section that lives below.)
   const RIDGE_LOCK_PROGRESS = 0.6;
-  const RIDGE_BASELINE_START = 1.08;
-  const RIDGE_BASELINE_LOCKED = 0.35;
+  const RIDGE_BASELINE_START = 1.20;
+  const RIDGE_BASELINE_LOCKED = 0.90;
 
   function ridgeBaselineFrac(progress) {
     const t = Math.min(1, progress / RIDGE_LOCK_PROGRESS);
