@@ -34,7 +34,6 @@
   'use strict';
 
   const $scene   = document.getElementById('scene');
-  const $stage   = document.querySelector('.scene-stage');
   const $canvas  = document.getElementById('sceneCanvas');
   const $nav     = document.getElementById('whyNav');
   const $hud     = document.getElementById('sceneHud');
@@ -50,17 +49,40 @@
   if (debug) $hud.hidden = false;
 
   /* ─── Sizing ──────────────────────────────────────────────────────────
-     Resize the backing store to viewport × DPR. Logical drawing uses
-     CSS pixels (we scale the context by DPR once per resize). */
-  let w = 0, h = 0, dpr = 1;
+     Path 2 sizing model. The canvas is ONE tall element:
+       • Top `mh` pixels (mountain region, = viewport height) hold the
+         full mountain composition — sky, sun, clouds, birds, ridge,
+         climb line, balls, gray ball, arc text.
+       • Below `mh` to `h` (canvas bottom) is continuous painted
+         bedrock + stars, sized to fit the absolutely-positioned
+         science section that sits on top of it.
+     We measure the science section's natural height and size the .scene
+     container (and thus the canvas, which is height:100% of it) to
+     mountain region + science height + buffer. Done on resize too. */
+  let w = 0, h = 0, mh = 0, dpr = 1;
+  function measureAndSize() {
+    // Mountain region = one viewport tall, always.
+    const vh = window.innerHeight;
+    // Science section's natural rendered height (it's absolutely
+    // positioned so it doesn't contribute to .scene's height — we add
+    // it manually). offsetHeight includes padding.
+    const scienceH = $scienceDeep ? $scienceDeep.offsetHeight : 0;
+    // Total scene/canvas height = mountain region + science content.
+    // A small buffer (24px) below the science content gives the painted
+    // bedrock a hair of room past the last card.
+    const totalH = vh + scienceH + 24;
+    $scene.style.height = totalH + 'px';
+  }
   function resize() {
+    measureAndSize();
     dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
-    // Canvas fills the full sticky stage (100svh).
+    mh = window.innerHeight;
     w = $canvas.clientWidth;
     h = $canvas.clientHeight;
     $canvas.width  = Math.round(w * dpr);
     $canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seedStars();
   }
 
   /* ─── Scroll → progress ───────────────────────────────────────────────
@@ -307,15 +329,24 @@
   }
 
   function paintSky(state, colors) {
-    // Sky gradient spans the full viewport — bedrock polygon will mask
-    // out the lower portion. Stops compressed slightly so the warmest
-    // band sits just above the ridge, where the sun will set.
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    // Sky gradient is confined to the MOUNTAIN REGION (top mh pixels of
+    // the canvas). Stops compressed slightly so the warmest band sits
+    // just above the ridge, where the sun will set. Below `mh` we paint
+    // solid bedrock so the rest of the canvas is the dark "underneath"
+    // fabric the science section sits on.
+    const grad = ctx.createLinearGradient(0, 0, 0, mh);
     grad.addColorStop(0.00, rgb(colors.sky.top));
     grad.addColorStop(0.60, rgb(colors.sky.mid));
     grad.addColorStop(1.00, rgb(colors.sky.bot));
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, w, mh);
+    // Solid bedrock for the entire extended region below the mountain.
+    // The ridge polygon will later paint over the upper part of this
+    // (from ridge baseline down) — but pre-filling here guarantees no
+    // transparent pixels under the science cards even if a polyfill
+    // path were ever miscomputed.
+    ctx.fillStyle = rgb(BEDROCK.bot);
+    ctx.fillRect(0, mh, w, h - mh);
   }
 
   /* Ridge geometry — computed without touching the canvas path, so sky
@@ -324,10 +355,13 @@
      the open ridge curve so the bedrock fill, mountain-face overlay,
      and rim-light pass all share the same exact silhouette. */
   function computeRidgeGeometry(state) {
-    const baselineY = h * ridgeBaselineFrac(state.progress);
+    // Ridge baseline is anchored to the MOUNTAIN REGION (mh), not the
+    // full canvas height — so the ridge sits at e.g. 35% of one viewport
+    // regardless of how tall the canvas grew to fit the science cards.
+    const baselineY = mh * ridgeBaselineFrac(state.progress);
     const pts = RIDGE_PROFILE.map(p => ({
       x: p.x * w,
-      y: baselineY - p.peak * h,
+      y: baselineY - p.peak * mh,
     }));
     let summit = pts[0];
     for (const p of pts) if (p.y < summit.y) summit = p;
@@ -383,7 +417,9 @@
     const peace = state.peaceT;
     const faceColor = lerpColor('#B4C3E6', '#4A3A6E', peace);
     const faceTop = geom.summitY - 2;
-    const faceBot = geom.baselineY + h * 0.08;
+    // Mountain-face overlay confined to the mountain region (mh) so it
+    // doesn't stretch its fade into the science area below.
+    const faceBot = geom.baselineY + mh * 0.08;
     if (faceBot <= faceTop) return;
     ctx.save();
     ctx.clip(geom.polyPath);
@@ -420,15 +456,26 @@
     ctx.restore();
   }
 
-  // ── Stars (bedrock region only) ──────────────────────────────────────
-  // Deterministic — fixed seed so they don't shimmer-jump on resize.
-  // Positions are stored in (x, worldY) where worldY is in *viewport-h*
-  // units BELOW the locked ridge baseline. So as the ridge rises, more
-  // stars come into view from below.
-  const STAR_COUNT = 90;
+  // ── Stars (bedrock region) ───────────────────────────────────────────
+  // Stars are deterministic + uniformly distributed across the bedrock
+  // area (from ridge baseline DOWN to canvas bottom). Positions stored
+  // as fractions:
+  //   x      — 0..1 across canvas width
+  //   yFrac  — 0..1 from ridge baseline to canvas bottom
+  // Count scales with the bedrock area (more pixels → more stars) so
+  // density stays roughly consistent as the canvas grows to fit content.
+  // Re-seeded on every resize() so a viewport rotate / DPR change
+  // reflows the star field to match the new bedrock dimensions.
+  const STAR_DENSITY_PER_KPX2 = 0.55; // stars per 1000 CSS pixels² of bedrock
   const stars = [];
   function seedStars() {
     stars.length = 0;
+    // Bedrock area below the LOCKED ridge baseline, i.e. once mountain
+    // is fully revealed. baselineY at lock = mh * RIDGE_BASELINE_LOCKED.
+    const bedrockTop = mh * RIDGE_BASELINE_LOCKED;
+    const bedrockH   = Math.max(1, h - bedrockTop);
+    const bedrockArea = w * bedrockH;
+    const targetCount = Math.max(60, Math.round(bedrockArea / 1000 * STAR_DENSITY_PER_KPX2));
     let s = 0x6F75FF;
     const rnd = () => {
       s |= 0; s = (s + 0x6D2B79F5) | 0;
@@ -436,32 +483,32 @@
       t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
-    for (let i = 0; i < STAR_COUNT; i++) {
+    for (let i = 0; i < targetCount; i++) {
       stars.push({
-        x:       rnd(),               // 0..1 of width
-        worldY:  rnd() * 0.9,         // 0..0.9 below ridge baseline (viewport-h units)
-        r:       0.5 + rnd() * 1.3,
-        tw:      rnd() * Math.PI * 2,
+        x:     rnd(),                 // 0..1 of width
+        yFrac: rnd(),                 // 0..1 from ridge baseline to canvas bottom
+        r:     0.5 + rnd() * 1.3,
+        tw:    rnd() * Math.PI * 2,
       });
     }
   }
-  seedStars();
 
   function paintStars(state, ridge) {
     // Bedrock has to actually be in-frame for stars to show. As the ridge
     // approaches the payoff, stars fade in.
     const alpha = easeInOutCubic(Math.min(1, state.progress / 0.55));
     if (alpha <= 0.02) return;
-    // Clip to the bedrock polygon (which is the current path set by
-    // buildRidgePath + already-filled paintBedrock). We need to re-build
-    // the path since fill() doesn't preserve it across draws.
+    // Star Y range: from the CURRENT ridge baseline down to the canvas
+    // bottom. So as the ridge rises during the reveal, the upper band of
+    // stars stays put (anchored to the bedrock area), with new stars
+    // becoming visible from above as the bedrock area grows upward.
+    const bandTop = ridge.baselineY;
+    const bandH   = Math.max(1, h - bandTop);
     ctx.save();
-    // Stars are positioned relative to the locked ridge baseline so they
-    // feel anchored to the bedrock, not the viewport edge.
     for (const star of stars) {
       const px = star.x * w;
-      const py = ridge.baselineY + star.worldY * h;
-      if (py < ridge.baselineY || py > h) continue;
+      const py = bandTop + star.yFrac * bandH;
+      if (py < bandTop || py > h) continue;
       const twinkle = state.reduced
         ? 0.85
         : 0.65 + 0.35 * Math.sin(state.time * 0.001 + star.tw);
@@ -501,7 +548,7 @@
     // a rising morning sun on landing, not a sliver hidden behind the nav.
     // ~7svh from the top → sun center clears the nav glass on both mobile
     // and desktop while still leaving room to descend toward sunYLow.
-    const sunYHigh = h * 0.07;
+    const sunYHigh = mh * 0.07;
     const sunYLow  = geom.summitY + sunR * 0.55;
     const sunY = sunYHigh + (sunYLow - sunYHigh) * peace;
     const sunX = geom.summitX;
@@ -592,8 +639,8 @@
     // Sizes/positions intentionally different so they don't read as twins.
     const t1 = state.driftT;
     const t2 = (state.driftT + 0.45) % 1.0;
-    _drawCloudShape(-cloudW + t1 * (span + cloudW), h * 0.11, cloudW,        cloudColor, baseAlpha);
-    _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.72, cloudColor, baseAlpha * 0.85);
+    _drawCloudShape(-cloudW + t1 * (span + cloudW), mh * 0.11, cloudW,        cloudColor, baseAlpha);
+    _drawCloudShape(-cloudW + t2 * (span + cloudW), mh * 0.05, cloudW * 0.72, cloudColor, baseAlpha * 0.85);
   }
 
   /* BIRDS — direct port of climb_card.dart _drawBird (lines 1314-1333).
@@ -618,8 +665,8 @@
     const factor = appFactor();
     const bw1 = 7.5 * factor;
     const bw2 = 6.5 * factor;
-    const y1 = h * 0.12;
-    const y2 = h * 0.17;
+    const y1 = mh * 0.12;
+    const y2 = mh * 0.17;
     const base = lerpColor('#6B7FAA', '#3A2D55', peace);
     const span = driftSpan();
     const t1 = (state.driftT + 0.10) % 1.0;
@@ -635,8 +682,8 @@
   function paintHorizonGlow(state, geom) {
     const peace = state.peaceT;
     if (peace < 0.03) return;
-    const glowTop = Math.max(0, geom.summitY - h * 0.18);
-    const glowBot = geom.baselineY + h * 0.02;
+    const glowTop = Math.max(0, geom.summitY - mh * 0.18);
+    const glowBot = geom.baselineY + mh * 0.02;
     if (glowBot <= glowTop) return;
     const color = lerpColor('#FFE0B5', '#FF8E5C', peace);
     const grad = ctx.createLinearGradient(0, glowTop, 0, glowBot);
@@ -663,9 +710,11 @@
      paintBlueBalls. */
   function computeClimbGeometry(state, geom) {
     const baselineY = geom.baselineY;
+    // Climb line points anchored to mountain region — keeps proportions
+    // identical to the original 100svh-canvas design.
     const pts = CLIMB_LINE.map(p => ({
       x: p.x * w,
-      y: baselineY - p.dy * h,
+      y: baselineY - p.dy * mh,
     }));
 
     const linePath = new Path2D();
@@ -688,10 +737,15 @@
       linePath.lineTo(pts[i].x, pts[i].y);
       polyPath.lineTo(pts[i].x, pts[i].y);
     }
-    // Close polygon down to canvas bottom
+    // Close the lavender-body polygon down to the BOTTOM OF THE MOUNTAIN
+    // REGION (mh), NOT the full canvas height. Otherwise the lavender
+    // fill would extend all the way through the bedrock area behind the
+    // science cards, polluting the dark fabric. The front-mountain bedrock
+    // polygon (paintBedrock) already covers below the front ridge, so the
+    // lavender just needs to reach mh — front mountain occludes it there.
     const last = pts[pts.length - 1];
-    polyPath.lineTo(last.x, h);
-    polyPath.lineTo(pts[0].x, h);
+    polyPath.lineTo(last.x, mh);
+    polyPath.lineTo(pts[0].x, mh);
     polyPath.closePath();
 
     let minY = pts[0].y, maxY = pts[0].y;
@@ -717,7 +771,10 @@
     const peace = state.peaceT;
     const lavTop = lerpColor('#B3B3E8', '#A989B8', peace);
     const lavBot = lerpColor('#6F6FBA', '#56407A', peace);
-    const grad = ctx.createLinearGradient(0, climb.minY, 0, h);
+    // Lavender gradient confined to the mountain region — same reason
+    // as the polygon's mh-close: prevent lavender from bleeding through
+    // the bedrock area.
+    const grad = ctx.createLinearGradient(0, climb.minY, 0, mh);
     grad.addColorStop(0.00, rgba(lavTop, 0.85));
     grad.addColorStop(0.45, rgba(lavTop, 0.78));
     grad.addColorStop(0.80, rgba(lavBot, 0.62));
@@ -770,7 +827,7 @@
      alive in place without animating along the path. Reduced-motion
      users see them perfectly still. */
   function paintBlueBalls(state, geom, climb) {
-    const ballR = Math.max(11, Math.min(h * 0.020, 24));
+    const ballR = Math.max(11, Math.min(mh * 0.020, 24));
     const bobT = state.reduced ? 0 : (state.time / BALL_BOB_PERIOD_MS) * Math.PI * 2;
     // Lift each ball clearly above the line (a hair more than tangent)
     // so they read as individual characters perched ABOVE the climb,
@@ -815,7 +872,7 @@
      Static — no bob — the stillness is the message: the solo journey
      stopped. Slightly smaller than the blue balls so it feels diminished. */
   function paintGrayBall(state, geom) {
-    const ballR = Math.max(10, Math.min(h * 0.018, 22));
+    const ballR = Math.max(10, Math.min(mh * 0.018, 22));
     const cx = GRAY_BALL_X_FRAC * w;
     // Rest the ball ON the silhouette curve (center one radius above the
     // ridge surface so it visually sits on the slope).
@@ -845,7 +902,7 @@
     // Sample the silhouette densely across the arc, offset upward into
     // the sky band so the text reads on the sky, not on the mountain.
     const samples = 80;
-    const yOffset = -Math.max(16, Math.min(h * 0.025, 28));
+    const yOffset = -Math.max(16, Math.min(mh * 0.025, 28));
     const arcPts = [];
     for (let i = 0; i <= samples; i++) {
       const xFrac = ARC_TEXT_START_X
@@ -1055,7 +1112,7 @@
       if (onscreen) start(); else stop();
     }
   }, { rootMargin: '0px' });
-  io.observe($stage);
+  io.observe($scene);
 
   // Science section reveal — one-time fade-up for each .science-reveal
   // block as it enters the viewport. Simple, elegant, no scroll math.
@@ -1086,7 +1143,14 @@
     needsScrollRepaint = true;
     if (!rafId && onscreen) rafId = requestAnimationFrame(tick);
   });
-  ro.observe($stage);
+  // Observe the science content — when its rendered height changes
+  // (font load, viewport width changes its text wrapping, etc.), we
+  // recompute the canvas/scene height. Not .scene itself (that would
+  // create a feedback loop since we set its height in measureAndSize).
+  if ($scienceDeep) ro.observe($scienceDeep);
+  // Also observe the canvas's width so DPR/viewport-resize-only changes
+  // still trigger a repaint at the right buffer size.
+  ro.observe($canvas);
 
   // Belt-and-suspenders: after webfonts load, force one more measure +
   // repaint. The ResizeObserver above usually catches this, but if the
