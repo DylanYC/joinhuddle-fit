@@ -457,6 +457,57 @@ body {
   gap: 18px;
 }
 
+/* ── Section header (intro copy now lives here, in normal flow) ── */
+.science-header {
+  text-align: left;
+  margin-bottom: clamp(20px, 4vw, 36px);
+  max-width: 720px;
+}
+.science-eyebrow {
+  font-size: clamp(11px, 2.6vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #A09AF5;
+  margin: 0 0 16px;
+}
+.science-h2 {
+  font-size: clamp(28px, 5.5vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+  color: var(--ink-night);
+  margin: 0 0 14px;
+}
+.science-sub {
+  font-size: clamp(15px, 3vw, 18px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+/* ── Scroll-into-view reveal — subtle fade + lift on each block as it
+   enters the viewport. Triggered by IntersectionObserver in JS. ── */
+.science-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+.science-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .science-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ── Core finding card ── */
 .core-finding {
   background: rgba(111, 117, 255, 0.06);

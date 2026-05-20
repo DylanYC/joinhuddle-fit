@@ -1050,6 +1050,21 @@
   }, { rootMargin: '0px' });
   io.observe($stage);
 
+  // Science section reveal — one-time fade-up for each .science-reveal
+  // block as it enters the viewport. Simple, elegant, no scroll math.
+  const revealTargets = document.querySelectorAll('.science-reveal');
+  if (revealTargets.length) {
+    const revealIO = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          revealIO.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    revealTargets.forEach(el => revealIO.observe(el));
+  }
+
   // ResizeObserver — fires immediately on observe AND every time the
   // stage's actual rendered box changes (font swap, sticky activation,
   // svh unit shifts, DPR settling late, viewport changes, ...). This
