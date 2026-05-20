@@ -39,86 +39,15 @@
   <a class="why-nav-cta" href="/#waitlist">Join Waitlist</a>
 </nav>
 
-<!-- The visual scene. ONE tall container holding:
-       1. <canvas> painted across the FULL height (mountain composition
-          in the top mountain-region, continuous bedrock + stars below it).
-       2. The science content absolutely positioned over the bedrock area
-          of the canvas, with transparent background — so the cards float
-          on the canvas's painted starry bedrock as one unified fabric.
-     No sticky tricks, no second background sheet. Canvas height is set
-     dynamically by JS to fit mountain region + measured science content. -->
+<!-- The visual scene. A tall scroll spacer holds the sticky full-viewport
+     canvas. Text content (below) is pinned to viewport positions via
+     position:fixed and fades in/out at the right scroll moments, so the
+     copy always sits exactly where we want — never on top of the mountain. -->
 <main class="scene" id="scene">
-  <canvas class="scene-canvas" id="sceneCanvas" aria-hidden="true"></canvas>
-  <div class="scene-hud" id="sceneHud" hidden></div>
-
-  <!-- ─── SCIENCE SECTION ─────────────────────────────────────────────
-       Absolutely positioned INSIDE .scene at top = mountain-region
-       height, so it sits directly over the canvas's bedrock band. No
-       background of its own — the canvas's painted bedrock shows
-       through. Cards keep their own subtle tinted backgrounds. -->
-  <section class="science-deep" id="scienceDeep">
-  <div class="science-inner">
-
-    <header class="science-header science-reveal">
-      <p class="science-eyebrow">The science</p>
-      <h2 class="science-h2">Underneath, the science is rock solid.</h2>
-      <p class="science-sub">One finding sits at the center of it. Three principles explain the design.</p>
-    </header>
-
-    <article class="core-finding science-reveal">
-      <div class="core-finding-badge">Core finding</div>
-      <h3 class="core-finding-title">Telling the right people you're going to do something makes you more likely to actually do it.</h3>
-      <p class="core-finding-body">Four longitudinal studies. 1,035 people. Sharing a goal with friends, family, or a partner — before you do it — increases the support you get and how hard you work toward it.</p>
-      <p class="core-finding-body">The key word is <em>who</em>. The research found that audience matters. Telling everyone isn't the same as telling the right people.</p>
-      <p class="core-finding-body">Huddle is built around the right people.</p>
-      <hr class="core-finding-divider">
-      <div class="core-finding-meta">
-        <div class="meta-row">
-          <div class="meta-stat">
-            <div class="meta-num">1,035</div>
-            <div class="meta-label">participants</div>
-          </div>
-          <div class="meta-div" aria-hidden="true"></div>
-          <div class="meta-stat">
-            <div class="meta-num">4</div>
-            <div class="meta-label">longitudinal studies</div>
-          </div>
-          <div class="meta-div" aria-hidden="true"></div>
-          <div class="meta-stat">
-            <div class="meta-num">2025</div>
-            <div class="meta-label">peer-reviewed</div>
-          </div>
-        </div>
-        <div class="meta-cite">
-          <strong>Peetz, Buehler &amp; Wells</strong><br>
-          Personality and Social Psychology Bulletin
-        </div>
-      </div>
-    </article>
-
-    <div class="pillars">
-      <article class="pillar pillar--specificity science-reveal">
-        <div class="pillar-num"><span class="pillar-num-digit">01</span> Specificity</div>
-        <h4 class="pillar-title">"Work out more" isn't a plan.</h4>
-        <p class="pillar-body">94 studies. 8,000+ people. Specifying exactly when, where, and how you'll show up — not just that you want to — makes a measurable difference. In Huddle, you start with a schedule.</p>
-        <div class="pillar-cite"><strong>Gollwitzer &amp; Sheeran</strong> · Advances in Experimental Social Psychology · 94 studies, 8,000+ participants</div>
-      </article>
-      <article class="pillar pillar--stakes science-reveal">
-        <div class="pillar-num"><span class="pillar-num-digit">02</span> Stakes</div>
-        <h4 class="pillar-title">Skipping feels different when people you care about can see it.</h4>
-        <p class="pillar-body">It's not surveillance. It's just that when the right people know your plan, the cost of bailing isn't purely personal anymore. That changes things.</p>
-        <div class="pillar-cite"><strong>Lerner &amp; Tetlock</strong> · Psychological Bulletin · Carnegie Mellon &amp; Ohio State</div>
-      </article>
-      <article class="pillar pillar--belonging science-reveal">
-        <div class="pillar-num"><span class="pillar-num-digit">03</span> Belonging</div>
-        <h4 class="pillar-title">A feed of strangers won't make you show up. The right 12 people will.</h4>
-        <p class="pillar-body">Belonging to a small group of people who actually know you is one of the most basic human needs. That's the science. The cap of 12 is our call — but it's not arbitrary.</p>
-        <div class="pillar-cite"><strong>Baumeister &amp; Leary</strong> · Psychological Bulletin · The need to belong as a fundamental human motivation</div>
-      </article>
-    </div>
-
+  <div class="scene-stage">
+    <canvas class="scene-canvas" id="sceneCanvas" aria-hidden="true"></canvas>
+    <div class="scene-hud" id="sceneHud" hidden></div>
   </div>
-</section>
 </main>
 
 <!-- Scroll-down hint — bouncing chevron at the bottom of the landing
@@ -136,7 +65,31 @@
      view. Fades out as the user scrolls past the landing band. -->
 <div class="copy-overlay copy-overlay--top is-visible" id="copyTop">
   <h1 class="overlay-h1">On the surface,<br><span class="overlay-h1-accent">Huddle is fun.</span></h1>
-  <p class="overlay-lede">Showing up feels good. Showing up with your people feels <span class="overlay-lede-accent">better</span>.</p>
+  <p class="overlay-lede">Showing up feels good. Showing up with your people feels <em>better</em>. <span class="overlay-lede-accent">Consistency is contagious.</span></p>
+</div>
+
+<!-- ─── BOTTOM OVERLAY · the UNDERNEATH copy ────────────────────────────
+     Always pinned in the bedrock band of the viewport while the scene is
+     in view. Fades in as the user reaches the payoff frame, holds while
+     the dark area is on-screen, fades out when scene exits. -->
+<div class="copy-overlay copy-overlay--bottom" id="copyBot">
+  <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
+  <p class="overlay-lede overlay-lede--dark">Consistency improves when you make a plan — and, more importantly, share it.</p>
+  <div class="stats-row">
+    <div class="stat">
+      <!-- Invisible spacer matching the "Only" prefix on the right stat,
+           so 76% and 43% sit at the same vertical baseline. -->
+      <div class="stat-prefix" aria-hidden="true" style="visibility:hidden">Only</div>
+      <div class="stat-num">76%</div>
+      <div class="stat-label">succeeded when they wrote it down + shared it</div>
+    </div>
+    <div class="stat stat--quiet">
+      <div class="stat-prefix">Only</div>
+      <div class="stat-num stat-num--quiet">43%</div>
+      <div class="stat-label">succeeded when they kept it in their head</div>
+    </div>
+  </div>
+  <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
 </div>
 
 <!-- Slim footer below the journey -->

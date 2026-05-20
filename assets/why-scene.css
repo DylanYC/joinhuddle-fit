@@ -55,9 +55,12 @@
   --ink-night-soft: rgba(255,255,255,0.72);
   --ink-night-quiet:rgba(255,255,255,0.45);
 
-  /* Scene height is determined by its children (the sticky canvas stage,
-     a spacer, and the science section). No longer a fixed value — the
-     mountain reveal scrolls over a fixed pixel range driven by JS. */
+  /* Scene geometry — held composition with enough scroll room for the
+     bedrock copy to settle CLEARLY in the dark area below the mountain.
+     The ridge crosses the viewport in the first ~55% of scroll, then
+     locks at the payoff frame while bedrock content (headline, stats,
+     CTA) scrolls past inside the dark half. */
+  --scene-h:    290svh;
 
   /* Type scale (mobile-first) */
   --t-h1: clamp(34px, 8.5vw, 56px);
@@ -72,16 +75,6 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-html {
-  /* Smooth scroll for any programmatic / anchor jumps, and reserve the
-     fixed-nav height when scrolling to in-page anchors. */
-  scroll-behavior: smooth;
-  scroll-padding-top: 72px;
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-}
 
 html, body {
   background: var(--sky-top-day);
@@ -177,27 +170,28 @@ body {
 }
 .why-nav-cta:hover { background: rgba(255,255,255,0.12); }
 
-/* ───────────────────────── Scene container ────────────────────────────
-   Path 2 architecture: ONE tall canvas paints the mountain composition
-   into its top mountain-region (~100svh) and continuous bedrock + stars
-   across the rest. The science section is absolutely positioned INSIDE
-   .scene over the canvas's bedrock area, with a transparent background
-   so the canvas's painted starry fabric shows through. No sticky.
-   .scene's height is set by JS once the science content is measured. */
+/* ───────────────────────── Scene container ────────────────────────────── */
 .scene {
   position: relative;
+  height: var(--scene-h);
   width: 100%;
-  /* height set inline by JS: mountain region (100svh) + measured
-     science-deep height + bottom padding. */
+}
+
+/* Sticky stage holds the canvas, pinned to the viewport for the scene's
+   entire height. */
+.scene-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
 }
 .scene-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  /* The canvas IS the page background for the entire scene. */
 }
 .scene-hud {
   position: absolute;
@@ -213,18 +207,16 @@ body {
 }
 
 /* ───────────────────────── Scroll-down hint ──────────────────────────
-   Bouncing chevron sitting just below the landing lede, holding visible
-   through the whole mountain-reveal scroll. Brand-purple so it stays
-   readable on both the light sky and the dark bedrock as the canvas
-   transitions underneath it. Fades out at the science-reveal moment. */
+   Subtle bouncing chevron at the bottom of the viewport on the landing
+   view. Fades out as soon as the user starts scrolling. */
 .scroll-hint {
   position: fixed;
-  top: 58svh;
+  bottom: 6svh;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  color: var(--brand-primary);
-  opacity: 0.75;
+  color: var(--ink-day-soft);
+  opacity: 0.55;
   pointer-events: none;
   transition: opacity 0.55s ease;
 }
@@ -233,14 +225,13 @@ body {
   animation: scroll-hint-bounce 1.8s ease-in-out infinite;
 }
 .scroll-hint svg {
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   display: block;
-  stroke-width: 2.4;
 }
 @keyframes scroll-hint-bounce {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(10px); }
+  50%      { transform: translateY(8px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint-inner { animation: none; }
@@ -314,16 +305,6 @@ body {
   align-items: center;
   gap: 20px;
   text-align: center;
-}
-/* Small eyebrow above the bedrock headline — sets up "The science"
-   as the section label, leading into the deep-dive below. */
-.overlay-eyebrow {
-  font-size: clamp(11px, 2.6vw, 13px);
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #A09AF5;
-  margin: 0;
 }
 .overlay-h2 {
   font-size: clamp(22px, 5.8vw, 40px);
@@ -441,284 +422,9 @@ body {
    than tall (the same svh translates to fewer absolute px above the
    block). Bottom overlay gets more bottom padding + a larger gap. */
 @media (min-width: 900px) {
+  :root { --scene-h: 200svh; }
   .copy-overlay--top { top: 22svh; }
-}
-
-/* ───────────────────────── Science deep-dive ──────────────────────────
-   Long-form scrollable section that appears after the mountain scene
-   releases. One "core finding" card framed in brand purple, plus three
-   "pillar" cards with warm accent colors (orange / green / yellow) —
-   borrowed from the v4 layout but restyled in Huddle's Inter type and
-   brand palette. */
-.science-deep {
-  /* TRANSPARENT — no background-color, no CSS stars. The canvas BEHIND
-     this section paints continuous bedrock + stars across the full
-     scene height, so the cards sit directly on the canvas's painted
-     fabric. No second sheet, no seam, no overlay rectangle. */
-  background: transparent;
-  /* Absolutely positioned inside .scene, anchored to the top of the
-     bedrock area. `top: 100svh` lines up with the end of the mountain
-     composition region (set by the JS painter constant MOUNTAIN_H_SVH).
-     Left/right zero stretches it across full width. */
-  position: absolute;
-  top: 100svh;
-  left: 0;
-  right: 0;
-  padding: clamp(40px, 6vw, 72px) var(--pad-x) clamp(64px, 10vw, 104px);
-  color: var(--ink-night-soft);
-}
-
-/* (Scene-spacer removed — no longer needed now that the canvas is short
-   and the science section flows directly below it as the bedrock area.) */
-.science-inner {
-  max-width: 920px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* ── Section header (intro copy now lives here, in normal flow) ── */
-.science-header {
-  text-align: left;
-  margin-bottom: clamp(20px, 4vw, 36px);
-  max-width: 720px;
-}
-.science-eyebrow {
-  font-size: clamp(11px, 2.6vw, 13px);
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #A09AF5;
-  margin: 0 0 16px;
-}
-.science-h2 {
-  font-size: clamp(28px, 5.5vw, 44px);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.018em;
-  color: var(--ink-night);
-  margin: 0 0 14px;
-}
-.science-sub {
-  font-size: clamp(15px, 3vw, 18px);
-  font-weight: 400;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
-  margin: 0;
-}
-
-/* ── Scroll-into-view reveal — subtle fade + lift on each block as it
-   enters the viewport. Triggered by IntersectionObserver in JS. ── */
-.science-reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
-              transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
-  will-change: opacity, transform;
-}
-.science-reveal.is-revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-@media (prefers-reduced-motion: reduce) {
-  .science-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* ── Core finding card ── */
-.core-finding {
-  background: rgba(111, 117, 255, 0.06);
-  border: 1px solid rgba(111, 117, 255, 0.26);
-  border-radius: 18px;
-  padding: clamp(26px, 4vw, 36px) clamp(22px, 4vw, 34px) clamp(22px, 3vw, 28px);
-}
-.core-finding-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #A09AF5;
-  background: rgba(111, 117, 255, 0.14);
-  border: 0.5px solid rgba(111, 117, 255, 0.30);
-  border-radius: 20px;
-  padding: 5px 12px;
-  margin: 0 0 22px;
-}
-.core-finding-badge::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--brand-primary);
-  border-radius: 50%;
-  display: inline-block;
-}
-.core-finding-title {
-  font-size: clamp(20px, 3.6vw, 26px);
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.005em;
-  color: var(--ink-night);
-  margin: 0 0 18px;
-  max-width: 720px;
-}
-.core-finding-body {
-  font-size: clamp(14px, 2.6vw, 16px);
-  font-weight: 400;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.58);
-  margin: 0 0 10px;
-  max-width: 700px;
-}
-.core-finding-body:last-of-type { margin-bottom: 0; }
-.core-finding-body em {
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.78);
-}
-.core-finding-divider {
-  border: none;
-  border-top: 0.5px solid rgba(255, 255, 255, 0.10);
-  margin: 22px 0 20px;
-}
-.core-finding-meta {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.meta-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.meta-stat {
-  display: flex;
-  flex-direction: column;
-}
-.meta-num {
-  font-size: 20px;
-  font-weight: 700;
-  color: #A09AF5;
-  line-height: 1;
-  letter-spacing: -0.01em;
-}
-.meta-label {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.34);
-  margin-top: 4px;
-  letter-spacing: 0.01em;
-}
-.meta-div {
-  width: 0.5px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.12);
-}
-.meta-cite {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.22);
-  line-height: 1.6;
-  margin-left: auto;
-  text-align: right;
-}
-.meta-cite strong {
-  color: rgba(255, 255, 255, 0.34);
-  font-weight: 500;
-}
-
-/* ── Three pillars grid ── */
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-.pillar {
-  background: rgba(255, 255, 255, 0.03);
-  border: 0.5px solid rgba(255, 255, 255, 0.09);
-  border-radius: 14px;
-  padding: 24px 20px 20px;
-  transition: background 0.2s ease, border-color 0.2s ease;
-  display: flex;
-  flex-direction: column;
-}
-.pillar:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-/* Colored top-tab — square top, rounded bottom corners. */
-.pillar--specificity { border-top: 2px solid #e07b5a; border-radius: 0 0 14px 14px; }
-.pillar--stakes      { border-top: 2px solid #4ec9a0; border-radius: 0 0 14px 14px; }
-.pillar--belonging   { border-top: 2px solid #e8c46a; border-radius: 0 0 14px 14px; }
-
-.pillar-num {
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin: 0 0 16px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-.pillar-num::before {
-  content: '';
-  display: inline-block;
-  width: 14px;
-  height: 1.5px;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.pillar--specificity .pillar-num { color: #e07b5a; }
-.pillar--stakes      .pillar-num { color: #4ec9a0; }
-.pillar--belonging   .pillar-num { color: #e8c46a; }
-.pillar-num-digit { font-weight: 600; }
-
-.pillar-title {
-  font-size: clamp(15px, 2.4vw, 17px);
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -0.005em;
-  color: var(--ink-night);
-  margin: 0 0 12px;
-}
-.pillar-body {
-  font-size: clamp(13px, 2.2vw, 14px);
-  font-weight: 400;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 16px;
-  flex-grow: 1;
-}
-.pillar-cite {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.22);
-  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
-  padding-top: 11px;
-  line-height: 1.55;
-  margin-top: auto;
-}
-.pillar-cite strong {
-  color: rgba(255, 255, 255, 0.34);
-  font-weight: 500;
-}
-
-/* Mobile — stack the pillars and the meta row. */
-@media (max-width: 760px) {
-  .pillars { grid-template-columns: 1fr; }
-  .core-finding-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-  }
-  .meta-cite {
-    margin-left: 0;
-    text-align: left;
-  }
+  .copy-overlay--bottom { bottom: 20svh; gap: 24px; }
 }
 
 /* ───────────────────────── Footer ─────────────────────────────────────── */
