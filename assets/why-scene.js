@@ -55,9 +55,7 @@
   let w = 0, h = 0, dpr = 1;
   function resize() {
     dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
-    // Use the CANVAS's own dimensions (100svh) — not the stage's (45svh).
-    // The stage clips the canvas visually, but the painter still draws
-    // the full 100svh composition at its original proportions.
+    // Canvas fills the full sticky stage (100svh).
     w = $canvas.clientWidth;
     h = $canvas.clientHeight;
     $canvas.width  = Math.round(w * dpr);
@@ -92,14 +90,12 @@
      stays composed and gently alive (sun drift, sunset evolves). */
 
   // Ridge BASELINE position as a fraction of CANVAS height. The canvas
-  // itself is 100svh tall (painting the full composition) — only the
-  // top 45svh is visible through the stage's overflow clip, but the
-  // painter draws with original proportions.
+  // is the full sticky stage (100svh) and the painter draws the full
+  // composition into it.
   //   progress 0   →  1.08  (silhouette mostly off-screen below; peak peeks)
   //   progress 0.6 →  0.35  (locked HIGH so the bedrock area takes up
-  //                          ~65% of the canvas; most of that bedrock is
-  //                          below the stage's 45svh clip, blending
-  //                          seamlessly into the science section below.)
+  //                          ~65% of the canvas, which then blends into
+  //                          the bedrock-bot spacer + science section.)
   const RIDGE_LOCK_PROGRESS = 0.6;
   const RIDGE_BASELINE_START = 1.08;
   const RIDGE_BASELINE_LOCKED = 0.35;

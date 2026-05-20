@@ -184,34 +184,31 @@ body {
   /* Height auto — derived from sticky stage + spacer + science section. */
 }
 
-/* Sticky stage — clipped to just the mountain portion of the canvas
-   (the top ~45svh). The CANVAS itself is still a full-viewport
-   composition (100svh) painted as designed; the stage's overflow:hidden
-   crops it so only the sky + mountain + ridge + sliver-of-bedrock show.
-   Below the stage in document flow, the science section continues the
-   bedrock visual with matching dark navy + CSS stars. */
+/* Sticky stage — full viewport. Sticks to the top while the user
+   scrolls through the mountain reveal animation (60svh of scroll
+   distance via the scene-spacer below), then releases and scrolls up
+   with the page so the science section can take over. */
 .scene-stage {
   position: sticky;
   top: 0;
-  height: 45svh;
+  height: 100svh;
   width: 100%;
   overflow: hidden;
-  /* HIGHER z-index than the science section so the mountain stays
-     visually on top — section content scrolls past UNDERNEATH the
-     mountain rather than over it. */
-  z-index: 5;
 }
 .scene-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  /* Explicit 100svh so the painter draws the full composition at its
-     original proportions — only the top 45svh is visible through the
-     stage's overflow clip, but the canvas paints the entire mountain
-     scene as if it had the full viewport. */
-  height: 100svh;
+  height: 100%;
   display: block;
+}
+/* Holds the sticky stage pinned for an additional 60svh of scroll so the
+   mountain-reveal animation has room to play out before the stage
+   releases. Painted in bedrock-bot so the canvas's dark bedrock band
+   continues seamlessly into the spacer (no visible seam). */
+.scene-spacer {
+  height: 60svh;
+  background-color: var(--bedrock-bot);
 }
 .scene-hud {
   position: absolute;
@@ -495,10 +492,6 @@ body {
   background-repeat: repeat;
   padding: clamp(56px, 9vw, 96px) var(--pad-x) clamp(64px, 10vw, 104px);
   position: relative;
-  /* Lower z-index than the sticky mountain stage — section content
-     scrolls past UNDERNEATH the mountain (which stays anchored at the
-     top of viewport via the stage's higher z-index). */
-  z-index: 1;
   color: var(--ink-night-soft);
 }
 
