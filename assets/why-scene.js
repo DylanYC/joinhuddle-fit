@@ -63,13 +63,17 @@
   }
 
   /* ─── Scroll → progress ───────────────────────────────────────────────
-     progress = (scrollY - sceneTop) / (sceneHeight - viewportHeight).
-     Clamped. Updated only on scroll/resize. */
+     Progress is calculated against a FIXED scroll range (not the full
+     .scene height), so the mountain reveal animation completes early
+     even though .scene now contains the long science section. Mountain
+     reaches its locked state by the time progress hits 1.0, regardless
+     of how much the user keeps scrolling through the deep-dive. */
+  const MOUNTAIN_REVEAL_SVH = 0.6; // 60svh of scroll for full reveal
   let progress = 0;
   function updateProgress() {
     const rect = $scene.getBoundingClientRect();
     const sceneTop = rect.top + window.scrollY;
-    const span = $scene.offsetHeight - window.innerHeight;
+    const span = MOUNTAIN_REVEAL_SVH * window.innerHeight;
     if (span <= 0) { progress = 0; return; }
     progress = Math.max(0, Math.min(1, (window.scrollY - sceneTop) / span));
   }
@@ -995,11 +999,6 @@
   // fade in (SCIENCE_REVEAL = 0.55), so the user never feels lost about
   // what to do next.
   const HINT_FADE_OUT = 0.55;
-  // Science section fades in just before the ridge fully locks (0.6).
-  // The section is also pulled up via negative margin so it overlaps
-  // the canvas's bedrock area — the reveal makes it visually replace
-  // that dark void as the mountain settles into place.
-  const SCIENCE_REVEAL = 0.55;
   // Bottom text holds off until progress 0.75 — well past the ridge lock
   // (0.60), so the user has scrolled most of the way and the visual scene
   // is fully settled. The bedrock copy then arrives as the "landing" beat
@@ -1011,17 +1010,12 @@
     // we hide both overlays.
     const rect = $scene.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
-    const showTop     = inView && progress < TOP_FADE_OUT;
-    const showBot     = inView && progress > BOT_FADE_IN;
-    const showHint    = inView && progress < HINT_FADE_OUT;
-    // Science section stays revealed once shown — even when user scrolls
-    // past .scene (inView=false), the section should remain visible since
-    // it's now the primary content. Reveal is purely scroll-progress-gated.
-    const showScience = progress > SCIENCE_REVEAL;
-    if ($copyTop)     $copyTop    .classList.toggle('is-visible', showTop);
-    if ($copyBot)     $copyBot    .classList.toggle('is-visible', showBot);
-    if ($scrollHint)  $scrollHint .classList.toggle('is-hidden', !showHint);
-    if ($scienceDeep) $scienceDeep.classList.toggle('is-revealed', showScience);
+    const showTop  = inView && progress < TOP_FADE_OUT;
+    const showBot  = inView && progress > BOT_FADE_IN;
+    const showHint = inView && progress < HINT_FADE_OUT;
+    if ($copyTop)    $copyTop   .classList.toggle('is-visible', showTop);
+    if ($copyBot)    $copyBot   .classList.toggle('is-visible', showBot);
+    if ($scrollHint) $scrollHint.classList.toggle('is-hidden', !showHint);
   }
 
   /* ─── rAF loop with visibility guard ──────────────────────────────── */

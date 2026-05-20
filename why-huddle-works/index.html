@@ -39,16 +39,19 @@
   <a class="why-nav-cta" href="/#waitlist">Join Waitlist</a>
 </nav>
 
-<!-- The visual scene. A tall scroll spacer holds the sticky full-viewport
-     canvas. Text content (below) is pinned to viewport positions via
-     position:fixed and fades in/out at the right scroll moments, so the
-     copy always sits exactly where we want — never on top of the mountain. -->
+<!-- The visual scene. The sticky canvas + the science section live INSIDE
+     the same .scene container. As the user scrolls, the canvas stays
+     pinned to the top of the viewport while the science section scrolls
+     up over the canvas's bedrock area (z-index handles the overlap).
+     This eliminates the "giant gap" between mountain and science. -->
 <main class="scene" id="scene">
   <div class="scene-stage">
     <canvas class="scene-canvas" id="sceneCanvas" aria-hidden="true"></canvas>
     <div class="scene-hud" id="sceneHud" hidden></div>
   </div>
-</main>
+  <!-- Spacer: gives the mountain reveal animation room to play out
+       before the science section starts climbing over the canvas. -->
+  <div class="scene-spacer" aria-hidden="true"></div>
 
 <!-- Scroll-down hint — bouncing chevron at the bottom of the landing
      view, fades out the moment the user begins scrolling. -->
@@ -69,11 +72,11 @@
 </div>
 
 <!-- ─── SCIENCE SECTION ─────────────────────────────────────────────────
-     Long-form content that scrolls in naturally after the mountain
-     scene releases. Header (eyebrow + headline + sub) sits at the top
-     of the section in normal flow, with the core-finding card and the
-     three pillar cards stacked below it. Each block gently fades in
-     as it enters the viewport. -->
+     LIVES INSIDE .scene as a sibling of .scene-stage. While the canvas
+     stays sticky at the top of viewport, this section scrolls up from
+     below over the canvas's bedrock area — z-index 3 keeps it on top.
+     The mountain visually anchors the experience while the science
+     content climbs into view. -->
 <section class="science-deep" id="scienceDeep">
   <div class="science-inner">
 
@@ -137,6 +140,7 @@
 
   </div>
 </section>
+</main>
 
 <!-- Slim footer below the journey -->
 <footer class="why-footer">

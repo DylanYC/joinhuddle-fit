@@ -55,11 +55,9 @@
   --ink-night-soft: rgba(255,255,255,0.72);
   --ink-night-quiet:rgba(255,255,255,0.45);
 
-  /* Scene geometry — kept short on purpose now that the bedrock copy
-     has moved into the document-flow `.science-deep` section below.
-     Just enough scroll for the ridge to reveal + a brief payoff dwell,
-     then we hand off to the science section immediately. */
-  --scene-h:    150svh;
+  /* Scene height is determined by its children (the sticky canvas stage,
+     a spacer, and the science section). No longer a fixed value — the
+     mountain reveal scrolls over a fixed pixel range driven by JS. */
 
   /* Type scale (mobile-first) */
   --t-h1: clamp(34px, 8.5vw, 56px);
@@ -182,8 +180,8 @@ body {
 /* ───────────────────────── Scene container ────────────────────────────── */
 .scene {
   position: relative;
-  height: var(--scene-h);
   width: 100%;
+  /* Height auto — derived from sticky stage + spacer + science section. */
 }
 
 /* Sticky stage holds the canvas, pinned to the viewport for the scene's
@@ -444,9 +442,7 @@ body {
    than tall (the same svh translates to fewer absolute px above the
    block). Bottom overlay gets more bottom padding + a larger gap. */
 @media (min-width: 900px) {
-  :root { --scene-h: 120svh; }
   .copy-overlay--top { top: 22svh; }
-  .copy-overlay--bottom { bottom: 20svh; gap: 24px; }
 }
 
 /* ───────────────────────── Science deep-dive ──────────────────────────
@@ -458,25 +454,22 @@ body {
 .science-deep {
   background: var(--bedrock-bot);
   padding: clamp(56px, 9vw, 96px) var(--pad-x) clamp(64px, 10vw, 104px);
+  /* Lives INSIDE .scene as a sibling of the sticky .scene-stage.
+     z-index above the canvas so as this section scrolls up from below
+     during the canvas's sticky period, it overlays the canvas's dark
+     bedrock area — no visible "gap" between mountain and content. */
   position: relative;
-  /* Pull the section UP so it overlaps the canvas's bedrock area. Without
-     this, there's a giant dark void between the locked mountain and the
-     section start (because the canvas is full-viewport and the canvas's
-     dark bedrock fills 65svh below the ridge). z-index above the canvas
-     so the section visually replaces that bedrock area when revealed. */
-  margin-top: -75svh;
   z-index: 3;
-  /* Hidden until the user is at the payoff / lock moment, so it doesn't
-     show through during the landing/climb scroll. Fades in smoothly at
-     progress > 0.55, just before the ridge fully locks. */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
   color: var(--ink-night-soft);
 }
-.science-deep.is-revealed {
-  opacity: 1;
-  pointer-events: auto;
+
+/* Spacer between the canvas stage and the science section. Gives the
+   mountain reveal animation room to play out before the science begins
+   to scroll over the canvas. Height roughly matches the scroll distance
+   for the ridge to fully lock. */
+.scene-spacer {
+  height: 40svh;
+  background: var(--bedrock-bot);
 }
 .science-inner {
   max-width: 920px;
