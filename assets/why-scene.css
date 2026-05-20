@@ -452,24 +452,47 @@ body {
    borrowed from the v4 layout but restyled in Huddle's Inter type and
    brand palette. */
 .science-deep {
-  background: var(--bedrock-bot);
+  /* Background = bedrock-bot (matches the canvas's deepest bedrock color)
+     PLUS a star field via radial-gradient layers. The section is now a
+     VISUAL CONTINUATION of the canvas's starry bedrock — not a separate
+     "black box" sliding over the mountain. As the section scrolls up
+     over the canvas, the user perceives it as the bedrock extending
+     downward to hold the science content. */
+  background-color: var(--bedrock-bot);
+  background-image:
+    radial-gradient(1.2px 1.2px at 47px  73px,  rgba(255,255,255,0.85), transparent 70%),
+    radial-gradient(1px   1px   at 153px 209px, rgba(255,255,255,0.55), transparent 70%),
+    radial-gradient(1.5px 1.5px at 271px 119px, rgba(255,255,255,0.92), transparent 70%),
+    radial-gradient(1px   1px   at 389px 313px, rgba(255,255,255,0.70), transparent 70%),
+    radial-gradient(0.9px 0.9px at 79px  431px, rgba(255,255,255,0.50), transparent 70%),
+    radial-gradient(1.2px 1.2px at 217px 487px, rgba(255,255,255,0.78), transparent 70%),
+    radial-gradient(1px   1px   at 467px 197px, rgba(255,255,255,0.62), transparent 70%),
+    radial-gradient(1px   1px   at 593px 379px, rgba(255,255,255,0.75), transparent 70%),
+    radial-gradient(0.8px 0.8px at 711px 67px,  rgba(255,255,255,0.55), transparent 70%),
+    radial-gradient(1px   1px   at 803px 277px, rgba(255,255,255,0.68), transparent 70%),
+    radial-gradient(1.5px 1.5px at 113px 539px, rgba(255,255,255,0.88), transparent 70%),
+    radial-gradient(1px   1px   at 343px 607px, rgba(255,255,255,0.62), transparent 70%),
+    radial-gradient(1px   1px   at 541px 547px, rgba(255,255,255,0.80), transparent 70%),
+    radial-gradient(1px   1px   at 683px 661px, rgba(255,255,255,0.72), transparent 70%),
+    radial-gradient(0.8px 0.8px at 761px 731px, rgba(255,255,255,0.50), transparent 70%),
+    radial-gradient(1px   1px   at 317px 769px, rgba(255,255,255,0.82), transparent 70%),
+    radial-gradient(1.1px 1.1px at 427px 657px, rgba(255,255,255,0.65), transparent 70%),
+    radial-gradient(1px   1px   at 643px 137px, rgba(255,255,255,0.70), transparent 70%);
+  background-size: 900px 820px;
+  background-repeat: repeat;
   padding: clamp(56px, 9vw, 96px) var(--pad-x) clamp(64px, 10vw, 104px);
-  /* Lives INSIDE .scene as a sibling of the sticky .scene-stage.
-     z-index above the canvas so as this section scrolls up from below
-     during the canvas's sticky period, it overlays the canvas's dark
-     bedrock area — no visible "gap" between mountain and content. */
   position: relative;
   z-index: 3;
   color: var(--ink-night-soft);
 }
 
-/* Spacer between the canvas stage and the science section. Gives the
-   mountain reveal animation room to play out before the science begins
-   to scroll over the canvas. Height roughly matches the scroll distance
-   for the ridge to fully lock. */
+/* Spacer — transparent now, so it just provides flow spacing without
+   painting a visible dark strip over the canvas. The canvas (sticky)
+   shows through this region while the user scrolls through the
+   mountain reveal. */
 .scene-spacer {
   height: 40svh;
-  background: var(--bedrock-bot);
+  background: transparent;
 }
 .science-inner {
   max-width: 920px;
