@@ -109,27 +109,28 @@
      supporting sub-cards beneath it. -->
 <section class="science-section" id="scienceSection">
   <div class="science-inner">
-    <!-- Anchor block: 84svh tall, header sits at its bottom so the
-         natural-flow header's bottom edge lines up with the fixed
-         copyBot's bottom edge at the handoff moment. -->
-    <div class="science-anchor">
-      <div class="science-header" id="scienceHeader" aria-hidden="true">
-        <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
-        <p class="overlay-lede overlay-lede--dark">Consistency improves when you make a plan — and, more importantly, share it.</p>
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-prefix" aria-hidden="true" style="visibility:hidden">Only</div>
-            <div class="stat-num">76%</div>
-            <div class="stat-label">succeeded when they wrote it down + shared it</div>
-          </div>
-          <div class="stat stat--quiet">
-            <div class="stat-prefix">Only</div>
-            <div class="stat-num stat-num--quiet">43%</div>
-            <div class="stat-label">succeeded when they kept it in their head</div>
-          </div>
+    <!-- Natural-flow mirror of the fixed copyBot. Sits at the top of
+         the section (no anchor padding above) so the finding card and
+         sub-cards immediately follow it as the user scrolls past the
+         handoff. The handoff scroll position is computed in JS from
+         this element's measured height so its bottom edge lines up with
+         the fixed copyBot's bottom anchor at the crossfade moment. -->
+    <div class="science-header" id="scienceHeader" aria-hidden="true">
+      <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
+      <p class="overlay-lede overlay-lede--dark">Consistency improves when you make a plan — and, more importantly, share it.</p>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-prefix" aria-hidden="true" style="visibility:hidden">Only</div>
+          <div class="stat-num">76%</div>
+          <div class="stat-label">succeeded when they wrote it down + shared it</div>
         </div>
-        <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener" tabindex="-1">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
+        <div class="stat stat--quiet">
+          <div class="stat-prefix">Only</div>
+          <div class="stat-num stat-num--quiet">43%</div>
+          <div class="stat-label">succeeded when they kept it in their head</div>
+        </div>
       </div>
+      <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener" tabindex="-1">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
     </div>
 
     <!-- Core finding — the headline research result. Larger, more

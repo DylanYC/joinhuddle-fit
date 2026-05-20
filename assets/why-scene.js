@@ -1023,14 +1023,21 @@
     const showHint = inView && progress < HINT_FADE_OUT;
 
     // ─── Handoff math ────────────────────────────────────────────────
-    // The fixed copyBot fades out as the natural-flow header (inside
-    // .science-section's .science-anchor) fades in, over a 5svh band
-    // ending at the moment .scene's bottom edge crosses the viewport
-    // top. At that moment the natural-flow header's BOTTOM sits at the
-    // same viewport y (84svh from top) as the fixed copyBot's BOTTOM
-    // anchor, so the crossfade is visually invisible.
+    // The fixed copyBot fades out as the natural-flow header (the first
+    // child of .science-section) fades in. The handoff is timed so it
+    // ends exactly when the natural-flow header's BOTTOM edge has
+    // scrolled up to viewport y = 84svh — which is where the fixed
+    // copyBot's bottom anchor sits (bottom: 16svh → 100svh - 16svh =
+    // 84svh from viewport top). At that moment both versions sit at
+    // identical viewport positions and the crossfade is invisible.
     //
-    // To eliminate the tiny y-offset that exists DURING the band (the
+    // Computed dynamically from the natural-flow header's measured
+    // height so it adapts to whatever the content reflows to on any
+    // viewport size. After handoff the natural-flow header just keeps
+    // scrolling up with the page and the finding card immediately
+    // follows it into view.
+    //
+    // To eliminate the y-offset that exists DURING the band (the
     // natural-flow element is moving with the page; the fixed one isn't),
     // we translate the natural-flow header upward by the remaining band
     // distance — at the band's start it's lifted by the full band, at
@@ -1038,8 +1045,12 @@
     // perfectly aligned throughout.
     const sceneBottomPageY = rect.bottom + window.scrollY;
     const bandPx = getHandoffBandPx();
+    const headerH = $scienceHeader ? $scienceHeader.offsetHeight : 0;
+    const targetBottomFromTop = 0.84 * window.innerHeight; // matches copyBot's bottom: 16svh
+    const handoffEndY = sceneBottomPageY + headerH - targetBottomFromTop;
+    const handoffStartY = handoffEndY - bandPx;
     const handoffT = bandPx > 0
-      ? Math.max(0, Math.min(1, (window.scrollY - (sceneBottomPageY - bandPx)) / bandPx))
+      ? Math.max(0, Math.min(1, (window.scrollY - handoffStartY) / bandPx))
       : 0;
 
     // copyBot fade-in: tiny ramp starting at BOT_FADE_IN. Combined with

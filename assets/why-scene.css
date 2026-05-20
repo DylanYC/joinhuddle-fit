@@ -457,18 +457,9 @@ body {
   padding: 0 var(--pad-x) clamp(60px, 10vw, 120px);
   display: flex;
   flex-direction: column;
-  gap: clamp(36px, 6vw, 56px);
+  gap: clamp(28px, 4vw, 44px);
 }
 
-/* Anchor block — height tuned so the header's bottom lands at viewport
-   84svh (matching the fixed copyBot) at the moment .scene exits the
-   viewport. Header sits at its bottom via justify-content:flex-end. */
-.science-anchor {
-  min-height: 84svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
 .science-header {
   display: flex;
   flex-direction: column;
