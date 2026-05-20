@@ -55,12 +55,11 @@
   --ink-night-soft: rgba(255,255,255,0.72);
   --ink-night-quiet:rgba(255,255,255,0.45);
 
-  /* Scene geometry — held composition with enough scroll room for the
-     bedrock copy to settle CLEARLY in the dark area below the mountain.
-     The ridge crosses the viewport in the first ~55% of scroll, then
-     locks at the payoff frame while bedrock content (headline, stats,
-     CTA) scrolls past inside the dark half. */
-  --scene-h:    290svh;
+  /* Scene geometry — kept short on purpose now that the bedrock copy
+     has moved into the document-flow `.science-deep` section below.
+     Just enough scroll for the ridge to reveal + a brief payoff dwell,
+     then we hand off to the science section immediately. */
+  --scene-h:    150svh;
 
   /* Type scale (mobile-first) */
   --t-h1: clamp(34px, 8.5vw, 56px);
@@ -75,6 +74,16 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  /* Smooth scroll for any programmatic / anchor jumps, and reserve the
+     fixed-nav height when scrolling to in-page anchors. */
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 html, body {
   background: var(--sky-top-day);
@@ -432,7 +441,7 @@ body {
    than tall (the same svh translates to fewer absolute px above the
    block). Bottom overlay gets more bottom padding + a larger gap. */
 @media (min-width: 900px) {
-  :root { --scene-h: 200svh; }
+  :root { --scene-h: 120svh; }
   .copy-overlay--top { top: 22svh; }
   .copy-overlay--bottom { bottom: 20svh; gap: 24px; }
 }
