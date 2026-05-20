@@ -202,14 +202,6 @@ body {
   height: 100%;
   display: block;
 }
-/* Holds the sticky stage pinned for an additional 60svh of scroll so the
-   mountain-reveal animation has room to play out before the stage
-   releases. Painted in bedrock-bot so the canvas's dark bedrock band
-   continues seamlessly into the spacer (no visible seam). */
-.scene-spacer {
-  height: 60svh;
-  background-color: var(--bedrock-bot);
-}
 .scene-hud {
   position: absolute;
   left: 12px; bottom: 12px;
