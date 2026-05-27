@@ -377,6 +377,24 @@ body {
   transform: translateX(-50%);
 }
 
+/* Credentials variant — three small-credential stats (e.g. participants,
+   studies, year) instead of the two dramatic percentages. The numbers
+   stay the visual anchor of the section but step down a tier so three
+   fit a single row at every breakpoint; the midline divider that the
+   two-stat layout uses is suppressed (it was positioned absolutely at
+   left:50% of the row, which only made sense between exactly two
+   stats). Tighter per-stat max-width keeps the row from sprawling on
+   wide viewports. */
+.stats-row--credentials .stat-num {
+  font-size: clamp(28px, 9vw, 60px);
+}
+.stats-row--credentials .stat {
+  max-width: 200px;
+}
+.stats-row--credentials .stat + .stat::before {
+  display: none;
+}
+
 /* Now an <a> linking out to the study PDF — keep the muted styling but
    add a subtle underline + hover lift so it reads as a citation link
    without competing with the stats above. */

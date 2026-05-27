@@ -74,22 +74,30 @@
      the dark area is on-screen, fades out when scene exits. -->
 <div class="copy-overlay copy-overlay--bottom" id="copyBot">
   <h2 class="overlay-h2">Underneath, the science is rock solid.</h2>
-  <p class="overlay-lede overlay-lede--dark">Consistency improves when you make a plan — and, more importantly, share it.</p>
-  <div class="stats-row">
+  <p class="overlay-lede overlay-lede--dark">Telling the right people you're going to do something makes you more likely to actually do it.</p>
+  <!-- Three-credential row replacing the previous two-percentage block.
+       Reuses .stats-row / .stat / .stat-num / .stat-label structure so
+       all base styling (brand indigo gradient on the number, label
+       treatment, centered flex row) carries over. The
+       .stats-row--credentials modifier sizes the numbers a touch smaller
+       (so three fit a single row at all breakpoints) and suppresses the
+       single midline divider that the two-stat layout used. Placeholder
+       copy; voice pass later. -->
+  <div class="stats-row stats-row--credentials">
     <div class="stat">
-      <!-- Invisible spacer matching the "Only" prefix on the right stat,
-           so 76% and 43% sit at the same vertical baseline. -->
-      <div class="stat-prefix" aria-hidden="true" style="visibility:hidden">Only</div>
-      <div class="stat-num">76%</div>
-      <div class="stat-label">succeeded when they wrote it down + shared it</div>
+      <div class="stat-num">1,035</div>
+      <div class="stat-label">participants</div>
     </div>
-    <div class="stat stat--quiet">
-      <div class="stat-prefix">Only</div>
-      <div class="stat-num stat-num--quiet">43%</div>
-      <div class="stat-label">succeeded when they kept it in their head</div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">longitudinal studies</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2025</div>
+      <div class="stat-label">peer-reviewed</div>
     </div>
   </div>
-  <a class="stats-source" href="https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf" target="_blank" rel="noopener">Study of 267 people · Dr. Gail Matthews, Dominican University</a>
+  <p class="stats-source">Peetz, Buehler &amp; Wells · Personality and Social Psychology Bulletin</p>
 </div>
 
 <!-- Slim footer below the journey -->
