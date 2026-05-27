@@ -395,20 +395,25 @@ body {
   display: none;
 }
 
-/* Now an <a> linking out to the study PDF — keep the muted styling but
-   add a subtle underline + hover lift so it reads as a citation link
-   without competing with the stats above. */
+/* Citation line — plain text by default, with an inline <a> for the
+   journal name (linked to the DOI). The base <p> is no longer
+   underlined as a whole; the underline + hover lift now live on the
+   nested anchor only, so the authors / separator render as plain muted
+   text and only the journal name reads as a clickable citation. */
 .stats-source {
   font-size: clamp(10px, 2.4vw, 12px);
   color: var(--ink-night-quiet);
   letter-spacing: 0.04em;
+}
+.stats-source a {
+  color: inherit;
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, 0.18);
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
   transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
-.stats-source:hover {
+.stats-source a:hover {
   color: var(--ink-night-soft);
   text-decoration-color: rgba(255, 255, 255, 0.4);
 }
