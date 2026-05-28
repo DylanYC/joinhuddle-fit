@@ -405,17 +405,27 @@ body {
   color: var(--ink-night-quiet);
   letter-spacing: 0.04em;
 }
-.stats-source a {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.18);
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
+.stats-source a,
+.stats-source a:visited {
+  /* Explicit color (not `inherit`) because browsers special-case
+     :visited and won't honor inherited color for privacy reasons,
+     which is what was bleeding the default purple/indigo into the
+     journal name. Both unvisited and visited links sit at the same
+     muted quiet that the surrounding "Peetz, Buehler & Wells ·" text
+     uses, so the line reads as one uniform subtle-grey string at
+     rest. */
+  color: var(--ink-night-quiet);
+  text-decoration: none;
   transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 .stats-source a:hover {
+  /* Only on hover does the link become discoverable: a touch brighter
+     and a subtle underline appears. */
   color: var(--ink-night-soft);
+  text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
 .cta-lede {
