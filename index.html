@@ -676,7 +676,10 @@
     --r-indigo:#5b54e8; --r-wash:#ece9ff;
     background:var(--r-sky);
     transition:background .6s ease;
-    padding:0 0 30px;
+    /* pull up behind the floating nav so the sky reaches the top edge
+       (margin-top is cancelled by an equal padding-top — content stays put) */
+    margin-top:-64px;
+    padding:64px 0 30px;
   }
   /* soft fade so the bright sky blends into the next section's bg */
   .rhero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:160px;z-index:1;pointer-events:none;
