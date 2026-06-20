@@ -135,7 +135,7 @@ body {
   font-weight: 500;
 }
 .why-nav-links a:hover { color: rgba(255, 255, 255, 0.95); }
-/* Active page indicator — bright white + bold with a Huddle-blue
+/* Active page indicator — bright white + bold with a Risers-blue
    underline below the text. The dark purple alone got lost against the
    dark frosted-glass nav background; this combo reads clearly while
    keeping the brand color as the actual "current page" marker. */
@@ -275,7 +275,7 @@ body {
   max-width: 720px;
   margin: 0 auto;
 }
-/* Second line of the landing headline — bright Huddle blue accent. */
+/* Second line of the landing headline — bright Risers blue accent. */
 .overlay-h1-accent {
   color: var(--brand-primary);
 }
@@ -286,7 +286,7 @@ body {
   max-width: var(--col-max);
   margin: 20px auto 0;
 }
-/* Inline accent phrase inside the landing lede — BRIGHTER Huddle blue
+/* Inline accent phrase inside the landing lede — BRIGHTER Risers blue
    so the closing tagline pops as the visual emphasis. */
 .overlay-lede-accent {
   color: var(--brand-primary);

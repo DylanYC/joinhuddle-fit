@@ -734,10 +734,10 @@
     ctx.restore();
   }
 
-  /* CLIMB DOTS — small Huddle-purple data points at every JAGGED-section
+  /* CLIMB DOTS — small Risers-purple data points at every JAGGED-section
      control point that doesn't already have a big blue ball. Reinforces
      the "plotted progress chart" reading and gives the right-side ridge
-     line its dot-marker character à la WHY slide 1's Huddle line. */
+     line its dot-marker character à la WHY slide 1's Risers line. */
   function paintClimbDots(state, geom, climb) {
     const dotR = Math.max(3.5, w * 0.0035);
     const ballSet = new Set([
@@ -757,7 +757,7 @@
     ctx.restore();
   }
 
-  /* BLUE BALLS — 4 Huddle-purple balls statically placed on the back
+  /* BLUE BALLS — 4 Risers-purple balls statically placed on the back
      mountain's ridge line in stair-step formation. Each one bobs up
      and down on a sine wave with its own phase offset so they feel
      alive in place without animating along the path. Reduced-motion
