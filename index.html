@@ -170,6 +170,69 @@
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
+  /* THE STANCE — the hero→carousel seam. The competitive noise drops & dims;
+     the proof rises. Quiet by design: muted negations, one-shot reveal, ~10px
+     of motion. Flat DOM so .is-calm can reflow the same spans into a 2-liner. */
+  .stance{padding:48px 24px 20px;display:flex;justify-content:center;}
+  .stance-inner{position:relative;width:100%;max-width:560px;}
+  /* horizon hairline — carries the hero's rising rays into the band, sweeps once */
+  .stance-rule{display:block;height:1px;width:100%;margin:0 0 28px;opacity:0;transform:scaleX(0);transform-origin:left center;
+    background:linear-gradient(90deg,transparent,var(--accent) 18%,var(--accent2) 50%,var(--accent) 82%,transparent);}
+  .stance.is-in .stance-rule{animation:stance-horizon .56s cubic-bezier(.22,.61,.36,1) forwards;}
+  @keyframes stance-horizon{0%{transform:scaleX(0);opacity:0;}60%{opacity:.7;}100%{transform:scaleX(1);opacity:.5;}}
+
+  .stance-rows{display:grid;grid-template-columns:1fr auto 1fr;column-gap:18px;row-gap:14px;align-items:baseline;}
+  /* the dropped noise — thin, muted, subordinate */
+  .stance-no{justify-self:end;text-align:right;font-size:clamp(15px,2.4vw,18px);font-weight:400;letter-spacing:.2px;
+    color:var(--text2);white-space:nowrap;position:relative;opacity:0;}
+  /* strike-draw: a single accent line wipes across, then settles faint */
+  .stance-no::after{content:'';position:absolute;left:0;right:0;top:54%;height:1.5px;border-radius:2px;
+    background:var(--accent2);transform:scaleX(0);transform-origin:left center;opacity:0;}
+  .stance-arrow{justify-self:center;align-self:center;width:24px;height:1px;background:var(--text3);position:relative;opacity:0;}
+  .stance-arrow::after{content:'';position:absolute;right:-1px;top:-2.5px;width:5px;height:5px;
+    border-top:1px solid var(--text3);border-right:1px solid var(--text3);transform:rotate(45deg);}
+  /* the risen proof — bold, full-strength, leads the eye */
+  .stance-yes{justify-self:start;text-align:left;font-size:clamp(17px,2.8vw,21px);font-weight:800;letter-spacing:-.4px;
+    color:var(--text1);white-space:nowrap;opacity:0;transform:translateY(10px);}
+  .stance-yes em{font-style:normal;color:var(--accent2);}
+
+  /* choreography — staggered 140ms per pair (ease-out, no bounce) */
+  .stance.is-in .stance-no{animation:stance-dim .5s ease-out forwards;animation-delay:calc(.18s + var(--si)*.14s);}
+  .stance.is-in .stance-no::after{animation:stance-strike .42s cubic-bezier(.22,.61,.36,1) forwards;animation-delay:calc(.2s + var(--si)*.14s);}
+  .stance.is-in .stance-arrow{animation:stance-fade .5s ease-out forwards;animation-delay:calc(.32s + var(--si)*.14s);}
+  .stance.is-in .stance-yes{animation:stance-rise .55s cubic-bezier(.22,.61,.36,1) forwards;animation-delay:calc(.3s + var(--si)*.14s);}
+  @keyframes stance-rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes stance-dim{from{opacity:0;}to{opacity:1;}}
+  @keyframes stance-fade{to{opacity:.55;}}
+  @keyframes stance-strike{0%{transform:scaleX(0);opacity:0;}30%{opacity:.9;}100%{transform:scaleX(1);opacity:.5;}}
+
+  /* .is-calm — the lighter A/B: no horizon, no strike, no connector; the spans
+     reflow into a single muted line above a single risen line, centered. */
+  .stance.is-calm .stance-rule,.stance.is-calm .stance-arrow,.stance.is-calm .stance-no::after{display:none;}
+  .stance.is-calm .stance-rows{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;}
+  .stance.is-calm .stance-no{order:1;white-space:nowrap;}
+  .stance.is-calm .stance-yes{order:2;white-space:nowrap;}
+  /* force a clean break between the muted negation line and the risen line */
+  .stance.is-calm .stance-rows::after{content:'';order:1;flex-basis:100%;height:0;}
+
+  @media (prefers-reduced-motion: reduce){
+    .stance-rule{transform:scaleX(1);opacity:.4;animation:none;}
+    .stance-no,.stance-yes{opacity:1 !important;transform:none !important;animation:none !important;}
+    .stance-no::after{transform:scaleX(1);opacity:.5;animation:none;}
+    .stance-arrow{opacity:.55;animation:none;}
+  }
+  @media (max-width:600px){
+    .stance{padding:34px 20px 14px;}
+    .stance-rule{margin-bottom:20px;}
+    .stance-rows{grid-template-columns:1fr;justify-items:center;row-gap:2px;}
+    .stance-arrow{display:none;}
+    .stance-no{justify-self:center;text-align:center;white-space:normal;margin-top:12px;}
+    .stance-no:first-of-type{margin-top:0;}
+    .stance-yes{justify-self:center;text-align:center;white-space:normal;}
+    .stance.is-calm .stance-rows{gap:2px 10px;}
+    .stance.is-calm .stance-no{margin-top:0;}
+  }
+
   /* THE LOOP — "How Risers Works".
      Dia-style pattern: section has NO artificial height. The right column is
      just three stacked scene rows; the left column has a small sticky nav
@@ -1081,6 +1144,26 @@
           </div>
           <div class="rhero-slabel" id="rSlabel">Capturing the proof</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1.5  THE STANCE — drop the noise, rise into proof -->
+  <section class="stance" id="stance" aria-label="What Risers is, and isn't">
+    <div class="stance-inner">
+      <span class="stance-rule" aria-hidden="true"></span>
+      <div class="stance-rows">
+        <span class="stance-no" style="--si:0">No Stats.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:0"></span>
+        <span class="stance-yes" style="--si:0">Just <em>proof.</em></span>
+
+        <span class="stance-no" style="--si:1">No Leaderboards.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:1"></span>
+        <span class="stance-yes" style="--si:1">Just <em>inspiring.</em></span>
+
+        <span class="stance-no" style="--si:2">No Competing.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:2"></span>
+        <span class="stance-yes" style="--si:2">Just <em>rising together.</em></span>
       </div>
     </div>
   </section>
@@ -2191,6 +2274,23 @@ cOuter.addEventListener('click', (e) => {
   document.addEventListener('visibilitychange', () => {
     hidden = document.hidden;
   });
+})();
+
+// =============================================================================
+// THE STANCE — reveal the drop/rise band once, when it scrolls into view.
+// =============================================================================
+(function () {
+  const el = document.getElementById('stance');
+  if (!el) return;
+  const reveal = () => el.classList.add('is-in');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { reveal(); io.disconnect(); }
+    }, { threshold: 0.35 });
+    io.observe(el);
+  } else {
+    reveal();
+  }
 })();
 
 // =============================================================================
