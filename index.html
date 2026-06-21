@@ -444,9 +444,10 @@
   .footer{padding:36px 40px;border-top:1px solid var(--footer-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
   .fl{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--text2);}
   .fl img{height:28px;width:auto;display:block;}
-  .fl .logo-mark{fill:#6F75FF;}
-  .fl .logo-word{fill:#ECEAFD;transition:fill .4s;}
-  .light .fl .logo-word{fill:#0A0F81;}
+  /* footer logo: white wordmark in dark, brand-indigo wordmark in light (icon stays #6F75FF in both) */
+  .fl .fl-light{display:none;}
+  .light .fl .fl-light{display:block;}
+  .light .fl .fl-dark{display:none;}
   .fd{font-size:13px;color:var(--text3);}
   .flinks{display:flex;gap:20px;font-size:13px;color:var(--text3);list-style:none;}
   .flinks a{color:inherit;text-decoration:none;transition:color .2s;}
@@ -1356,7 +1357,8 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="fl">
-      <img src="assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
+      <img class="fl-dark" src="assets/Risers-Logo-Dark-Icon+Wordmark.svg" alt="Risers" width="120" height="28">
+      <img class="fl-light" src="assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
     </div>
     <div class="fd">risers.fit</div>
     <ul class="flinks"><li><a href="/privacy">Privacy Policy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul>
