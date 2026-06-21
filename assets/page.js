@@ -37,7 +37,30 @@ window.toggleMode = function () {
 
 const nav = document.querySelector('.nav');
 if (nav) {
-  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  // Hysteresis: add 'scrolled' past ENTER, remove only below EXIT. The dead
+  // zone between the two thresholds stops the class from oscillating (and
+  // restarting the transition) when scroll jitter hovers near the boundary.
+  const ENTER = 40;
+  const EXIT = 10;
+  let scrolled = false;
+  let ticking = false;
+  const apply = () => {
+    ticking = false;
+    const y = window.scrollY;
+    if (!scrolled && y > ENTER) {
+      scrolled = true;
+      nav.classList.add('scrolled');
+    } else if (scrolled && y < EXIT) {
+      scrolled = false;
+      nav.classList.remove('scrolled');
+    }
+  };
+  const onScroll = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+  };
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  apply();
 }
