@@ -946,7 +946,7 @@
           <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
           <div class="ref-callout" id="heroPerk" hidden></div>
           <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
-          <div class="rhero-soc"><span class="dot"></span>Coming this year · <b>1,400+</b> already lining up</div>
+          <div class="rhero-soc" id="rheroSoc"><span class="dot"></span>Coming this year</div>
         </div>
       </div>
 
@@ -2684,6 +2684,38 @@ async function fetchCount(code) {
   } catch { return 0; }
 }
 
+// ---- real waitlist total (honest social proof) ----
+// Stored as a single counter doc in the already client-readable/writable
+// waitlistCounts collection. Key uses underscores so it can never collide
+// with a generated 5-char referral code. Seed once with the real current
+// signup count; it then increments on each new signup.
+const TOTAL_KEY = '__total__';
+let waitlistTotal = null;
+async function fetchTotal() {
+  try {
+    const snap = await getDoc(doc(db, 'waitlistCounts', TOTAL_KEY));
+    return snap.exists() ? (snap.data().count || 0) : 0;
+  } catch { return 0; }
+}
+function renderTotal(n) {
+  if (typeof n === 'number') waitlistTotal = n;
+  const el = document.getElementById('rheroSoc');
+  if (!el) return;
+  if (waitlistTotal && waitlistTotal > 0) {
+    el.innerHTML = '<span class="dot"></span>Coming this year · <b>'
+      + waitlistTotal.toLocaleString() + '</b> already lining up';
+  } else {
+    el.innerHTML = '<span class="dot"></span>Coming this year';
+  }
+}
+async function bumpTotal() {
+  // best-effort; must never block or break a signup
+  try {
+    await setDoc(doc(db, 'waitlistCounts', TOTAL_KEY),
+      { count: increment(1), updatedAt: serverTimestamp() }, { merge: true });
+  } catch (_) { /* counter not writable yet — ignore */ }
+}
+
 async function validateRefCode(code) {
   if (!/^[A-Z0-9]{5}$/.test(code || '')) return false;
   try {
@@ -2719,6 +2751,8 @@ async function submitSignup(email, referredBy) {
     );
   }
   await batch.commit();
+  bumpTotal();                                           // fire-and-forget global counter
+  if (waitlistTotal && waitlistTotal > 0) renderTotal(waitlistTotal + 1); // optimistic UI
   return { email: normalized, referralCode, referredBy: effectiveReferredBy };
 }
 
@@ -2968,4 +3002,7 @@ shareCopyBtn.addEventListener('click', async () => {
     showInboundSocialProof(refCode);
   }
 })();
+
+// Honest social proof: show the real signup total if the counter is seeded.
+fetchTotal().then(renderTotal);
 </script>
