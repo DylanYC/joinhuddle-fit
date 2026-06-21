@@ -1376,12 +1376,33 @@
 (function(){
   const nav = document.querySelector('.nav');
   if (!nav) return;
-  const THRESHOLD = 16;
+  // Hysteresis: go floating past ENTER, return to flat only below EXIT. The
+  // dead zone between them stops the class from oscillating (and restarting the
+  // transition) when scroll jitter — or the nav's own height change — hovers
+  // near a single boundary. rAF coalesces bursts of scroll events.
+  const ENTER = 40;
+  const EXIT = 10;
+  let scrolled = false;
+  let ticking = false;
+  function apply() {
+    ticking = false;
+    const y = window.scrollY;
+    if (!scrolled && y > ENTER) {
+      scrolled = true;
+      nav.classList.add('scrolled');
+    } else if (scrolled && y < EXIT) {
+      scrolled = false;
+      nav.classList.remove('scrolled');
+    }
+  }
   function update() {
-    nav.classList.toggle('scrolled', window.scrollY > THRESHOLD);
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
   }
   window.addEventListener('scroll', update, {passive: true});
-  update();
+  apply();
 })();
 
 // Smooth scroll: snappy departure, soft landing (easeOutQuart)
