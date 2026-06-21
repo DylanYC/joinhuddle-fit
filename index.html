@@ -853,9 +853,10 @@
     background:linear-gradient(160deg,#1b1a26,#0c0c14);
     box-shadow:0 50px 90px -30px rgba(40,50,110,.5),0 8px 24px rgba(40,50,110,.18);}
   .light .rhero-phone-body{background:linear-gradient(160deg,#1b1a26,#0c0c14);}
-  .rhero-screen{position:relative;width:100%;height:100%;border-radius:34px 34px 20px 20px;overflow:hidden;background:var(--p-screen);transition:background .6s ease;}
+  .rhero-screen{position:relative;width:100%;height:100%;border-radius:34px 34px 20px 20px;overflow:hidden;background:var(--p-screen);transition:background .6s ease;transform:translateZ(0);}
   .rhero-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:84px;height:23px;background:#0b0b12;border-radius:12px;z-index:8;}
-  .rhero-pane{position:absolute;inset:0;background:var(--p-screen);opacity:0;visibility:hidden;font-family:'Inter',sans-serif;}
+  /* panes carry the screen's own rounded corners + clip so a fading (compositor-promoted) pane can never flash square corners outside the phone */
+  .rhero-pane{position:absolute;inset:0;background:var(--p-screen);opacity:0;visibility:hidden;font-family:'Inter',sans-serif;border-radius:34px 34px 20px 20px;overflow:hidden;}
   .rhero-pane.on{opacity:1;visibility:visible;animation:rScreenIn .45s ease;}
 
   /* phone bits */
