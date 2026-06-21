@@ -731,24 +731,24 @@
   /* ---- section shell + theme tokens ---- */
   .rhero{
     position:relative; overflow:hidden; isolation:isolate;
-    /* DARK / night (default theme) — deep navy-blue to match the in-app dark mode */
-    --r-sky: linear-gradient(180deg,#070a14 0%,#0a1024 30%,#0e1836 54%,#12214a 74%,#0a1230 100%);
-    --r-bloom: radial-gradient(closest-side, rgba(82,112,240,.30), rgba(82,112,240,.08) 46%, transparent 74%);
-    --r-dawn: radial-gradient(closest-side, rgba(255,168,128,.12), rgba(86,124,232,.22) 46%, transparent 80%);
-    --r-ray: rgba(150,180,255,.40);
-    --r-cloud: rgba(80,116,235,.16);
+    /* DARK / night (default theme) — brand indigo (#0A0F81 deep, #646AFF accent) */
+    --r-sky: linear-gradient(180deg,#06070f 0%,#080a22 30%,#0b0e39 54%,#0d1153 74%,#080a26 100%);
+    --r-bloom: radial-gradient(closest-side, rgba(100,106,255,.30), rgba(100,106,255,.08) 46%, transparent 74%);
+    --r-dawn: radial-gradient(closest-side, rgba(255,168,128,.11), rgba(100,106,255,.20) 46%, transparent 80%);
+    --r-ray: rgba(150,156,255,.40);
+    --r-cloud: rgba(100,106,255,.15);
     --r-head:#ffffff;
-    --r-accent:#6f7cff;
+    --r-accent:#646aff;
     --r-sub: rgba(255,255,255,.66);
     --r-sub-strong:#ffffff;
-    --r-guide: rgba(96,124,255,.30);
+    --r-guide: rgba(100,106,255,.30);
     --r-card-bg: rgba(26,23,44,.55);
     --r-card-bd: rgba(255,255,255,.13);
     --r-card-blur: 16px;
     --r-card-sh: 0 26px 60px -18px rgba(0,0,0,.6);
     /* phone (app dark mode) */
     --p-screen:#131221; --p-text:#ffffff; --p-mute:rgba(255,255,255,.52); --p-card:#1e1c2e; --p-card-sh:none;
-    --p-line: rgba(255,255,255,.08); --p-wash: rgba(96,124,255,.2);
+    --p-line: rgba(255,255,255,.08); --p-wash: rgba(100,106,255,.2);
     --r-indigo:#5b54e8; --r-wash:#ece9ff;
     background:var(--r-sky);
     transition:background .6s ease;
