@@ -245,7 +245,7 @@
   /* Scene 3 — celebration feed card */
   .loop-feed-card{width:352px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.05);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);}
   .loop-feed-header{padding:16px 16px 12px;display:flex;align-items:center;gap:10px;}
-  .loop-feed-av{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
+  .loop-feed-av{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;box-shadow:0 0 0 2px #5b54e8;}
   .loop-feed-av img{width:100%;height:100%;object-fit:cover;display:block;}
   .loop-feed-user{flex:1;min-width:0;}
   .loop-feed-name{font-size:13px;font-weight:700;color:#1C1C1C;letter-spacing:-.1px;}
@@ -473,6 +473,7 @@
   .proof-avatars{display:flex;}
   .proof-av{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;margin-left:-5px;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
   .proof-av:first-child{margin-left:0;}
+  .proof-av.is-you{border-color:#5b54e8;position:relative;z-index:2;}
   .proof-av img{width:100%;height:100%;object-fit:cover;display:block;}
 
   /* PHONE */
@@ -768,6 +769,7 @@
   .rhero-icbody{background:var(--r-card-bg);backdrop-filter:blur(var(--r-card-blur));-webkit-backdrop-filter:blur(var(--r-card-blur));border:1px solid var(--r-card-bd);border-radius:16px;padding:13px 16px;box-shadow:var(--r-card-sh);}
   .rhero-icthumbs{display:flex;align-items:center;height:22px;margin-bottom:9px;}
   .rhero-icthumbs span{width:22px;height:22px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--p-card);}
+  .rhero-icthumbs span.me{box-shadow:0 0 0 2px var(--r-indigo);position:relative;z-index:2;}
   .rhero-icthumbs span+span{margin-left:-7px;}
   .rhero-icthumbs span img{width:100%;height:100%;object-fit:cover;display:block;}
   .rhero-icthumbs .more{background:var(--r-wash);color:var(--r-indigo);font-family:'Inter',sans-serif;font-weight:700;font-size:9.5px;display:flex;align-items:center;justify-content:center;}
@@ -1554,7 +1556,7 @@ cOuter.addEventListener('click', (e) => {
   const proofTasks = [
     {
       emoji:'🏃', name:'Morning run — 5km', time:'7:00am',
-      viewers:[ AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Partner_Klaudia.png' ],
+      viewers:[ AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Family_Rachael.png' ],
       ts:'6:14 AM', caption:'morning run · 6:14 am',
       glowColor:'#ea580c', bgClass:'proof-bg-0',
       mediaSrc: null, mediaType: 'image',
@@ -1616,7 +1618,7 @@ cOuter.addEventListener('click', (e) => {
     },
     {
       emoji:'🧘', name:'Evening stretch', time:'9:00pm',
-      viewers:[ AV+'MainUser_Dylan.png', AV+'Partner_Klaudia.png', AV+'Partner_Klaudia.png' ],
+      viewers:[ AV+'MainUser_Dylan.png', AV+'Partner_Klaudia.png', AV+'Family_Gisela.png' ],
       ts:'9:03 PM', caption:'evening stretch · 9:03 pm',
       glowColor:'#a855f7', bgClass:'proof-bg-4',
       mediaSrc: null, mediaType: 'image',
@@ -1704,7 +1706,7 @@ cOuter.addEventListener('click', (e) => {
   function buildCardInner(idx) {
     const t = proofTasks[pMod(idx, proofTasks.length)];
     const avs = t.viewers.slice(0, 4).map(src =>
-      `<div class="proof-av"><img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background='#CFD1FF';this.remove();"></div>`
+      `<div class="proof-av${src.indexOf('MainUser_Dylan')!==-1?' is-you':''}"><img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background='#CFD1FF';this.remove();"></div>`
     ).join('');
     return (
       '<div class="proof-card-row1">' +
@@ -2225,7 +2227,7 @@ cOuter.addEventListener('click', (e) => {
   const stackCards = [
     {
       emoji:'🏃', name:'Morning run — 5km', time:'7:00am',
-      viewers:[AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Partner_Klaudia.png'],
+      viewers:[AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Crew_Leila.png'],
       cls:'loop-card-front'
     },
     {
@@ -2241,7 +2243,8 @@ cOuter.addEventListener('click', (e) => {
   ];
 
   function avMarkup(src) {
-    return '<div class="proof-av"><img src="' + src + '" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background=\'#CFD1FF\';this.remove();"></div>';
+    var you = src.indexOf('MainUser_Dylan') !== -1 ? ' is-you' : '';
+    return '<div class="proof-av' + you + '"><img src="' + src + '" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background=\'#CFD1FF\';this.remove();"></div>';
   }
 
   function buildStackCard(c) {
@@ -2523,7 +2526,7 @@ cOuter.addEventListener('click', (e) => {
   const AV = 'assets/Avatars/';
   // existing site faces, reused for the orbit (first = "you", gets the ring)
   const FACES = [
-    'MainUser_Dylan.png','Partner_Klaudia.png','MainUser_Dylan.png','Family_Kyle.png',
+    'MainUser_Dylan.png','Partner_Klaudia.png','Family_Vanessa.png','Family_Kyle.png',
     'Family_Richard.png','Family_Mike.png','Crew_Kev.png','Family_Rachael.png',
     'Family_Ele.png','Family_Gisela.png','Crew_Leila.png','Family_Karl.png'
   ];
@@ -2572,7 +2575,7 @@ cOuter.addEventListener('click', (e) => {
     icLabel.textContent = SIZES[idx].label;
     icSub.textContent = n+' people · always under 12';
     const shown = Math.min(n,5); let html='';
-    for (let i=0;i<shown;i++) html += '<span><img src="'+AV+FACES[i]+'" alt=""></span>';
+    for (let i=0;i<shown;i++) html += '<span'+(i===0?' class="me"':'')+'><img src="'+AV+FACES[i]+'" alt=""></span>';
     if (n>5) html += '<span class="more">+'+(n-5)+'</span>';
     icThumbs.innerHTML = html;
   }
