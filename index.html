@@ -989,7 +989,7 @@
 <div class="site light" id="site">
 
   <!-- NAV -->
-  <nav class="nav scrolled">
+  <nav class="nav">
     <div class="nav-logo">
       <img src="assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"/>
     </div>
@@ -1368,21 +1368,16 @@
 </div>
 
 <script>
-// Floating nav — always floats as a frosted pill (from the top)
+// Nav: sits seamlessly pinned on the hero at the very top, then pops into a
+// floating frosted pill once you scroll down — and back to pinned at the top.
 (function(){
   const nav = document.querySelector('.nav');
   if (!nav) return;
-  let ticking = false;
+  const THRESHOLD = 16;
   function update() {
-    nav.classList.add('scrolled');
-    ticking = false;
+    nav.classList.toggle('scrolled', window.scrollY > THRESHOLD);
   }
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  }, {passive: true});
+  window.addEventListener('scroll', update, {passive: true});
   update();
 })();
 
