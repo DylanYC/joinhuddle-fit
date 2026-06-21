@@ -2333,7 +2333,7 @@ cOuter.addEventListener('click', (e) => {
   // assets/Avatars so this matches the proof carousel's seen-by row.
   const stackCards = [
     {
-      emoji:'🏃', name:'Morning run — 5km', time:'7:00am',
+      emoji:'👟', name:'Walk 10,000 Steps', time:'7:00am',
       viewers:[AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Crew_Leila.png'],
       cls:'loop-card-front'
     },
@@ -2376,35 +2376,28 @@ cOuter.addEventListener('click', (e) => {
     [stackCards[2], stackCards[1], stackCards[0]].map(buildStackCard).join('');
 
   // ── SCENE 2 — single proof card (reuses .proof-scene-* visual language) ──
+  // Reuse the proof carousel's card language: full-bleed photo, avatar top-left, title overlay.
   document.getElementById('loop-proof-card').innerHTML = (
-    '<div class="proof-scene-vignette"></div>' +
-    '<div class="proof-scene-inner">' +
-      '<span class="proof-scene-ts">6:47 AM</span>' +
-      '<div class="proof-scene-illo">' + runIllo + '</div>' +
-      '<div class="proof-scene-badge">' +
-        '<div class="proof-scene-badge-label">Risers Proof</div>' +
-        '<div class="proof-scene-badge-name">🏃 Morning run — 5km</div>' +
-        '<div class="proof-scene-badge-status">' +
-          '<div class="proof-scene-check">&#10003;</div>' +
-          'Proved · sent to your circle' +
-        '</div>' +
-      '</div>' +
+    '<img class="pc-photo" src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Walk 10,000 Steps" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' +
+    '<div class="pc-avatar"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
+    '<div class="pc-ov">' +
+      '<div class="pc-title">👟 Walk 10,000 Steps</div>' +
     '</div>'
   );
 
   // ── SCENE 3 — celebration feed card ──
   document.getElementById('loop-feed-card').innerHTML = (
     '<div class="loop-feed-header">' +
-      '<div class="loop-feed-av"><img src="' + AV + 'MainUser_Dylan.png" alt="" loading="lazy" decoding="async"></div>' +
+      '<div class="loop-feed-av"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
       '<div class="loop-feed-user">' +
-        '<div class="loop-feed-name">Jordan R.</div>' +
-        '<div class="loop-feed-meta">Morning run — 5km · 6:47 AM</div>' +
+        '<div class="loop-feed-name">Kyle</div>' +
+        '<div class="loop-feed-meta">Walk 10,000 Steps · 6:47 AM</div>' +
       '</div>' +
       '<div class="loop-feed-badge">&#10003; Proved</div>' +
     '</div>' +
     '<div class="loop-feed-img proof-bg-0">' +
+      '<img class="pc-photo" src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Walk 10,000 Steps" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' +
       '<div class="loop-feed-img-vignette"></div>' +
-      runIlloWhite +
       '<div class="loop-feed-img-badge">6:47 AM · Today</div>' +
     '</div>' +
     '<div class="loop-feed-react">' +
@@ -2414,11 +2407,11 @@ cOuter.addEventListener('click', (e) => {
     '<div class="loop-feed-comments">' +
       '<div class="loop-comment">' +
         '<div class="loop-comment-av"><img src="' + AV + 'Family_Rachael.png" alt="" loading="lazy" decoding="async"></div>' +
-        '<div class="loop-comment-body"><span class="loop-comment-handle">@mikeb</span>Absolute unit 💪<span class="loop-comment-time">just now</span></div>' +
+        '<div class="loop-comment-body"><span class="loop-comment-handle">@mikeb</span>Wow that\'s a ton of steps! nice 👟<span class="loop-comment-time">just now</span></div>' +
       '</div>' +
       '<div class="loop-comment">' +
         '<div class="loop-comment-av"><img src="' + AV + 'Family_Richard.png" alt="" loading="lazy" decoding="async"></div>' +
-        '<div class="loop-comment-body"><span class="loop-comment-handle">@kaylal</span>Let\'s GO!! This is your week 🔥<span class="loop-comment-time">just now</span></div>' +
+        '<div class="loop-comment-body"><span class="loop-comment-handle">@kaylal</span>Beast mode 🔥<span class="loop-comment-time">just now</span></div>' +
       '</div>' +
     '</div>'
   );
