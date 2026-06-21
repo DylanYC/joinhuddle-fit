@@ -2534,7 +2534,7 @@ cOuter.addEventListener('click', (e) => {
   const STATES = [
     { label:'You + a partner', faces:[DYLAN, 'Partner_Klaudia.png'] },
     { label:'Your crew',       faces:[DYLAN, 'Crew_Kev.png', 'Crew_Leila.png', 'Crew_Sabi.png'] },
-    { label:'The whole family', faces:[DYLAN, 'Family_Richard.png', 'Family_Ele.png', 'Family_Gisela.png', 'Family_Karl.png', 'Family_Kyle.png', 'Family_Mike.png', 'Family_Rachael.png', 'Family_Vanessa.png', 'Family-Harveer.png'] },
+    { label:'The whole family', faces:[DYLAN, 'Partner_Klaudia.png', 'Family_Richard.png', 'Family_Ele.png', 'Family_Gisela.png', 'Family_Karl.png', 'Family_Kyle.png', 'Family_Mike.png', 'Family_Rachael.png', 'Family_Vanessa.png', 'Family-Harveer.png'] },
   ];
   const MAXN = Math.max.apply(null, STATES.map(function(s){ return s.faces.length; }));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
