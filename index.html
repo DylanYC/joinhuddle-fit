@@ -977,8 +977,8 @@
               <div class="rhero-iceyebrow"><span class="d"></span><span class="t">Your inner circle</span></div>
               <div class="rhero-icbody">
                 <div class="rhero-icthumbs" id="rIcThumbs"></div>
-                <div class="rhero-iclabel" id="rIcLabel">Close friends</div>
-                <div class="rhero-icsub" id="rIcSub">4 people · always under 12</div>
+                <div class="rhero-iclabel" id="rIcLabel">You + a partner</div>
+                <div class="rhero-icsub" id="rIcSub">2 people · always under 12</div>
               </div>
             </div>
 
@@ -2529,18 +2529,14 @@ cOuter.addEventListener('click', (e) => {
   if (!orbit || !track) return;
 
   const AV = 'assets/Avatars/';
-  // existing site faces, reused for the orbit (first = "you", gets the ring)
-  const FACES = [
-    'MainUser_Dylan.png','Partner_Klaudia.png','Family_Vanessa.png','Family_Kyle.png',
-    'Family_Richard.png','Family_Mike.png','Crew_Kev.png','Family_Rachael.png',
-    'Family_Ele.png','Family_Gisela.png','Crew_Leila.png','Family_Karl.png'
+  const DYLAN = 'MainUser_Dylan.png';   // main user — always first (leftmost), always gets the ring
+  // Three inner-circle tiers; members picked by avatar filename prefix, Dylan in each.
+  const STATES = [
+    { label:'You + a partner', faces:[DYLAN, 'Partner_Klaudia.png'] },
+    { label:'Your crew',       faces:[DYLAN, 'Crew_Kev.png', 'Crew_Leila.png', 'Crew_Sabi.png'] },
+    { label:'The whole family', faces:[DYLAN, 'Family_Richard.png', 'Family_Ele.png', 'Family_Gisela.png', 'Family_Karl.png', 'Family_Kyle.png', 'Family_Mike.png', 'Family_Rachael.png', 'Family_Vanessa.png', 'Family-Harveer.png'] },
   ];
-  const SIZES = [
-    { n:2,  label:'You + a partner' },
-    { n:4,  label:'Close friends' },
-    { n:7,  label:'Your crew' },
-    { n:12, label:'The whole family' }
-  ];
+  const MAXN = Math.max.apply(null, STATES.map(function(s){ return s.faces.length; }));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // light rays (11, fanning from low-center)
@@ -2548,25 +2544,28 @@ cOuter.addEventListener('click', (e) => {
     for (let i=0;i<11;i++){ const d=document.createElement('i'); d.style.transform='rotate('+((i-5)*13)+'deg)'; rays.appendChild(d); }
   }
 
-  // build the 12 avatar nodes once
-  const nodes = FACES.map((f,i)=>{
+  // build the avatar nodes once (max across states); images swap per state
+  const nodes = Array.from({length:MAXN}, (_,i)=>{
     const o=document.createElement('div'); o.className='rhero-orb';
     const sp=document.createElement('div'); sp.className='rhero-orb-spin';
     const av=document.createElement('div'); av.className='rhero-av'+(i===0?' rhero-orb-ring':'');
-    const im=document.createElement('img'); im.src=AV+f; im.alt=''; im.loading='lazy';
+    const im=document.createElement('img'); im.alt=''; im.loading='lazy';
     av.appendChild(im); sp.appendChild(av); o.appendChild(sp); orbit.appendChild(o);
-    return { o, av };
+    return { o, av, im };
   });
 
-  let idx = 1; // start at "Close friends" (n=4) to match the default card copy
+  let idx = 0; // start at "You + a partner"
 
   function place(){
-    const n = SIZES[idx].n;
+    const st = STATES[idx];
+    const faces = st.faces;
+    const n = faces.length;
     const r = 196 + n*5;                 // true-circle radius, grows with n
     const s = Math.max(38, 54 - n*1.3);  // avatars shrink slightly as ring grows
     guide.style.setProperty('--ring', (r*2)+'px');
     nodes.forEach((nd,i)=>{
       const vis = i<n;
+      if (vis && nd.im.getAttribute('src') !== AV+faces[i]) nd.im.src = AV+faces[i];
       const ang = (i/n)*2*Math.PI;       // evenly spaced, start at right flank
       const rr = vis ? r : r*0.5;        // hidden ones tuck toward center
       nd.o.style.left = (Math.cos(ang)*rr)+'px';
@@ -2576,16 +2575,16 @@ cOuter.addEventListener('click', (e) => {
       nd.av.style.width = sz+'px';
       nd.av.style.height= sz+'px';
     });
-    // keep the floating card in sync with the ring count
-    icLabel.textContent = SIZES[idx].label;
+    // keep the floating card in sync with the ring
+    icLabel.textContent = st.label;
     icSub.textContent = n+' people · always under 12';
     const shown = Math.min(n,5); let html='';
-    for (let i=0;i<shown;i++) html += '<span'+(i===0?' class="me"':'')+'><img src="'+AV+FACES[i]+'" alt=""></span>';
+    for (let i=0;i<shown;i++) html += '<span'+(i===0?' class="me"':'')+'><img src="'+AV+faces[i]+'" alt=""></span>';
     if (n>5) html += '<span class="more">+'+(n-5)+'</span>';
     icThumbs.innerHTML = html;
   }
   place();
-  if (!reduce) setInterval(()=>{ idx=(idx+1)%SIZES.length; place(); }, 5600);
+  if (!reduce) setInterval(()=>{ idx=(idx+1)%STATES.length; place(); }, 5600);
 
   /* ---- day-arc slider: 3 stops (plan · proof · recap) ---- */
   const RATIO = { plan:0, proof:0.5, recap:1 };
