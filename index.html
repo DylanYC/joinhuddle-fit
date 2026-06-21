@@ -2685,15 +2685,16 @@ async function fetchCount(code) {
 }
 
 // ---- real waitlist total (honest social proof) ----
-// Stored as a single counter doc in the already client-readable/writable
-// waitlistCounts collection. Key uses underscores so it can never collide
-// with a generated 5-char referral code. Seed once with the real current
-// signup count; it then increments on each new signup.
-const TOTAL_KEY = '__total__';
+// A dedicated public counter doc (waitlistStats/global). Security rules
+// allow public read + increment-by-1 only (no tampering). Seed once in the
+// Firebase console with the real current signup count; it self-increments
+// on each new signup thereafter.
+const STATS_COLL = 'waitlistStats';
+const STATS_DOC = 'global';
 let waitlistTotal = null;
 async function fetchTotal() {
   try {
-    const snap = await getDoc(doc(db, 'waitlistCounts', TOTAL_KEY));
+    const snap = await getDoc(doc(db, STATS_COLL, STATS_DOC));
     return snap.exists() ? (snap.data().count || 0) : 0;
   } catch { return 0; }
 }
@@ -2711,9 +2712,9 @@ function renderTotal(n) {
 async function bumpTotal() {
   // best-effort; must never block or break a signup
   try {
-    await setDoc(doc(db, 'waitlistCounts', TOTAL_KEY),
+    await setDoc(doc(db, STATS_COLL, STATS_DOC),
       { count: increment(1), updatedAt: serverTimestamp() }, { merge: true });
-  } catch (_) { /* counter not writable yet — ignore */ }
+  } catch (_) { /* counter not seeded/writable yet — ignore */ }
 }
 
 async function validateRefCode(code) {
