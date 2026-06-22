@@ -1424,6 +1424,14 @@ function smoothScrollTo(id) {
 }
 
 const THEME_KEY = 'huddle-theme';
+// A #dark / #light hash (e.g. risers.fit/#dark) forces a theme on load and
+// persists it, so a shared link opens in that mode and carries to subpages.
+(function applyHashTheme(){
+  const h = location.hash.toLowerCase();
+  if (h === '#dark' || h === '#light') {
+    localStorage.setItem(THEME_KEY, h.slice(1));
+  }
+})();
 let light = localStorage.getItem(THEME_KEY) !== 'dark';
 (function applyInitialTheme(){
   document.getElementById('site').classList.toggle('light', light);

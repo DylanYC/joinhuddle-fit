@@ -26,6 +26,13 @@ function applyTheme(light) {
   if (tlbl) tlbl.textContent = light ? 'Light' : 'Dark';
 }
 
+// A #dark / #light hash (e.g. risers.fit/contact.html#dark) forces a theme on
+// load and persists it, matching the home page's shareable-link behaviour.
+const hash = location.hash.toLowerCase();
+if (hash === '#dark' || hash === '#light') {
+  localStorage.setItem(THEME_KEY, hash.slice(1));
+}
+
 const stored = localStorage.getItem(THEME_KEY);
 if (stored === 'dark') applyTheme(false);
 
