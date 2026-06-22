@@ -113,10 +113,10 @@ body {
   transform: translateY(0);
   pointer-events: auto;
 }
-.why-nav-logo { display: inline-flex; height: 28px; }
-.why-nav-logo svg { height: 100%; width: auto; display: block; }
-.why-nav-word { fill: #ECEAFD; }
-.why-nav-mark { fill: var(--brand-primary); }
+.why-nav-logo { display: inline-flex; height: 24px; }
+/* Risers wordmark — same asset as the home-page nav. The frosted nav glass
+   is always dark here, so render the navy wordmark in white. */
+.why-nav-logo img { height: 100%; width: auto; display: block; filter: brightness(0) invert(1); }
 
 /* Center nav links — mirrors the home page nav pattern. */
 .why-nav-links {

@@ -138,26 +138,26 @@
     { x:  0.28, dy: 0.25 },  //  7 — 0.04 above front mtn peak (0.21)
     { x:  0.32, dy: 0.30 },  //  8 — diverges UP while front drops to 0.18
     { x:  0.36, dy: 0.34 },  //  9 — end of smooth section
-    // ── Jagged right half — VARIED amplitudes + VARIED x spacing so the
-    //    line reads as a natural mountain ridge AND a plotted chart at
-    //    the same time. No two consecutive segments are the same length
-    //    or rise; some peaks are tall, some are shoulders; some dips are
-    //    shallow saddles, some are deeper pullbacks. ──
-    { x: 0.39, dy: 0.30 },  //  8  — small dip
-    { x: 0.42, dy: 0.34 },  //  9  — short rise
-    { x: 0.47, dy: 0.31 },  // 10  — deeper dip (longer drop)
-    { x: 0.51, dy: 0.39 },  // 11  — bigger rise
-    { x: 0.54, dy: 0.37 },  // 12  — tiny pullback (small span)
-    { x: 0.59, dy: 0.43 },  // 13  — peak after a medium climb
-    { x: 0.63, dy: 0.40 },  // 14  — dip (medium)
-    { x: 0.66, dy: 0.41 },  // 15  — almost-flat plateau bump
-    { x: 0.71, dy: 0.47 },  // 16  — taller rise after the plateau
-    { x: 0.75, dy: 0.44 },  // 17  — pullback
-    { x: 0.81, dy: 0.50 },  // 18  — bigger rise (longer span)
-    { x: 0.85, dy: 0.47 },  // 19  — dip
-    { x: 0.90, dy: 0.51 },  // 20  — modest rise
-    { x: 0.96, dy: 0.50 },  // 21  — long flat-ish stretch
-    { x: 1.10, dy: 0.57 },  // 22  — final climb off the right edge
+    // ── Jagged right half — a clean ascending STAIRCASE, echoing the
+    //    in-app Climb card's progress line: four distinct shoulders, each
+    //    reached by a rise then a shallow pullback. Fewer points than
+    //    before (was 15) so it reads as a calm climb, not a busy zigzag —
+    //    important on mobile where the line fills most of the frame. The
+    //    four balls perch on the rises up to each shoulder. ──
+    // A calm, steadily-RISING ridge: the cumulative score only ever climbs
+    // (just like the in-app Climb card), so there are no down-dips to make
+    // the line wiggle. The slope just eases at each "shoulder" then steepens
+    // again — gentle, smooth undulation, never a sawtooth. The four balls
+    // ride the steeper rises (segment midpoints, on the curve) between them.
+    { x: 0.43, dy: 0.36 },  // 10
+    { x: 0.50, dy: 0.40 },  // 11 — shoulder (slope eases)
+    { x: 0.57, dy: 0.42 },  // 12
+    { x: 0.64, dy: 0.46 },  // 13 — shoulder
+    { x: 0.71, dy: 0.48 },  // 14
+    { x: 0.78, dy: 0.515 }, // 15 — shoulder
+    { x: 0.85, dy: 0.535 }, // 16
+    { x: 0.91, dy: 0.565 }, // 17 — shoulder (front)
+    { x: 1.12, dy: 0.64 },  // 18 — final climb off the right edge
   ];
   const CLIMB_SMOOTH_END = 9;  // last index of the smooth section
 
@@ -175,18 +175,15 @@
        frac  = 0..1 fraction along that segment
        phase = sine-bob phase offset (radians) so balls bob out of sync */
   const BALL_POSITIONS = [
-    // (Indices shifted +2 from earlier values because we added 2 control
-    //  points to the smooth section to match the mountain's cadence.)
-    // HESITATOR — lagging far back on a downslope (idx 15 → 16 descends)
-    { idx: 15, frac: 0.50, phase: 1.8 },
-    // FOLLOWER_B — pulled back from FOLLOWER_A onto the small descending
-    // step at idx 18 → 19. Still ahead of Hesitator, but with a clear
-    // gap to A so the twins don't read as overlapping.
-    { idx: 18, frac: 0.30, phase: 1.1 },
-    // FOLLOWER_A — twin, on the shared upslope ahead of B
-    { idx: 19, frac: 0.65, phase: 0.7 },
-    // LEADER — out front, climbing strongly (idx 21 → 22 ascends)
-    { idx: 21, frac: 0.65, phase: 0.0 },
+    // Evenly spread along the climb so they never collide — one per rise,
+    // each anchored to a segment midpoint (which lies exactly on the smooth
+    // curve). frac 0.5 = the on-curve midpoint; the small variations just
+    // give the group a looser, less mechanical spacing. Back → front:
+    // hesitator trailing, two followers, leader out ahead.
+    { idx: 10, frac: 0.55, phase: 1.8 },  // HESITATOR — trailing
+    { idx: 12, frac: 0.50, phase: 1.1 },  // FOLLOWER_B
+    { idx: 14, frac: 0.50, phase: 0.7 },  // FOLLOWER_A
+    { idx: 16, frac: 0.45, phase: 0.0 },  // LEADER — out front
   ];
   const BALL_BOB_AMPLITUDE_PX = 4;                 // peak vertical drift
   const BALL_BOB_PERIOD_MS    = 2400;              // one full sine cycle
@@ -666,21 +663,21 @@
     linePath.moveTo(pts[0].x, pts[0].y);
     polyPath.moveTo(pts[0].x, pts[0].y);
 
-    // ── Smooth section: quadratic through midpoints ──
-    for (let i = 1; i < CLIMB_SMOOTH_END; i++) {
+    // ── One continuous smooth ridge: quadratic beziers through the
+    //    midpoints, with each control point as the off-curve handle. The
+    //    whole line flows as a single mountain ridge (same technique as the
+    //    in-app Climb card's ridge) — no hard angular kinks, which read as
+    //    "squishy" zigzags on a narrow phone screen. ──
+    for (let i = 1; i < pts.length - 1; i++) {
       const mx = (pts[i].x + pts[i + 1].x) / 2;
       const my = (pts[i].y + pts[i + 1].y) / 2;
       linePath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
       polyPath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
     }
-    // Anchor at the transition point
-    linePath.lineTo(pts[CLIMB_SMOOTH_END].x, pts[CLIMB_SMOOTH_END].y);
-    polyPath.lineTo(pts[CLIMB_SMOOTH_END].x, pts[CLIMB_SMOOTH_END].y);
-    // ── Jagged section: straight lineTo (plot-graph character) ──
-    for (let i = CLIMB_SMOOTH_END + 1; i < pts.length; i++) {
-      linePath.lineTo(pts[i].x, pts[i].y);
-      polyPath.lineTo(pts[i].x, pts[i].y);
-    }
+    // Final run-out to the last (off-canvas) point.
+    const lastPt = pts[pts.length - 1];
+    linePath.lineTo(lastPt.x, lastPt.y);
+    polyPath.lineTo(lastPt.x, lastPt.y);
     // Close polygon down to canvas bottom
     const last = pts[pts.length - 1];
     polyPath.lineTo(last.x, h);
@@ -708,15 +705,42 @@
      reads as a real second mountain, not a haze. */
   function paintLavenderRidge(state, geom, climb) {
     const peace = state.peaceT;
-    const lavTop = lerpColor('#B3B3E8', '#A989B8', peace);
-    const lavBot = lerpColor('#6F6FBA', '#56407A', peace);
-    const grad = ctx.createLinearGradient(0, climb.minY, 0, h);
-    grad.addColorStop(0.00, rgba(lavTop, 0.85));
-    grad.addColorStop(0.45, rgba(lavTop, 0.78));
-    grad.addColorStop(0.80, rgba(lavBot, 0.62));
-    grad.addColorStop(1.00, rgba(lavBot, 0.50));
-    ctx.fillStyle = grad;
-    ctx.fill(climb.polyPath);
+    const top = climb.minY;
+    ctx.save();
+    ctx.clip(climb.polyPath);
+
+    // 1. Atmospheric body — a sunlit upper slope that fades into haze toward
+    //    its base. Alpha falls off downward so the far massif recedes into
+    //    the sky near the horizon rather than reading as a flat purple slab.
+    const bodyTop = lerpColor('#BFBEEC', '#C7A6CE', peace);
+    const bodyBot = lerpColor('#9498CF', '#765F95', peace);
+    const vGrad = ctx.createLinearGradient(0, top, 0, h);
+    vGrad.addColorStop(0.00, rgba(bodyTop, 0.80));
+    vGrad.addColorStop(0.42, rgba(bodyTop, 0.56));
+    vGrad.addColorStop(0.78, rgba(bodyBot, 0.30));
+    vGrad.addColorStop(1.00, rgba(bodyBot, 0.10));
+    ctx.fillStyle = vGrad;
+    ctx.fillRect(0, top, w, h - top);
+
+    // 2. Directional light — the sun sits on the left, so the near (left)
+    //    slopes catch a warm wash while the far (right) slopes fall into
+    //    cool shade. The lit-to-shadow gradient across the face gives the
+    //    massif volume instead of one flat tone.
+    const warm = lerpColor('#FFE3C6', '#FFC197', peace);
+    const warmGrad = ctx.createLinearGradient(0, 0, w * 0.62, 0);
+    warmGrad.addColorStop(0.00, rgba(warm, 0.18 + 0.20 * peace));
+    warmGrad.addColorStop(1.00, rgba(warm, 0));
+    ctx.fillStyle = warmGrad;
+    ctx.fillRect(0, top, w, h - top);
+
+    const shade = lerpColor('#5C61A8', '#3C3164', peace);
+    const shadeGrad = ctx.createLinearGradient(w * 0.45, 0, w, 0);
+    shadeGrad.addColorStop(0.00, rgba(shade, 0));
+    shadeGrad.addColorStop(1.00, rgba(shade, 0.22 + 0.18 * peace));
+    ctx.fillStyle = shadeGrad;
+    ctx.fillRect(0, top, w, h - top);
+
+    ctx.restore();
   }
 
   /* CLIMB LINE — the back mountain's ridge silhouette. Stroked along
