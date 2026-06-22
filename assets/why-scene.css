@@ -285,6 +285,9 @@ body {
   color: var(--ink-day-soft);
   max-width: var(--col-max);
   margin: 20px auto 0;
+  /* Balance line lengths so the two sentences split evenly instead of
+     dropping a lone word onto its own line. */
+  text-wrap: balance;
 }
 /* Inline accent phrase inside the landing lede — BRIGHTER Risers blue
    so the closing tagline pops as the visual emphasis. */
