@@ -663,21 +663,14 @@
     linePath.moveTo(pts[0].x, pts[0].y);
     polyPath.moveTo(pts[0].x, pts[0].y);
 
-    // ── One continuous smooth ridge: quadratic beziers through the
-    //    midpoints, with each control point as the off-curve handle. The
-    //    whole line flows as a single mountain ridge (same technique as the
-    //    in-app Climb card's ridge) — no hard angular kinks, which read as
-    //    "squishy" zigzags on a narrow phone screen. ──
-    for (let i = 1; i < pts.length - 1; i++) {
-      const mx = (pts[i].x + pts[i + 1].x) / 2;
-      const my = (pts[i].y + pts[i + 1].y) / 2;
-      linePath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
-      polyPath.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+    // ── Straight segments through every point — a PLOTTED progress line
+    //    with pointed corners, exactly like the in-app Climb card's polyline
+    //    (climb_card.dart draws it with lineTo + round joins). No curves:
+    //    the angular peaks are what make it read as a chart, not a snake. ──
+    for (let i = 1; i < pts.length; i++) {
+      linePath.lineTo(pts[i].x, pts[i].y);
+      polyPath.lineTo(pts[i].x, pts[i].y);
     }
-    // Final run-out to the last (off-canvas) point.
-    const lastPt = pts[pts.length - 1];
-    linePath.lineTo(lastPt.x, lastPt.y);
-    polyPath.lineTo(lastPt.x, lastPt.y);
     // Close polygon down to canvas bottom
     const last = pts[pts.length - 1];
     polyPath.lineTo(last.x, h);
@@ -751,7 +744,10 @@
     const strokeW = Math.max(3, w * 0.0035);
     ctx.save();
     ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    // Sharp (mitered) joins so the peaks read as crisp plotted-graph corners,
+    // not rounded-off bumps.
+    ctx.lineJoin = 'miter';
+    ctx.miterLimit = 12;
     ctx.lineWidth = strokeW;
     ctx.strokeStyle = '#6F75FF';
     ctx.stroke(climb.linePath);
