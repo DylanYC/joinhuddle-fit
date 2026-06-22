@@ -144,20 +144,20 @@
     //    before (was 15) so it reads as a calm climb, not a busy zigzag —
     //    important on mobile where the line fills most of the frame. The
     //    four balls perch on the rises up to each shoulder. ──
-    // A calm, steadily-RISING ridge: the cumulative score only ever climbs
-    // (just like the in-app Climb card), so there are no down-dips to make
-    // the line wiggle. The slope just eases at each "shoulder" then steepens
-    // again — gentle, smooth undulation, never a sawtooth. The four balls
-    // ride the steeper rises (segment midpoints, on the curve) between them.
-    { x: 0.43, dy: 0.36 },  // 10
-    { x: 0.50, dy: 0.40 },  // 11 — shoulder (slope eases)
-    { x: 0.57, dy: 0.42 },  // 12
-    { x: 0.64, dy: 0.46 },  // 13 — shoulder
-    { x: 0.71, dy: 0.48 },  // 14
-    { x: 0.78, dy: 0.515 }, // 15 — shoulder
-    { x: 0.85, dy: 0.535 }, // 16
-    { x: 0.91, dy: 0.565 }, // 17 — shoulder (front)
-    { x: 1.12, dy: 0.64 },  // 18 — final climb off the right edge
+    // A climbing RIDGE that doubles as a plotted progress chart: four real
+    // peaks, each higher than the last, separated by shallow pullbacks. The
+    // peaks give it mountain character + chart character; the quadratic
+    // smoothing in computeClimbGeometry rounds the apexes so it reads as a
+    // ridge, not a harsh sawtooth. Balls ride the rises between the peaks.
+    { x: 0.43, dy: 0.35 },  // 10 — pullback off the smooth crest
+    { x: 0.50, dy: 0.43 },  // 11 — peak 1
+    { x: 0.57, dy: 0.39 },  // 12 — dip
+    { x: 0.64, dy: 0.48 },  // 13 — peak 2 (higher)
+    { x: 0.71, dy: 0.44 },  // 14 — dip
+    { x: 0.78, dy: 0.53 },  // 15 — peak 3 (higher)
+    { x: 0.85, dy: 0.49 },  // 16 — dip
+    { x: 0.91, dy: 0.58 },  // 17 — peak 4 (front, highest)
+    { x: 1.12, dy: 0.65 },  // 18 — final climb off the right edge
   ];
   const CLIMB_SMOOTH_END = 9;  // last index of the smooth section
 
