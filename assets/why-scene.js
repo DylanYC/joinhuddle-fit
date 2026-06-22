@@ -193,22 +193,32 @@
   // graph instead of a steep zigzag.
   const MOBILE_MAX_W = 700;
   const CLIMB_LINE_MOBILE = [
-    { x: -0.05, dy: 0.05 },  // 0 — off-canvas foothill
-    { x:  0.13, dy: 0.10 },  // 1
-    { x:  0.27, dy: 0.16 },  // 2
-    { x:  0.41, dy: 0.21 },  // 3
-    { x:  0.53, dy: 0.27 },  // 4 — peak 1
-    { x:  0.62, dy: 0.24 },  // 5 — dip
-    { x:  0.74, dy: 0.31 },  // 6 — peak 2
-    { x:  0.83, dy: 0.28 },  // 7 — dip
-    { x:  0.94, dy: 0.36 },  // 8 — peak 3 (front)
-    { x:  1.20, dy: 0.43 },  // 9 — final climb off the right edge
+    // Indices 0–7 HUG the front mountain: same x as RIDGE_PROFILE's ascent,
+    // each lifted 0.04 above it, so the climb line rides just over the dark
+    // ridge until the summit (it must never let the dark peak poke through).
+    { x: -0.02, dy: 0.03 },  // 0 — off-canvas foothill
+    { x:  0.00, dy: 0.04 },  // 1
+    { x:  0.05, dy: 0.07 },  // 2
+    { x:  0.10, dy: 0.11 },  // 3
+    { x:  0.15, dy: 0.15 },  // 4
+    { x:  0.20, dy: 0.19 },  // 5
+    { x:  0.25, dy: 0.23 },  // 6
+    { x:  0.28, dy: 0.25 },  // 7 — just above the front summit (peak 0.21)
+    // Past the summit the front ridge drops away and the climb line diverges
+    // UP with three gentle peaks (fewer + lower than desktop, so a narrow
+    // phone doesn't get a steep, busy zigzag).
+    { x:  0.44, dy: 0.30 },  // 8 — peak 1
+    { x:  0.55, dy: 0.27 },  // 9 — dip
+    { x:  0.70, dy: 0.34 },  // 10 — peak 2
+    { x:  0.81, dy: 0.31 },  // 11 — dip
+    { x:  0.95, dy: 0.39 },  // 12 — peak 3 (front)
+    { x:  1.20, dy: 0.46 },  // 13 — final climb off the right edge
   ];
   const BALL_POSITIONS_MOBILE = [
-    { idx: 2, frac: 0.55, phase: 1.8 },  // HESITATOR — trailing on the low slope
-    { idx: 3, frac: 0.55, phase: 1.1 },  // FOLLOWER_B — rise to peak 1
-    { idx: 5, frac: 0.55, phase: 0.7 },  // FOLLOWER_A — rise to peak 2
-    { idx: 7, frac: 0.55, phase: 0.0 },  // LEADER — rise to peak 3
+    { idx: 7,  frac: 0.55, phase: 1.8 },  // HESITATOR — trailing, just past the summit
+    { idx: 9,  frac: 0.50, phase: 1.1 },  // FOLLOWER_B — rise to peak 2
+    { idx: 11, frac: 0.35, phase: 0.7 },  // FOLLOWER_A — climbing to peak 3
+    { idx: 11, frac: 0.80, phase: 0.0 },  // LEADER — cresting peak 3
   ];
   // Active profile by viewport width. computeClimbGeometry and
   // paintBlueBalls MUST read from here so the line and balls always agree.
