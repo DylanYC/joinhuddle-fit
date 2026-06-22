@@ -185,6 +185,39 @@
     { idx: 14, frac: 0.50, phase: 0.7 },  // FOLLOWER_A
     { idx: 16, frac: 0.45, phase: 0.0 },  // LEADER — out front
   ];
+
+  // ── Narrow-screen variant ───────────────────────────────────────────
+  // On a tall, narrow phone the desktop line compresses into a steep,
+  // busy climb. Below MOBILE_MAX_W we swap in a gentler profile: only
+  // three peaks and a lower overall rise, so it reads as a calm plotted
+  // graph instead of a steep zigzag.
+  const MOBILE_MAX_W = 700;
+  const CLIMB_LINE_MOBILE = [
+    { x: -0.05, dy: 0.05 },  // 0 — off-canvas foothill
+    { x:  0.13, dy: 0.10 },  // 1
+    { x:  0.27, dy: 0.16 },  // 2
+    { x:  0.41, dy: 0.21 },  // 3
+    { x:  0.53, dy: 0.27 },  // 4 — peak 1
+    { x:  0.62, dy: 0.24 },  // 5 — dip
+    { x:  0.74, dy: 0.31 },  // 6 — peak 2
+    { x:  0.83, dy: 0.28 },  // 7 — dip
+    { x:  0.94, dy: 0.36 },  // 8 — peak 3 (front)
+    { x:  1.20, dy: 0.43 },  // 9 — final climb off the right edge
+  ];
+  const BALL_POSITIONS_MOBILE = [
+    { idx: 2, frac: 0.55, phase: 1.8 },  // HESITATOR — trailing on the low slope
+    { idx: 3, frac: 0.55, phase: 1.1 },  // FOLLOWER_B — rise to peak 1
+    { idx: 5, frac: 0.55, phase: 0.7 },  // FOLLOWER_A — rise to peak 2
+    { idx: 7, frac: 0.55, phase: 0.0 },  // LEADER — rise to peak 3
+  ];
+  // Active profile by viewport width. computeClimbGeometry and
+  // paintBlueBalls MUST read from here so the line and balls always agree.
+  function activeClimb() {
+    return w < MOBILE_MAX_W
+      ? { line: CLIMB_LINE_MOBILE, balls: BALL_POSITIONS_MOBILE }
+      : { line: CLIMB_LINE, balls: BALL_POSITIONS };
+  }
+
   const BALL_BOB_AMPLITUDE_PX = 4;                 // peak vertical drift
   const BALL_BOB_PERIOD_MS    = 2400;              // one full sine cycle
 
@@ -653,7 +686,7 @@
      paintBlueBalls. */
   function computeClimbGeometry(state, geom) {
     const baselineY = geom.baselineY;
-    const pts = CLIMB_LINE.map(p => ({
+    const pts = activeClimb().line.map(p => ({
       x: p.x * w,
       y: baselineY - p.dy * h,
     }));
@@ -791,7 +824,7 @@
     const restOffset = ballR * 1.25;
     ctx.save();
     ctx.fillStyle = '#6F75FF';
-    for (const pos of BALL_POSITIONS) {
+    for (const pos of activeClimb().balls) {
       const p1 = climb.pts[pos.idx];
       const p2 = climb.pts[pos.idx + 1];
       if (!p1 || !p2) continue;
