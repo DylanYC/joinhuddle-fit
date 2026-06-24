@@ -159,7 +159,6 @@
   .pc-avatar.is-you{border-color:#5B52E8;box-shadow:0 0 0 1px rgba(91,82,232,.35),0 2px 8px rgba(91,82,232,.45);}
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.45) 45%,rgba(0,0,0,.88));padding:40px 14px 14px;}
   .pc-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;}
-  .pc-date{font-size:10px;color:rgba(255,255,255,.7);margin-top:3px;}
   .pc-desc{font-size:11.5px;color:rgba(255,255,255,.92);margin-top:5px;line-height:1.3;}
   .c-dots{display:flex;justify-content:center;gap:7px;margin-top:-36px;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .4s,width .4s,border-radius .4s;}
@@ -671,7 +670,6 @@
     .pc-avatar{width:28px;height:28px;top:8px;left:8px;border-width:2px;}
     .pc-ov{padding:32px 11px 11px;}
     .pc-title{font-size:12px;}
-    .pc-date{font-size:9px;}
     .pc-desc{font-size:10px;margin-top:4px;}
 
     /* SECTIONS */
@@ -1304,7 +1302,7 @@
       </div>
     </div>
     <div class="ic-copy">
-      <h2>Up to 12 people.<br/>Maximum accountability.</h2>
+      <h2>Up to 12 people.<br/>Your inner circle of accountability.</h2>
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
       <div class="vs">
@@ -1449,22 +1447,23 @@ function toggleMode() {
 const PROOF = 'assets/Proof Carousel/';
 const AVA = 'assets/Avatars/';
 // Real proof photos. `you:true` gives the avatar a blue stroke (the main user, Dylan).
-// `date` renders as "Completed on <date>"; leave date/desc as '' to show just the title.
+// `desc` renders as a one-line caption under the title; leave it '' to show just the title.
 const cards = [
-  {img:PROOF+'Rewe 5K Company Run_Klaudia.JPG',          t:'Rewe 5K Company Run',          avatar:AVA+'Partner_Klaudia.png',  date:'June 17, 2026', desc:'Team challenge 5k!'},
-  {img:PROOF+'After Work Run with Klausi_Dylan.JPG',     t:'After Work Run with Klausi',   avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
-  {img:PROOF+'30km Marathon Prep Run_Richard.JPG',       t:'30km Marathon Prep Run',       avatar:AVA+'Family_Richard.png',   date:'', desc:''},
-  {img:PROOF+'Healthy 1 Portion Dinner_Dylan.JPG',       t:'Healthy 1 Portion Dinner',     avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
-  {img:PROOF+'10K Steps_Klaudia.JPG',                    t:'10K Steps',                    avatar:AVA+'Partner_Klaudia.png',  date:'', desc:''},
-  {img:PROOF+'Gym Day_Harveer.JPG',                      t:'Gym Day',                      avatar:AVA+'Family-Harveer.png',   date:'', desc:''},
-  {img:PROOF+'3km Family Run_Dylan.JPG',                 t:'3km Family Run',               avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
-  {img:PROOF+'Gardening and Yard Work_Ele.JPG',          t:'Gardening and Yard Work',      avatar:AVA+'Family_Ele.png',       date:'', desc:''},
-  {img:PROOF+'Home Fully Body Workout_Klaudia.JPG',      t:'Home Full Body Workout',       avatar:AVA+'Partner_Klaudia.png',  date:'', desc:''},
-  {img:PROOF+'Gym Pull Day_Dylan.JPG',                   t:'Gym Pull Day',                 avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
-  {img:PROOF+'Morning Run by the River_Richard.JPG',     t:'Morning Run by the River',     avatar:AVA+'Family_Richard.png',   date:'', desc:''},
-  {img:PROOF+'Healthy Snacks Only_Klaudia.JPG',          t:'Healthy Snacks Only',          avatar:AVA+'Partner_Klaudia.png',  date:'', desc:''},
-  {img:PROOF+'10min Apple Fitness Spin Class_Dylan.JPG', t:'10min Apple Fitness Spin Class', avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
-  {img:PROOF+'Knee Exercises_Dylan.JPG',                 t:'Knee Exercises',               avatar:AVA+'MainUser_Dylan.png', you:true, date:'', desc:''},
+  {img:PROOF+'Rewe 5K Company Run_Klaudia.JPG',          t:'Rewe 5K Company Run',          avatar:AVA+'Partner_Klaudia.png',  desc:'Team challenge 5k!'},
+  {img:PROOF+'After Work Run with Klausi_Dylan.JPG',     t:'After Work Run with Klausi',   avatar:AVA+'MainUser_Dylan.png', you:true, desc:'Evening loop to unwind after work'},
+  {img:PROOF+'30km Marathon Prep Run_Richard.JPG',       t:'30km Marathon Prep Run',       avatar:AVA+'Family_Richard.png',   desc:'Longest run yet before race day'},
+  {img:PROOF+'Healthy 1 Portion Dinner_Dylan.JPG',       t:'Healthy 1 Portion Dinner',     avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
+  {img:PROOF+'10K Steps_Klaudia.JPG',                    t:'10K Steps',                    avatar:AVA+'Partner_Klaudia.png',  desc:''},
+  {img:PROOF+'Gym Day_Harveer.JPG',                      t:'Gym Day',                      avatar:AVA+'Family-Harveer.png',   desc:'Full push session done'},
+  {img:PROOF+'3km Family Run_Dylan.JPG',                 t:'3km Family Run',               avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
+  {img:PROOF+'Gardening and Yard Work_Ele.JPG',          t:'Gardening and Yard Work',      avatar:AVA+'Family_Ele.png',       desc:''},
+  {img:PROOF+'Home Fully Body Workout_Klaudia.JPG',      t:'Home Full Body Workout',       avatar:AVA+'Partner_Klaudia.png',  desc:'No equipment, no excuses'},
+  {img:PROOF+'Gym Pull Day_Dylan.JPG',                   t:'Gym Pull Day',                 avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
+  {img:PROOF+'Morning Run by the River_Richard.JPG',     t:'Morning Run by the River',     avatar:AVA+'Family_Richard.png',   desc:'Easy sunrise miles by the water'},
+  {img:PROOF+'Healthy Snacks Only_Klaudia.JPG',          t:'Healthy Snacks Only',          avatar:AVA+'Partner_Klaudia.png',  desc:''},
+  {img:PROOF+'10min Apple Fitness Spin Class_Dylan.JPG', t:'10min Apple Fitness Spin Class', avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
+  {img:PROOF+'Apple Spin Class_Dylan.JPG',               t:'Apple Spin Class',             avatar:AVA+'MainUser_Dylan.png', you:true, desc:'Sweaty spin to kick off the day'},
+  {img:PROOF+'Knee Exercises_Dylan.JPG',                 t:'Knee Exercises',               avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
 ];
 
 const track = document.getElementById('ctrack');
@@ -1481,7 +1480,7 @@ for (let copy = 0; copy < 3; copy++) {
   cards.forEach(c => {
     const el = document.createElement('div');
     el.className = 'pcard';
-    el.innerHTML = `<img class="pc-photo" src="${c.img}" alt="${c.t}" loading="lazy" decoding="async"><div class="pc-avatar${c.you?' is-you':''}"><img src="${c.avatar}" alt="" loading="lazy" decoding="async"></div><div class="pc-ov"><div class="pc-title">${c.t}</div>${c.date?`<div class="pc-date">Completed on ${c.date}</div>`:''}${c.desc?`<div class="pc-desc">${c.desc}</div>`:''}</div>`;
+    el.innerHTML = `<img class="pc-photo" src="${c.img}" alt="${c.t}" loading="lazy" decoding="async"><div class="pc-avatar${c.you?' is-you':''}"><img src="${c.avatar}" alt="" loading="lazy" decoding="async"></div><div class="pc-ov"><div class="pc-title">${c.t}</div>${c.desc?`<div class="pc-desc">${c.desc}</div>`:''}</div>`;
     track.appendChild(el);
   });
 }
