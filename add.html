@@ -44,8 +44,17 @@
       border-radius: 28px; padding: 40px 28px;
       box-shadow: 0 24px 60px rgba(41, 45, 145, 0.12);
     }
-    /* The icon PNG already carries its own shape + drop shadow. */
-    .badge { width: 88px; height: 88px; margin: 0 auto 20px; display: block; }
+    /* The icon PNG already carries its own shape + drop shadow. The stacked
+       drop-shadows trace a hairline light-grey outline along the icon's
+       rounded-square silhouette so the white mark reads against the white card. */
+    .badge {
+      width: 88px; height: 88px; margin: 0 auto 20px; display: block;
+      filter:
+        drop-shadow(1px 0 0 #DDDDDD)
+        drop-shadow(-1px 0 0 #DDDDDD)
+        drop-shadow(0 1px 0 #DDDDDD)
+        drop-shadow(0 -1px 0 #DDDDDD);
+    }
     h1 {
       font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
       font-size: 24px; margin: 0 0 10px; letter-spacing: -0.02em;
