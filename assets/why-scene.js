@@ -22,7 +22,7 @@
        act,              // 'sky' | 'climb' | 'hinge' | 'bedrock'
        hingeT,           // [0,1] eased crossover, 0 = day, 1 = night
        peaceT,           // [0,1] sunset blend (combined scroll + idle drift)
-       driftT,           // [0,1] cycling for clouds/birds at rest
+       driftT,           // [0,1] cycling for clouds/planes at rest
        w, h,             // viewport pixels (DPR-aware draw uses ctx scale)
        dpr,              // device pixel ratio
        reduced,          // user prefers reduced motion
@@ -515,7 +515,7 @@
 
   function appFactor() { return Math.max(0.6, w / 340); }
 
-  // Drift cycles the cloud (L→R) and birds (R→L) over a wraparound span,
+  // Drift cycles the cloud (L→R) and planes (R→L) over a wraparound span,
   // exactly matching climb_card.dart's `span = size.width + 60.0`.
   function driftSpan() { return w + 60 * appFactor(); }
 
@@ -629,36 +629,303 @@
     _drawCloudShape(-cloudW + t2 * (span + cloudW), h * 0.05, cloudW * 0.72, cloudColor, baseAlpha * 0.85);
   }
 
-  /* BIRDS — direct port of climb_card.dart _drawBird (lines 1314-1333).
-     Two quadratic arcs forming the classic "M-bird" silhouette. Two
-     birds drift R→L at offset phases. Color lerps day → dusk with peace. */
-  function _drawBirdShape(cx, cy, bw, color) {
-    const bh = bw * 0.45;
+  /* ─── PLANES + TOWED BANNERS ──────────────────────────────────────────
+     Two vintage biplanes in Risers colors fly R→L across the sky band,
+     each towing a fabric advertising banner the way beach planes really
+     do. (These replaced the original birds — a port of climb_card.dart's
+     _drawBird — because the sky needed to carry a message.)
+
+     The two banners are one sentence split in half, so the planes fly as
+     a FORMATION (one drift phase, second plane a fixed fraction of a lap
+     behind) and always read left-to-right. Independent phases made the
+     halves swap order whenever one plane wrapped around the edge.
+
+     Both fade out as the sky turns to dusk — this is a landing-act gag
+     and has no business in the sunset payoff frame. */
+  const PLANE_BANNERS = [
+    { text: "You're not a quitter!" },
+    { text: 'You just need', icon: true },
+  ];
+
+  // Same asset the page preloads for the equation, so this is a cache hit.
+  const bannerIcon = new Image();
+  bannerIcon.decoding = 'async';
+  let bannerIconReady = false;
+  bannerIcon.addEventListener('load', () => { bannerIconReady = true; });
+  bannerIcon.src = '/assets/Risers-Icon1-Shadows-Outline.png';
+
+  const PLANE_BODY  = '#6F75FF';   // --brand-primary
+  const PLANE_DEEP  = '#292D91';   // --brand-primary-dark
+  const PLANE_LIGHT = '#CFD1FF';   // --brand-primary-light
+
+  /* The plane is authored once in a local 100-unit-long box: nose at x=0,
+     tail at x≈90, fuselage centerline at y=0, nose pointing LEFT (the
+     direction of travel). The caller translates + scales it, so every
+     coordinate below can stay readable. */
+  function _drawPlane(cx, cy, pw, alpha, spin) {
+    const u = pw / 100;
     ctx.save();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = Math.max(1, bw / 7);
+    ctx.globalAlpha = alpha;
+    ctx.translate(cx - pw / 2, cy);
+    ctx.scale(u, u);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+
+    // Propeller — a faint disc for the blur, plus one blade caught
+    // mid-rotation so the spin reads at a glance. Kept slim so it doesn't
+    // clot into a dark blob at this size.
+    ctx.fillStyle = 'rgba(41,45,145,0.14)';
     ctx.beginPath();
-    ctx.moveTo(cx - bw / 2, cy);
-    ctx.quadraticCurveTo(cx - bw / 4, cy - bh, cx, cy - bh * 0.25);
-    ctx.quadraticCurveTo(cx + bw / 4, cy - bh, cx + bw / 2, cy);
+    ctx.ellipse(1, -1, 2.2, 21, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(41,45,145,0.5)';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(1, -1 - 20 * Math.cos(spin));
+    ctx.lineTo(1, -1 + 20 * Math.cos(spin));
     ctx.stroke();
+
+    // Tail — fin above the boom, stabilizer behind it.
+    ctx.fillStyle = PLANE_DEEP;
+    ctx.beginPath();
+    ctx.moveTo(66, -8);
+    ctx.lineTo(80, -30);
+    ctx.quadraticCurveTo(85, -32, 88, -27);
+    ctx.lineTo(90, -6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = PLANE_LIGHT;
+    ctx.beginPath();
+    ctx.ellipse(88, -2, 12, 3.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Fuselage — tapered body, nose rounded, tail boom narrowing.
+    ctx.fillStyle = PLANE_BODY;
+    ctx.beginPath();
+    ctx.moveTo(10, -12);
+    ctx.bezierCurveTo(28, -16, 52, -16, 68, -12);
+    ctx.lineTo(88, -6);
+    ctx.quadraticCurveTo(92, 0, 88, 5);
+    ctx.lineTo(68, 10);
+    ctx.bezierCurveTo(52, 14, 28, 14, 10, 11);
+    ctx.quadraticCurveTo(0, 6, 0, -1);
+    ctx.quadraticCurveTo(0, -8, 10, -12);
+    ctx.closePath();
+    ctx.fill();
+
+    // Livery stripe along the belly + the darker nose spinner.
+    ctx.save();
+    ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.fillRect(0, 2.5, 96, 5);
+    ctx.restore();
+    ctx.fillStyle = PLANE_DEEP;
+    ctx.beginPath();
+    ctx.ellipse(6, -1, 5, 8.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cockpit bump + window.
+    ctx.fillStyle = PLANE_DEEP;
+    ctx.beginPath();
+    ctx.moveTo(44, -14);
+    ctx.quadraticCurveTo(54, -25, 66, -13);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(223,232,255,0.95)';
+    ctx.beginPath();
+    ctx.ellipse(54, -16, 5.5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Landing gear — far wheel first so the near one reads in front.
+    ctx.strokeStyle = PLANE_DEEP;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(34, 8); ctx.lineTo(40, 20);
+    ctx.moveTo(26, 8); ctx.lineTo(28, 20);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(41,45,145,0.55)';
+    ctx.beginPath();
+    ctx.arc(40, 22, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = PLANE_DEEP;
+    ctx.beginPath();
+    ctx.arc(28, 23, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = PLANE_LIGHT;
+    ctx.beginPath();
+    ctx.arc(28, 23, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lower wing — drawn over the fuselage so it reads as the near wing.
+    ctx.fillStyle = PLANE_LIGHT;
+    ctx.beginPath();
+    ctx.ellipse(46, 9, 26, 3.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Biplane struts in the gap between fuselage and top wing.
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(30, -30); ctx.lineTo(28, -12);
+    ctx.moveTo(70, -30); ctx.lineTo(68, -12);
+    ctx.moveTo(32, -30); ctx.lineTo(66, -12);
+    ctx.moveTo(66, -30); ctx.lineTo(32, -12);
+    ctx.stroke();
+
+    // Upper wing — the biggest shape, painted last so it sits on top.
+    ctx.fillStyle = PLANE_LIGHT;
+    ctx.beginPath();
+    ctx.ellipse(48, -32, 32, 4.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = PLANE_BODY;
+    ctx.fillRect(40, -35, 14, 5.5);
+
     ctx.restore();
   }
-  function paintBirds(state) {
+
+  /* The banner is real fabric, not a card: a long ribbon that ripples on a
+     travelling sine wave, stiff at the leading pole and flapping harder
+     toward the free end, finished with a swallowtail cut. The lettering
+     rides the same wave — each glyph is placed on the centerline and
+     rotated to the local slope — which is what sells it as cloth. */
+  function _drawTowedBanner(banner, cx, cy, pw, alpha, time, reducedMotion) {
+    if (alpha <= 0.02) return;
+    const fontSize = Math.max(12, Math.min(w * 0.0135, 18));
+    const padX = fontSize * 1.0;
+    const iconSize = banner.icon ? fontSize * 1.45 : 0;
+    const iconGap  = banner.icon ? fontSize * 0.45 : 0;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = `700 ${fontSize}px Inter, system-ui, sans-serif`;
+    ctx.textBaseline = 'middle';
+
+    const textW = ctx.measureText(banner.text).width;
+    const notch = fontSize * 0.85;                       // swallowtail depth
+    const len = textW + iconGap + iconSize + padX * 2 + notch;
+    const hgt = fontSize * 2.15;
+
+    // Planes fly right → left, so the banner streams out BEHIND them.
+    const ropeLen = Math.max(14, pw * 0.30);
+    const x0 = cx + pw * 0.5 + ropeLen;
+    const xEnd = x0 + len;
+
+    // Travelling ripple. Amplitude grows toward the free end because the
+    // leading edge is held rigid by its pole.
+    const amp = hgt * 0.24;
+    const k = (Math.PI * 2) / Math.max(60, len * 0.62);
+    const phase = reducedMotion ? 0.9 : -time * 0.0032;
+    const waveAt = (x) => {
+      const t = Math.max(0, Math.min(1, (x - x0) / len));
+      return Math.sin(k * (x - x0) + phase) * amp * (0.12 + 0.88 * t);
+    };
+
+    // Tow rope — sags slightly under its own weight.
+    ctx.strokeStyle = 'rgba(41,45,145,0.45)';
+    ctx.lineWidth = Math.max(1, pw * 0.014);
+    ctx.beginPath();
+    ctx.moveTo(cx + pw * 0.44, cy + pw * 0.02);
+    ctx.quadraticCurveTo(
+      (cx + pw * 0.44 + x0) / 2, cy + pw * 0.05,
+      x0, cy + waveAt(x0)
+    );
+    ctx.stroke();
+
+    // Ribbon outline: top edge out, swallowtail, bottom edge back.
+    const N = 22;
+    ctx.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const x = x0 + (len * i) / N;
+      const y = cy + waveAt(x) - hgt / 2;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.lineTo(xEnd - notch, cy + waveAt(xEnd - notch));
+    ctx.lineTo(xEnd, cy + waveAt(xEnd) + hgt / 2);
+    for (let i = N; i >= 0; i--) {
+      const x = x0 + (len * i) / N;
+      ctx.lineTo(x, cy + waveAt(x) + hgt / 2);
+    }
+    ctx.closePath();
+
+    // Cloth shading — a gradient whose stops follow the same wave, so the
+    // troughs fall into shadow and the crests catch the light.
+    ctx.fillStyle = 'rgba(255,255,255,0.96)';
+    ctx.fill();
+    const grad = ctx.createLinearGradient(x0, 0, xEnd, 0);
+    for (let i = 0; i <= 14; i++) {
+      const t = i / 14;
+      const s = Math.cos(k * (len * t) + phase);   // +1 crest, -1 trough
+      grad.addColorStop(t, `rgba(90,100,180,${(0.10 * (0.5 - 0.5 * s)).toFixed(3)})`);
+    }
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(41,45,145,0.30)';
+    ctx.lineWidth = Math.max(1, fontSize * 0.07);
+    ctx.stroke();
+
+    // Leading pole — the rigid edge the rope is tied to.
+    ctx.strokeStyle = PLANE_DEEP;
+    ctx.lineWidth = Math.max(2, fontSize * 0.2);
+    ctx.beginPath();
+    ctx.moveTo(x0, cy + waveAt(x0) - hgt * 0.62);
+    ctx.lineTo(x0, cy + waveAt(x0) + hgt * 0.62);
+    ctx.stroke();
+
+    // Lettering rides the wave, glyph by glyph.
+    ctx.fillStyle = '#1C1C24';
+    let cursor = x0 + padX;
+    for (const ch of banner.text) {
+      const cw = ctx.measureText(ch).width;
+      const x = cursor + cw / 2;
+      const slope = (waveAt(x + 3) - waveAt(x - 3)) / 6;
+      ctx.save();
+      ctx.translate(x, cy + waveAt(x));
+      ctx.rotate(Math.atan(slope));
+      ctx.fillText(ch, -cw / 2, 0);
+      ctx.restore();
+      cursor += cw;
+    }
+    // The icon is the last "word" — same wave, same tilt.
+    if (banner.icon && bannerIconReady) {
+      const x = cursor + iconGap + iconSize / 2;
+      const slope = (waveAt(x + 3) - waveAt(x - 3)) / 6;
+      ctx.save();
+      ctx.translate(x, cy + waveAt(x));
+      ctx.rotate(Math.atan(slope));
+      ctx.drawImage(bannerIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  function paintPlanes(state) {
     const peace = state.peaceT;
-    const factor = appFactor();
-    const bw1 = 7.5 * factor;
-    const bw2 = 6.5 * factor;
-    const y1 = h * 0.12;
-    const y2 = h * 0.17;
-    const base = lerpColor('#6B7FAA', '#3A2D55', peace);
+    const pw1 = Math.max(54, Math.min(w * 0.072, 104));
+    const pw2 = pw1 * 0.88;
+    const y1 = h * 0.115;
+    const y2 = h * 0.185;
     const span = driftSpan();
-    const t1 = (state.driftT + 0.10) % 1.0;
-    const t2 = (state.driftT + 0.55) % 1.0;
-    _drawBirdShape(w + 20 - t1 * span, y1, bw1, rgba(base, 0.55));
-    _drawBirdShape(w + 20 - t2 * span, y2, bw2, rgba(base, 0.40));
+    // Formation: one drift phase, trailing plane a fixed fraction of a lap
+    // behind, so the two banner halves never swap reading order.
+    const TRAIL_GAP = 0.16;
+    // With reduced motion driftT is frozen at 0, so pick a phase that parks
+    // the pair left-of-center with both banners fully on screen instead of
+    // whatever the 0-phase happens to land on.
+    const tLead  = state.reduced ? 0.62 : (state.driftT + 0.10) % 1.0;
+    const tTrail = (tLead + 1 - TRAIL_GAP) % 1.0;
+    const xLead  = w + 20 - tLead  * span;
+    const xTrail = w + 20 - tTrail * span;
+    // Banners fade out first, then the planes themselves: by the sunset
+    // payoff frame the sky is empty again, so the gag never sits on top of
+    // the quiet ending. Brand-colored planes ghosting over an orange dusk
+    // sky looked out of place at any opacity.
+    const planeAlpha  = Math.max(0, 1 - peace * 1.3);
+    const bannerAlpha = Math.max(0, 1 - peace * 1.7);
+    const spin = state.reduced ? 0.6 : state.time * 0.02;
+    _drawPlane(xLead,  y1, pw1, planeAlpha, spin);
+    _drawPlane(xTrail, y2, pw2, planeAlpha * 0.92, spin + 1.7);
+    _drawTowedBanner(PLANE_BANNERS[0], xLead,  y1, pw1, bannerAlpha, state.time, state.reduced);
+    _drawTowedBanner(PLANE_BANNERS[1], xTrail, y2, pw2, bannerAlpha * 0.96, state.time + 900, state.reduced);
   }
 
   /* HORIZON GLOW — warm atmospheric band just above the ridge at sunset.
@@ -987,12 +1254,12 @@
     //    fades in with peace. Painted before the sun so the sun's
     //    bloom lays on top of it naturally.
     paintHorizonGlow(state, geom);
-    // 3. Sky-layer art. Sun paints first so clouds/birds can fly in
+    // 3. Sky-layer art. Sun paints first so clouds/planes can fly in
     //    front of it. Sun's lower half gets clipped by the bedrock
     //    polygon later — that's how it "sets behind" the mountain.
     paintSun(state, geom);
     paintClouds(state);
-    paintBirds(state);
+    paintPlanes(state);
     // 3. BACK MOUNTAIN (lavender body) — painted FIRST so the front
     //    mountain occludes its lower portion. The visible lavender is
     //    therefore the area above the front mountain silhouette: the
