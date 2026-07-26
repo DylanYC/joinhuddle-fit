@@ -41,6 +41,8 @@
     --eyebrow-bg:rgba(91,82,232,0.15); --eyebrow-border:rgba(91,82,232,0.3);
     --waitlist-bg:rgba(91,82,232,0.08); --waitlist-border:rgba(91,82,232,0.25);
     --pro-color:#E5B454;
+    --spec-card-bg:rgba(255,255,255,0.045); --spec-hero-fill:#0d0d22;
+    --spec-neutral-bg:rgba(255,255,255,0.10); --spec-neutral-ink:rgba(255,255,255,0.78);
   }
 
   .light {
@@ -67,6 +69,8 @@
     --eyebrow-bg:rgba(91,82,232,0.1); --eyebrow-border:rgba(91,82,232,0.25);
     --waitlist-bg:rgba(91,82,232,0.06); --waitlist-border:rgba(91,82,232,0.2);
     --pro-color:#A87810;
+    --spec-card-bg:rgba(255,255,255,0.72); --spec-hero-fill:#ffffff;
+    --spec-neutral-bg:rgba(10,10,24,0.07); --spec-neutral-ink:rgba(10,10,24,0.68);
   }
 
   /* overflow-x: clip (not hidden) so position:sticky descendants still work.
@@ -397,20 +401,74 @@
   .ic-copy h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:12px;}
   .ic-copy p{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
   .hlc{color:var(--text1);font-weight:500;}
-  .vs{background:var(--vs-bg);border:1px solid var(--vs-border);border-radius:14px;padding:16px 18px;transition:all .4s;}
-  .vs-head{font-size:12px;font-weight:700;color:var(--vs-title);letter-spacing:.2px;margin-bottom:8px;}
-  .we-love{font-weight:400;color:var(--vs-text);font-style:italic;}
-  .vs-sub{font-size:13px;color:var(--vs-text);line-height:1.6;margin-bottom:14px;}
-  .showed-up{font-weight:800;color:var(--accent2);}
-  .vs-rows{display:flex;flex-direction:column;}
-  .vs-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--vs-row-border);}
-  .vs-badge{flex-shrink:0;font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;line-height:1.4;margin-top:1px;}
-  .vs-badge.strava{background:rgba(252,76,2,0.15);color:#FC4C02;}
-  .vs-badge.huddle{background:rgba(91,82,232,0.15);color:var(--accent2);}
-  .vs-row-text{font-size:13px;color:var(--vs-text);line-height:1.55;}
+  /* POSITIONING SPECTRUM — BeReal + Strava = Risers */
+  .spec-sec{padding:64px 40px 56px;max-width:1120px;margin:0 auto;text-align:center;}
+  .spec-formula{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+  .spec-fpill{font-size:12px;font-weight:700;letter-spacing:.2px;border-radius:8px;padding:5px 12px;background:var(--spec-neutral-bg);color:var(--spec-neutral-ink);line-height:1.3;}
+  .spec-fpill.strava{background:rgba(252,76,2,0.13);color:#FC4C02;}
+  .spec-fpill.risers{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(91,82,232,0.4);}
+  .spec-fop{font-size:16px;font-weight:600;color:var(--text3);}
+  .spec-title{font-size:clamp(26px,3.6vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.14;color:var(--text1);max-width:640px;margin:0 auto;}
+  .spec-title em{font-style:normal;color:var(--accent2);}
+  /* Hand-drawn underline: SVG stretched under a phrase, stroke stays crisp. */
+  .ul-hand{position:relative;display:inline-block;white-space:nowrap;}
+  .ul-hand > svg{position:absolute;left:-3px;right:-3px;bottom:-0.22em;width:calc(100% + 6px);height:0.4em;overflow:visible;pointer-events:none;}
+  .ul-hand > svg path{fill:none;stroke:var(--accent2);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
+  .spec-sub{margin:14px auto 0;font-size:15px;color:var(--text2);max-width:500px;line-height:1.65;}
+
+  .spec-grid{display:grid;grid-template-columns:1fr 1.16fr 1fr;gap:16px;align-items:stretch;margin-top:40px;text-align:left;}
+
+  .spec-card{position:relative;display:flex;flex-direction:column;border-radius:20px;padding:24px 22px;background:var(--spec-card-bg);border:1px solid var(--vs-border);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .4s cubic-bezier(.34,1.2,.64,1),box-shadow .4s,border-color .4s;}
+  .spec-card.is-muted{opacity:.94;}
+
+  .spec-card.is-hero{
+    background:
+      linear-gradient(180deg, rgba(91,82,232,0.16), rgba(91,82,232,0.03) 62%),
+      var(--spec-hero-fill);
+    border:1px solid rgba(91,82,232,0.55);
+    box-shadow:0 0 0 1px rgba(91,82,232,0.22), 0 26px 56px rgba(91,82,232,0.26), 0 8px 20px rgba(0,0,0,0.16);
+    transform:translateY(-12px);
+  }
+  .spec-card.is-hero::before{
+    content:"";position:absolute;inset:-1px;border-radius:20px;pointer-events:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+
+  .spec-badge{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.4px;border-radius:8px;padding:5px 11px;line-height:1.3;}
+  .spec-badge.bereal{background:var(--spec-neutral-bg);color:#fff;}
+  .spec-badge.strava{background:rgba(252,76,2,0.14);color:#FC4C02;}
+  .spec-badge.risers{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(91,82,232,0.45);}
+
+  .spec-role{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);margin:18px 0 7px;}
+  .spec-role.is-intersection{color:var(--accent2);}
+  .spec-focus{font-size:15.5px;font-weight:600;color:var(--text1);line-height:1.42;}
+  .spec-gap{margin-top:16px;padding-top:15px;border-top:1px solid var(--vs-row-border);font-size:13px;color:var(--vs-text);line-height:1.55;}
+
+  .spec-tagline{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--text1);line-height:1.25;margin:12px 0 0;}
+  .spec-hero-focus{margin-top:12px;font-size:13.5px;color:var(--text2);line-height:1.62;}
+  /* Proof pills pin to the card bottom so all three cards line up their footer. */
+  .spec-proofs{margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:8px;}
+  .spec-proof{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:13px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);font-size:13px;font-weight:700;color:var(--text1);line-height:1.35;}
+  .spec-proof svg{flex-shrink:0;width:16px;height:16px;color:var(--accent2);}
+  .spec-proof.is-muted{background:var(--spec-neutral-bg);border-color:var(--vs-border);color:var(--text2);}
+  .spec-proof.is-muted svg{color:var(--text3);}
+  /* Per-card check tints: BeReal reads pure white in dark / pure black in light, Strava uses its orange. */
+  .spec-proof.chk-strava svg{color:#FC4C02;}
+  .spec-proof.chk-ink svg{color:#fff;}
+  .light .spec-proof.chk-ink svg{color:#000;}
+  .light .spec-badge.bereal{color:#000;}
+
+  @media (min-width:761px){ .spec-card:not(.is-hero){margin-top:8px;} }
+  @media (max-width:760px){
+    .spec-sec{padding:48px 20px 40px;}
+    .spec-grid{grid-template-columns:1fr;gap:14px;margin-top:30px;}
+    .spec-card.is-hero{transform:none;}
+    .spec-proofs{margin-top:16px;}
+  }
+  @media (prefers-reduced-motion: reduce){ .spec-card{transition:none;} }
 
   /* WAITLIST SECTION */
-  .waitlist-sec{padding:60px 36px;text-align:center;}
+  .waitlist-sec{padding:60px 36px 88px;text-align:center;}
   .waitlist-card{max-width:520px;margin:24px auto 0;background:var(--waitlist-bg);border:1px solid var(--waitlist-border);border-radius:24px;padding:36px 36px;transition:background .4s,border-color .4s;}
   .waitlist-card p{font-size:15px;color:var(--text2);margin-bottom:20px;line-height:1.65;}
   .waitlist-form{display:flex;gap:0;}
@@ -697,7 +755,7 @@
     .ic-copy h2{font-size:26px;}
 
     /* WAITLIST */
-    .waitlist-sec{padding:48px 16px;}
+    .waitlist-sec{padding:48px 16px 68px;}
     .waitlist-card{padding:26px 20px;border-radius:20px;}
     .waitlist-form{flex-direction:column;gap:10px;}
     .waitlist-form input{border-radius:12px;border-right:1px solid var(--input-border);}
@@ -1311,17 +1369,72 @@
       <h2>Up to 12 people.<br/>Your private circle.</h2>
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
-      <div class="vs">
-        <div class="vs-head">How Risers is different from Strava. <span class="we-love">(We love both)</span></div>
-        <div class="vs-sub">Strava is for broadcasting your performance. Risers is for proving you <span class="showed-up">showed up.</span></div>
-        <div class="vs-rows">
-          <div class="vs-row">
-            <span class="vs-badge strava">Strava</span>
-            <div class="vs-row-text">Your stats, PBs, and highlights — shared with a wide fitness community.</div>
+    </div>
+  </section>
+
+  <!-- 5b. POSITIONING SPECTRUM — BeReal + Strava = Risers -->
+  <section class="spec-sec" id="positioning" aria-label="How Risers compares to BeReal and Strava">
+    <div class="spec-formula" aria-hidden="true">
+      <span class="spec-fpill">BeReal</span>
+      <span class="spec-fop">&#8596;</span>
+      <span class="spec-fpill risers">Risers</span>
+      <span class="spec-fop">&#8596;</span>
+      <span class="spec-fpill strava">Strava</span>
+    </div>
+    <h2 class="spec-title">The <span class="ul-hand">raw honesty<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span> of BeReal.<br/>The <span class="ul-hand">active energy<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 8 C 42 13, 84 3, 128 9 C 170 14, 212 4, 256 9 C 275 11, 289 7, 298 9"/></svg></span> of Strava.</h2>
+    <p class="spec-sub">Risers lives right at the sweet spot of these amazing apps.</p>
+
+    <div class="spec-grid">
+      <!-- BeReal -->
+      <div class="spec-card is-muted">
+        <span class="spec-badge bereal">BeReal</span>
+        <div class="spec-role">Core focus</div>
+        <div class="spec-focus">Raw, authentic photo moments.</div>
+        <div class="spec-gap">Great for candid snapshots, but no daily active goals or health intent behind them.</div>
+        <div class="spec-proofs">
+          <div class="spec-proof is-muted chk-ink">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 6 L9 17 L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Any moment, any circumstance.
           </div>
-          <div class="vs-row">
-            <span class="vs-badge huddle">Risers</span>
-            <div class="vs-row-text">Your commitments, your proof, your inner circle. No competing. Just showing up.</div>
+        </div>
+      </div>
+
+      <!-- RISERS (hero) -->
+      <div class="spec-card is-hero">
+        <span class="spec-badge risers">RISERS</span>
+        <div class="spec-role is-intersection">The sweet spot</div>
+        <div class="spec-tagline">Raw proof. Active holistic wellness.</div>
+        <p class="spec-hero-focus">Daily proof of movement, nutrition, and well-being, shared with your partner or a trusted few.</p>
+        <div class="spec-proofs">
+          <div class="spec-proof">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 6 L9 17 L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Healthy living moments and wins.
+          </div>
+          <div class="spec-proof">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 6 L9 17 L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            No stats. No metrics. Just real proof.
+          </div>
+        </div>
+      </div>
+
+      <!-- Strava -->
+      <div class="spec-card is-muted">
+        <span class="spec-badge strava">Strava</span>
+        <div class="spec-role">Core focus</div>
+        <div class="spec-focus">Active workouts.</div>
+        <div class="spec-gap">Powerful for tracking performance and broadcasting it. Ideal for enthusiasts who run, cycle, or swim, and who thrive with a bit of performance pressure.</div>
+        <div class="spec-proofs">
+          <div class="spec-proof is-muted chk-strava">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 6 L9 17 L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Stats, PBs, and performance tracking.
           </div>
         </div>
       </div>
