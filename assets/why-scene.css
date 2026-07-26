@@ -374,9 +374,9 @@ body {
 }
 .ul-hand > svg path {
   fill: none;
-  /* Matches the home page's --accent2 (light mode) so the squiggle sits a
-     shade softer than the brand blue used on the equation terms. */
-  stroke: #9B94F5;
+  /* Same Risers blue as the equation terms above, so the squiggle ties the
+     caption back to "Plans + Witnesses" instead of reading purple. */
+  stroke: var(--brand-primary);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
