@@ -265,7 +265,9 @@ body {
   text-align: center;
 }
 .overlay-h1 {
-  font-size: clamp(40px, 11vw, 80px);
+  /* Sized to sit ABOVE the equation as its title, not to be the loudest
+     thing on screen — the formula line below carries the visual weight. */
+  font-size: clamp(30px, 7.4vw, 52px);
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -0.022em;
@@ -278,6 +280,60 @@ body {
 /* Second line of the landing headline — bright Risers blue accent. */
 .overlay-h1-accent {
   color: var(--brand-primary);
+}
+
+/* ── The Risers Equation · [app icon] = Plans + Witnesses ───────────────
+   A single centered flex row. Wrapping is allowed on the OUTER row only
+   (the terms live inside .equation-side, which never breaks), so the
+   worst case on a narrow phone is a tidy two-line formula:
+       [icon] =
+       Plans + Witnesses
+   Column gap doubles as the optical spacing around the operators. */
+.equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: clamp(8px, 2.6vw, 18px);
+  row-gap: clamp(4px, 1.4vw, 10px);
+  margin-top: clamp(14px, 3.4vw, 22px);
+}
+.equation-side {
+  display: flex;
+  align-items: center;
+  column-gap: clamp(8px, 2.6vw, 18px);
+}
+.equation-icon {
+  /* Slightly larger than the cap height of the terms so the icon reads as
+     an equal member of the formula rather than a bullet next to it. The
+     PNG carries its own soft drop shadow, so no extra radius/shadow here;
+     the small negative block margin cancels the shadow's padding and keeps
+     the icon optically centered on the text baseline row. */
+  width: clamp(44px, 11.6vw, 86px);
+  height: auto;
+  display: block;
+  margin-block: -6px;
+}
+.equation-term {
+  /* Floor is set so the whole formula still fits one line on a 375px
+     phone; below that the outer row wraps (see .equation). */
+  font-size: clamp(25px, 6.9vw, 54px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.022em;
+  color: var(--brand-primary);
+}
+/* "=" and "+" — lighter and muted so the terms stay the emphasis. */
+.equation-op {
+  font-size: clamp(20px, 5.4vw, 38px);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink-day-soft);
+}
+/* Tighter than the default lede spacing: the caption belongs to the
+   formula above it, so it sits closer than a standalone paragraph would. */
+.equation + .overlay-lede {
+  margin-top: clamp(14px, 3vw, 20px);
 }
 .overlay-lede {
   font-size: clamp(16px, 4.6vw, 22px);
@@ -294,6 +350,37 @@ body {
 .overlay-lede-accent {
   color: var(--brand-primary);
   font-weight: 600;
+}
+
+/* Hand-drawn underline — same treatment as the home page's "raw honesty" /
+   "active energy" (`.ul-hand` in index.html): an absolutely positioned SVG
+   squiggle under the word, stretched to the span's width. `nowrap` keeps
+   the underlined word from breaking across lines, which would leave the
+   stroke stranded. Stroke is one step lighter than the home page's 4px
+   because this sits under lede-sized text, not a section headline. */
+.ul-hand {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.ul-hand > svg {
+  position: absolute;
+  left: -3px; right: -3px;
+  bottom: -0.2em;
+  width: calc(100% + 6px);
+  height: 0.4em;
+  overflow: visible;
+  pointer-events: none;
+}
+.ul-hand > svg path {
+  fill: none;
+  /* Matches the home page's --accent2 (light mode) so the squiggle sits a
+     shade softer than the brand blue used on the equation terms. */
+  stroke: #9B94F5;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 /* BOTTOM overlay · underneath copy in the bedrock dark band.

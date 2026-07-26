@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="/assets/Risers-Icon1-Shadows-Outline.png" fetchpriority="high">
 <link rel="stylesheet" href="/assets/why-scene.css">
 </head>
 <body>
@@ -58,8 +59,21 @@
      Always pinned in the sky band of the viewport while the scene is in
      view. Fades out as the user scrolls past the landing band. -->
 <div class="copy-overlay copy-overlay--top is-visible" id="copyTop">
-  <h1 class="overlay-h1">On the surface,<br><span class="overlay-h1-accent">Risers feels good.</span></h1>
-  <p class="overlay-lede">Rising to your potential feels good. Doing it with your people feels <em>better</em>.</p>
+  <h1 class="overlay-h1">The Risers Equation</h1>
+  <!-- The formula itself. `role="img"` + aria-label so screen readers get
+       one clean sentence instead of the icon / operator / term fragments.
+       The right-hand side is grouped in .equation-side so narrow viewports
+       wrap between "=" and "Plans + Witnesses" rather than mid-formula. -->
+  <div class="equation" role="img" aria-label="The Risers app equals Plans plus Witnesses">
+    <img class="equation-icon" src="/assets/Risers-Icon1-Shadows-Outline.png" alt="" width="84" height="84" fetchpriority="high" decoding="async">
+    <span class="equation-op">=</span>
+    <span class="equation-side">
+      <span class="equation-term">Plans</span>
+      <span class="equation-op">+</span>
+      <span class="equation-term">Witnesses</span>
+    </span>
+  </div>
+  <p class="overlay-lede">Our &ldquo;secret sauce&rdquo; formula contains the two key ingredients of <span class="ul-hand">consistency<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span>.</p>
 </div>
 
 <!-- ─── BOTTOM OVERLAY · the UNDERNEATH copy ────────────────────────────
