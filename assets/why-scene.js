@@ -931,8 +931,12 @@
     const tLead  = state.reduced ? 0.62 : lap % 1.0;
     const tTrail = state.reduced ? (0.62 + 1 - TRAIL_GAP) % 1.0
                                  : (lapTrail < 0 ? lapTrail : lapTrail % 1.0);
-    const xLead  = w + 20 - tLead  * span;
-    const xTrail = w + 20 - tTrail * span;
+    // _drawPlane treats cx as the CENTER of the plane's box and draws pw/2 to
+    // the left of it, so the phase-0 parking spot has to clear that much or a
+    // sliver of nose stays pinned to the right edge for the whole delay.
+    const parkX = (pw) => w + pw * 0.5 + 6;
+    const xLead  = parkX(pw1) - tLead  * span;
+    const xTrail = parkX(pw2) - tTrail * span;
     // Banners fade out first, then the planes themselves: by the sunset
     // payoff frame the sky is empty again, so the gag never sits on top of
     // the quiet ending. Brand-colored planes ghosting over an orange dusk
