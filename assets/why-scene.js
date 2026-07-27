@@ -1,7 +1,7 @@
 /* ===========================================================================
    why-scene.js  ·  Structural pass
    ---------------------------------------------------------------------------
-   This is the wiring layer for the /why-huddle-works.html scene. It owns:
+   This is the wiring layer for the /why-risers-works/ scene. It owns:
 
      1. The single full-viewport <canvas> sticky inside .scene.
      2. A scroll-driven `progress ∈ [0,1]` that linearly maps `scrollY`
@@ -515,6 +515,9 @@
 
   function appFactor() { return Math.max(0.6, w / 340); }
 
+  // Cloud / plane drift cycles in ~24s. Independent of scroll.
+  const DRIFT_PERIOD_MS = 24000;
+
   // Drift cycles the cloud (L→R) and planes (R→L) over a wraparound span,
   // exactly matching climb_card.dart's `span = size.width + 60.0`.
   function driftSpan() { return w + 60 * appFactor(); }
@@ -653,6 +656,13 @@
   let bannerIconReady = false;
   bannerIcon.addEventListener('load', () => { bannerIconReady = true; });
   bannerIcon.src = '/assets/Risers-Icon1-Shadows-Outline.png';
+
+  // Uniform size multiplier on the plane art. The towed banner's type is
+  // sized off the viewport, not off pw, so shrinking the planes leaves the
+  // lettering just as readable — only the aircraft (and its tow rope) shrink.
+  const PLANE_SCALE = 0.70;
+  // Dead air on a fresh load before the first plane noses in from the right.
+  const PLANE_ENTRY_DELAY_MS = 7000;
 
   const PLANE_BODY  = '#6F75FF';   // --brand-primary
   const PLANE_DEEP  = '#292D91';   // --brand-primary-dark
@@ -900,7 +910,7 @@
 
   function paintPlanes(state) {
     const peace = state.peaceT;
-    const pw1 = Math.max(54, Math.min(w * 0.072, 104));
+    const pw1 = Math.max(54, Math.min(w * 0.072, 104)) * PLANE_SCALE;
     const pw2 = pw1 * 0.88;
     const y1 = h * 0.115;
     const y2 = h * 0.185;
@@ -908,11 +918,19 @@
     // Formation: one drift phase, trailing plane a fixed fraction of a lap
     // behind, so the two banner halves never swap reading order.
     const TRAIL_GAP = 0.16;
-    // With reduced motion driftT is frozen at 0, so pick a phase that parks
-    // the pair left-of-center with both banners fully on screen instead of
-    // whatever the 0-phase happens to land on.
-    const tLead  = state.reduced ? 0.62 : (state.driftT + 0.10) % 1.0;
-    const tTrail = (tLead + 1 - TRAIL_GAP) % 1.0;
+    // Planes fly on their own clock, offset by PLANE_ENTRY_DELAY_MS, so the
+    // sky is empty for the first few seconds of a fresh load and the reader
+    // gets the equation before the banners sail through it. `lap` is
+    // unbounded (not wrapped) so the trailing plane can sit at a NEGATIVE
+    // phase during that first pass — parked off the right edge — rather than
+    // wrapping around and appearing on the left immediately.
+    const lap = Math.max(0, state.time - PLANE_ENTRY_DELAY_MS) / DRIFT_PERIOD_MS;
+    const lapTrail = lap - TRAIL_GAP;
+    // With reduced motion there's no animation to delay, so park the pair
+    // left-of-center with both banners fully on screen.
+    const tLead  = state.reduced ? 0.62 : lap % 1.0;
+    const tTrail = state.reduced ? (0.62 + 1 - TRAIL_GAP) % 1.0
+                                 : (lapTrail < 0 ? lapTrail : lapTrail % 1.0);
     const xLead  = w + 20 - tLead  * span;
     const xTrail = w + 20 - tTrail * span;
     // Banners fade out first, then the planes themselves: by the sunset
@@ -1231,9 +1249,7 @@
 
   function paintScene(now) {
     const time = now - startTime;
-    // Cloud / bird drift cycles in ~24s. Independent of scroll.
-    const driftPeriodMs = 24000;
-    const driftT = reduced ? 0 : (time % driftPeriodMs) / driftPeriodMs;
+    const driftT = reduced ? 0 : (time % DRIFT_PERIOD_MS) / DRIFT_PERIOD_MS;
 
     const state = {
       progress,
