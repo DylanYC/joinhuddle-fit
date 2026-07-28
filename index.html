@@ -1266,7 +1266,7 @@
             <button class="loop-step is-active" type="button" role="tab" aria-selected="true" data-step="0">
               <span class="loop-step-n">01</span>
               <span class="loop-step-title">Build &amp; Share Your Daily Plans</span>
-              <span class="loop-step-sub">Set your daily to-dos and share them as commitments with your inner circle. They’ll hold you to it.</span>
+              <span class="loop-step-sub">Set your daily to-dos and share them with your inner circle before you’ve done a thing about them. Whoever opens the app that day has your back.</span>
             </button>
             <button class="loop-step" type="button" role="tab" aria-selected="false" data-step="1">
               <span class="loop-step-n">02</span>
@@ -2429,20 +2429,23 @@ cOuter.addEventListener('click', (e) => {
 
   // Commitment cards — front to back. Avatars use the real photos from
   // assets/Avatars so this matches the proof carousel's seen-by row.
+  // Same backers, same order on every card — in practice your inner circle is
+  // the same handful of people day after day.
+  const stackBackers = [AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Crew_Leila.png'];
   const stackCards = [
     {
       emoji:'👟', name:'Walk 10,000 Steps', time:'7:00am',
-      viewers:[AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Crew_Leila.png'],
+      viewers:stackBackers,
       cls:'loop-card-front'
     },
     {
       emoji:'🥗', name:'Sunday meal prep', time:'5:00pm',
-      viewers:[AV+'Family_Richard.png', AV+'Family_Mike.png', AV+'Family_Karl.png'],
+      viewers:stackBackers,
       cls:'loop-card-mid'
     },
     {
       emoji:'💪', name:'Close activity rings', time:'All day',
-      viewers:[AV+'Family_Gisela.png', AV+'Family_Vanessa.png'],
+      viewers:stackBackers,
       cls:'loop-card-back'
     }
   ];
