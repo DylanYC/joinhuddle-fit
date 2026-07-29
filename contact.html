@@ -151,7 +151,7 @@ form.addEventListener('submit', async (e) => {
   }
   // Honeypot tripped. Look successful, send nothing.
   if (form.querySelector('.cf-gotcha').value) {
-    form.innerHTML = '<p class="cf-done">Message sent. Watch your inbox.</p>';
+    form.innerHTML = '<p class="cf-done">Message sent. We\'ll get back to you asap.</p>';
     return;
   }
 
@@ -192,8 +192,7 @@ form.addEventListener('submit', async (e) => {
       throw new Error('Bad response ' + res.status);
     }
 
-    form.innerHTML = '<p class="cf-done">Message sent. One person reads these, '
-      + 'so give it a few days.</p>';
+    form.innerHTML = '<p class="cf-done">Message sent. We\'ll get back to you asap.</p>';
   } catch (err) {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send message';
