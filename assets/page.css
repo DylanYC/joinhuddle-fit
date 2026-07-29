@@ -82,6 +82,31 @@
 .contact-card .label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .contact-card .value{font-size:15px;color:var(--text1);font-weight:500;}
 .contact-note{font-size:13px;line-height:1.6;color:var(--text3);margin-top:20px;}
+.contact-note a{color:var(--accent2);text-decoration:none;border-bottom:1px solid var(--prose-rule);}
+.contact-note a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* CONTACT FORM */
+.cform{margin-top:28px;display:flex;flex-direction:column;gap:18px;}
+.cf-field{display:flex;flex-direction:column;gap:7px;}
+.cf-field label{font-size:13px;font-weight:600;color:var(--text2);}
+.cf-opt{font-weight:400;color:var(--text3);}
+.cf-field input,.cf-field select,.cf-field textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:13px 16px;color:var(--input-text);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.cf-field input::placeholder,.cf-field textarea::placeholder{color:var(--input-ph);}
+.cf-field input:focus,.cf-field select:focus,.cf-field textarea:focus{border-color:var(--accent);}
+.cf-field textarea{resize:vertical;min-height:132px;line-height:1.6;}
+/* color-scheme is scoped to the controls so the native dropdown and caret
+   follow the site toggle without restyling the rest of the page. */
+.cf-field select{color-scheme:dark;appearance:none;-webkit-appearance:none;padding-right:40px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%238a8a9a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+.light .cf-field select{color-scheme:light;}
+.cf-gotcha{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+.cf-submit{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:15px 24px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .2s;}
+.cf-submit:hover{background:#4a42d4;}
+.cf-submit:disabled{cursor:default;opacity:.85;background:var(--accent);}
+.cf-status{font-size:13px;line-height:1.6;color:var(--text3);}
+.cf-status:empty{display:none;}
+.cf-status.is-error{color:#ff7a7a;}
+.light .cf-status.is-error{color:#c0392b;}
+.cf-done{margin-top:28px;padding:18px 20px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:14px;font-size:15px;font-weight:600;color:var(--accent2);line-height:1.55;}
 
 /* FOOTER */
 .footer{padding:36px 40px;border-top:1px solid var(--footer-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}

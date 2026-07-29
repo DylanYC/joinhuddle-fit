@@ -26,7 +26,7 @@
 
   <main class="page">
     <div class="eyebrow">One inbox</div>
-    <h1>Email us</h1>
+    <h1>Write to us</h1>
     <p class="meta">Replies usually take a few days.</p>
 
     <div class="prose">
@@ -36,21 +36,46 @@
       </p>
     </div>
 
-    <div class="contact-grid">
-      <a class="contact-card" href="mailto:hello@risers.fit">
-        <div>
-          <div class="label">General &amp; support</div>
-          <div class="value">hello@risers.fit</div>
-        </div>
-      </a>
-      <a class="contact-card" href="mailto:dylan@risers.fit">
-        <div>
-          <div class="label">Straight to the founder</div>
-          <div class="value">dylan@risers.fit</div>
-        </div>
-      </a>
-    </div>
+    <form class="cform" id="cform" novalidate>
+      <div class="cf-field">
+        <label for="cf-topic">What this is about</label>
+        <select id="cf-topic" name="topic">
+          <option>Question</option>
+          <option>Idea</option>
+          <option>Bug</option>
+          <option>Press</option>
+          <option>Something else</option>
+        </select>
+      </div>
 
+      <div class="cf-field">
+        <label for="cf-name">Name <span class="cf-opt">(optional)</span></label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="What should we call you">
+      </div>
+
+      <div class="cf-field">
+        <label for="cf-email">Email</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="Where the reply should go">
+      </div>
+
+      <div class="cf-field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="6" placeholder="As much or as little detail as you want"></textarea>
+      </div>
+
+      <!-- Honeypot. Bots fill it, people never see it. Named _gotcha so
+           Formspree-style endpoints also drop it server side. -->
+      <input class="cf-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <button class="cf-submit" type="submit" id="cf-submit">Send message</button>
+      <p class="cf-status" id="cf-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="contact-note">
+      Email works too. <a href="mailto:hello@risers.fit">hello@risers.fit</a> lands in the
+      same inbox, <a href="mailto:dylan@risers.fit">dylan@risers.fit</a> goes straight to
+      the founder.
+    </p>
     <p class="contact-note">
       In the app, Settings &rsaquo; Help sends bug reports with device details attached.
     </p>
@@ -73,3 +98,107 @@
 </div>
 
 <script src="assets/page.js"></script>
+
+<script>
+// Contact form. Posts JSON to the submitContact Cloud Function, which stores
+// the message and emails it on via Resend. The function lives in the app repo
+// (functions/src/index.ts) and its URL is printed by `firebase deploy`.
+//
+// While ENDPOINT is empty the submit button falls back to opening the
+// visitor's mail client with the message prefilled, so the page is never
+// broken. Paste the URL in and the fallback stops being used.
+const ENDPOINT = 'https://us-central1-oljijbp53x9re7stfut7zguduw5kes.cloudfunctions.net/submitContact';
+
+const FALLBACK_TO = 'hello@risers.fit';
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+// Matches FEEDBACK_MIN_LENGTH server side, so a too-short message is caught
+// here with a friendly line instead of coming back as a 400.
+const MIN_MESSAGE = 10;
+
+const form = document.getElementById('cform');
+const statusEl = document.getElementById('cf-status');
+const submitBtn = document.getElementById('cf-submit');
+
+function setStatus(text, kind) {
+  statusEl.textContent = text;
+  statusEl.className = 'cf-status' + (kind ? ' is-' + kind : '');
+}
+
+function mailtoFallback(topic, name, email, message) {
+  const meta = [name ? 'From: ' + name : '', email ? 'Reply to: ' + email : ''].filter(Boolean);
+  const body = message + (meta.length ? '\n\n--\n' + meta.join('\n') : '');
+  return 'mailto:' + FALLBACK_TO
+    + '?subject=' + encodeURIComponent('[' + topic + '] Risers')
+    + '&body=' + encodeURIComponent(body);
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const topic = document.getElementById('cf-topic').value;
+  const name = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const message = document.getElementById('cf-message').value.trim();
+
+  if (!EMAIL_RE.test(email)) {
+    setStatus('That email address does not look right. We need it to write back.', 'error');
+    document.getElementById('cf-email').focus();
+    return;
+  }
+  if (message.length < MIN_MESSAGE) {
+    setStatus('Add a little more detail before sending.', 'error');
+    document.getElementById('cf-message').focus();
+    return;
+  }
+  // Honeypot tripped. Look successful, send nothing.
+  if (form.querySelector('.cf-gotcha').value) {
+    form.innerHTML = '<p class="cf-done">Message sent. Watch your inbox.</p>';
+    return;
+  }
+
+  if (!ENDPOINT) {
+    window.location.href = mailtoFallback(topic, name, email, message);
+    setStatus('Opening your email app with this message ready to send.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending';
+  setStatus('');
+
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic: topic,
+        name: name,
+        email: email,
+        message: message,
+        _gotcha: form.querySelector('.cf-gotcha').value,
+      }),
+    });
+
+    if (!res.ok) {
+      // The function explains rejections it can describe (bad address, too
+      // short, rate limited). Prefer its wording over the generic line.
+      let detail = '';
+      try { detail = (await res.json()).error || ''; } catch (_) {}
+      if (detail) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send message';
+        setStatus(detail, 'error');
+        return;
+      }
+      throw new Error('Bad response ' + res.status);
+    }
+
+    form.innerHTML = '<p class="cf-done">Message sent. One person reads these, '
+      + 'so give it a few days.</p>';
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send message';
+    setStatus('That did not send. Email ' + FALLBACK_TO + ' instead and it reaches the same place.', 'error');
+  }
+});
+</script>
