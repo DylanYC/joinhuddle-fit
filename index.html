@@ -155,7 +155,7 @@
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
-  /* THE STANCE — the hero→carousel seam. The competitive noise drops & dims;
+  /* THE STANCE — closes the app demo. The competitive noise drops & dims;
      the proof rises. Quiet by design: muted negations, one-shot reveal, ~10px
      of motion. Flat DOM so .is-calm can reflow the same spans into a 2-liner. */
   .stance{padding:48px 24px 20px;display:flex;justify-content:center;}
@@ -1034,6 +1034,16 @@
   .rhero-center .rhero-sub{margin:20px auto 0;max-width:none;}
   .rhero-cta-center{margin-top:28px;}
 
+  /* Caption beneath the card wall — matches the hero sub copy so it reads as
+     part of the wall, not a separate band. */
+  .cwall-caption{position:relative;z-index:2;max-width:640px;margin:22px auto 0;padding:0 24px;
+    text-align:center;font-family:'Inter',sans-serif;font-size:clamp(15px,1.5vw,18px);
+    line-height:1.6;color:var(--r-sub);}
+  /* hand-drawn underline (shared .ul-hand) — thinner stroke than the big spec
+     title since the caption text is much smaller */
+  .cwall-caption .ul-hand > svg path{stroke-width:3;}
+  @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:18px;} }
+
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
     /* ~7 stacks visible at any desktop width: each card is 1/7 of the viewport
@@ -1229,27 +1239,12 @@
     <div class="cwall" id="cwall" role="group" aria-label="Example daily plans and the proof that backed them">
       <div class="cwall-track" id="cwallTrack"></div>
     </div>
-  </section>
 
-
-  <!-- 1.5  THE STANCE — drop the noise, rise into proof -->
-  <section class="stance is-calm" id="stance" aria-label="What Risers is, and isn't">
-    <div class="stance-inner">
-      <span class="stance-rule" aria-hidden="true"></span>
-      <div class="stance-rows">
-        <span class="stance-no" style="--si:0">No Stats.</span>
-        <span class="stance-arrow" aria-hidden="true" style="--si:0"></span>
-        <span class="stance-yes" style="--si:0">Just <em>proof.</em></span>
-
-        <span class="stance-no" style="--si:1">No Leaderboards.</span>
-        <span class="stance-arrow" aria-hidden="true" style="--si:1"></span>
-        <span class="stance-yes" style="--si:1">Just <em>inspiration.</em></span>
-
-        <span class="stance-no" style="--si:2">No Competing.</span>
-        <span class="stance-arrow" aria-hidden="true" style="--si:2"></span>
-        <span class="stance-yes" style="--si:2">Just <em>rising together.</em></span>
-      </div>
-    </div>
+    <!-- ===== Card-wall caption ===== -->
+    <p class="cwall-caption">
+      No plan is too big or small. As long as it's <span class="ul-hand">yours<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span>.<br>
+      They're for your circle, not strangers.
+    </p>
   </section>
 
   <!-- 3. THE LOOP — How Risers Works (Dia-style sticky-left, scrolling-right) -->
@@ -1335,6 +1330,26 @@
       <div class="proof-dots" id="proof-dots"></div>
       <button class="proof-btn" id="proof-next" aria-label="Next">&#8594;</button>
     </nav>
+  </section>
+
+  <!-- THE STANCE — drop the noise, rise into proof. Caps off the app demo. -->
+  <section class="stance is-calm" id="stance" aria-label="What Risers is, and isn't">
+    <div class="stance-inner">
+      <span class="stance-rule" aria-hidden="true"></span>
+      <div class="stance-rows">
+        <span class="stance-no" style="--si:0">No Stats.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:0"></span>
+        <span class="stance-yes" style="--si:0">Just <em>proof.</em></span>
+
+        <span class="stance-no" style="--si:1">No Leaderboards.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:1"></span>
+        <span class="stance-yes" style="--si:1">Just <em>inspiration.</em></span>
+
+        <span class="stance-no" style="--si:2">No Competing.</span>
+        <span class="stance-arrow" aria-hidden="true" style="--si:2"></span>
+        <span class="stance-yes" style="--si:2">Just <em>rising together.</em></span>
+      </div>
+    </div>
   </section>
 
   <!-- 5. INNER CIRCLE -->
