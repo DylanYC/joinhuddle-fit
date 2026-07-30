@@ -1076,10 +1076,14 @@
   .cwall-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
 
   /* One stack = plan card (front) + proof card (peeking behind). */
-  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:pointer;}
+  /* Each stack is a size container: card anatomy scales in cqw (% of card
+     width, clamped), so bigger desktop cards keep the 188px design's density
+     instead of growing whitespace — and the clamp floors keep small cards
+     exactly as they are on phones / narrow windows. */
+  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:pointer;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);}
   .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
     transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
-  .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:10px 11px;text-align:left;}
+  .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:var(--cw-pad);text-align:left;}
   /* Resting recede: -11px peek + scale(.90). Because transform-origin is bottom
      center, scaling drops the top edge by 10% of the card height — the -10%
      (translate % = own height) compensates so the receded card genuinely peeks
@@ -1105,65 +1109,66 @@
   }
 
   /* plan card content — mirrors the app's task-card anatomy:
-     cadence pill (clock icon), emoji title, "Backed by" + avatar row */
-  .cwall-pill{display:inline-flex;align-items:center;gap:4px;background:var(--cw-pill-bg);color:var(--cw-pill-ink);border-radius:999px;padding:3px 8px 3px 7px;font-size:10px;font-weight:600;line-height:1.3;white-space:nowrap;}
-  .cwall-pill svg{display:block;flex-shrink:0;}
-  .cwall-label{margin-top:9px;font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
-  .cwall-desc{margin-top:4px;font-size:11px;font-weight:500;color:var(--cw-sub);line-height:1.4;}
+     cadence pill (clock icon), emoji title, "Backed by" + avatar row.
+     Font/element sizes are cqw-scaled, anchored to the 188px-wide card. */
+  .cwall-pill{display:inline-flex;align-items:center;gap:.4em;background:var(--cw-pill-bg);color:var(--cw-pill-ink);border-radius:999px;padding:.32em .85em .32em .75em;font-size:clamp(10px,5.3cqw,13px);font-weight:600;line-height:1.3;white-space:nowrap;}
+  .cwall-pill svg{display:block;flex-shrink:0;width:1em;height:1em;}
+  .cwall-label{margin-top:.6em;font-size:clamp(13px,8cqw,20px);font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
+  .cwall-desc{margin-top:.35em;font-size:clamp(11px,5.9cqw,14px);font-weight:500;color:var(--cw-sub);line-height:1.4;}
+  /* bottom-anchored flow: CTA above the backed-by row, no per-size offsets */
+  .cwall-plan-foot{position:absolute;left:var(--cw-pad);right:var(--cw-pad);bottom:var(--cw-pad);display:flex;flex-direction:column;gap:.55em;font-size:clamp(10px,5.3cqw,13px);}
   /* compact take on the app's dashed capture CTA (capture_proof_cta.dart) —
      tapping it (or anywhere on the stack) reveals the proof behind */
-  .cwall-cta{position:absolute;left:11px;right:11px;bottom:36px;display:flex;align-items:center;justify-content:center;gap:6px;
-    height:30px;border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
-    font-size:11px;font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
-  .cwall-cta-ic{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#7C82FF,#3B3FA8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .cwall-cta-ic svg{display:block;}
-  .cwall-backed{position:absolute;left:11px;right:11px;bottom:10px;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:var(--cw-sub);white-space:nowrap;overflow:hidden;}
+  .cwall-cta{display:flex;align-items:center;justify-content:center;gap:.55em;
+    height:clamp(26px,16cqw,38px);border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
+    font-size:clamp(10px,5.9cqw,14px);font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
+  .cwall-cta-ic{width:1.5em;height:1.5em;border-radius:50%;background:linear-gradient(135deg,#7C82FF,#3B3FA8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .cwall-cta-ic svg{display:block;width:56%;height:56%;}
+  .cwall-backed{display:flex;align-items:center;gap:.5em;font-weight:500;color:var(--cw-sub);white-space:nowrap;overflow:hidden;}
   .cwall-avs{display:flex;flex-shrink:0;}
-  .cwall-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cw-ring);background:#CFD1FF;flex-shrink:0;}
-  .cwall-av+.cwall-av{margin-left:-6px;}
+  .cwall-av{width:clamp(18px,10.6cqw,26px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.5px solid var(--cw-ring);background:#CFD1FF;flex-shrink:0;}
+  .cwall-av+.cwall-av{margin-left:-.32em;}
   .cwall-av.is-you{border-color:#5B52E8;position:relative;z-index:1;}
   .cwall-av img{width:100%;height:100%;object-fit:cover;display:block;}
 
   /* proof card content */
   .cwall-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
   /* poster's avatar top-left — same treatment as the proof carousel's pc-avatar */
-  .cwall-poster{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:2;}
+  .cwall-poster{position:absolute;top:8px;left:8px;width:clamp(26px,15cqw,36px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:2;}
   .cwall-poster.is-you{border-color:#5B52E8;}
   .cwall-poster img{width:100%;height:100%;object-fit:cover;display:block;}
   /* flex pill — compact echo of the app's FlexPillButton, under the title chip */
-  .cwall-flex{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;
+  .cwall-flex{display:inline-flex;align-items:center;gap:.4em;
     background:rgba(0,0,0,.58);
-    border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:4px 8px;
-    color:#fff;font-size:10.5px;font-weight:700;line-height:1;}
-  .cwall-flex svg{display:block;flex-shrink:0;}
-  .cwall-flex-avs{display:flex;margin-left:2px;}
-  .cwall-flex-avs span{width:14px;height:14px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(255,255,255,.85);background:#CFD1FF;flex-shrink:0;}
-  .cwall-flex-avs span+span{margin-left:-5px;}
+    border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:.4em .75em;
+    color:#fff;font-size:clamp(10px,5.6cqw,13px);font-weight:700;line-height:1;}
+  .cwall-flex svg{display:block;flex-shrink:0;width:1.35em;height:1.35em;}
+  .cwall-flex-avs{display:flex;margin-left:.2em;}
+  .cwall-flex-avs span{width:clamp(13px,7.4cqw,18px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.5px solid rgba(255,255,255,.85);background:#CFD1FF;flex-shrink:0;}
+  .cwall-flex-avs span+span{margin-left:-.38em;}
   .cwall-flex-avs img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* bottom-anchored flow on the proof card: title chip above the flex pill */
+  .cwall-proof-meta{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;
+    display:flex;flex-direction:column;align-items:flex-start;gap:6px;}
   /* No backdrop-filter on chips/pills: blur re-samples the backdrop every frame
      while the track drifts — with ~48 of them it visibly janks the marquee.
      A slightly more opaque fill reads the same at this size. */
-  .cwall-chip{position:absolute;left:8px;bottom:38px;max-width:calc(100% - 16px);
+  .cwall-chip{max-width:100%;
     background:rgba(0,0,0,.58);
-    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:3px 9px;
-    font-size:11px;font-weight:600;color:#fff;line-height:1.3;
+    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.3em .8em;
+    font-size:clamp(11px,6.1cqw,15px);font-weight:600;color:#fff;line-height:1.3;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   /* signature variant — for unphotographable plans */
   .cwall-sig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
     background:linear-gradient(160deg,rgba(111,117,255,.18),rgba(111,117,255,.05));}
-  .cwall-sig svg{width:74px;height:36px;display:block;}
+  .cwall-sig svg{width:clamp(64px,39cqw,96px);height:auto;display:block;}
   .cwall-sig svg path{fill:none;stroke:var(--r-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-  .cwall-signed{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);}
+  .cwall-signed{font-size:clamp(10px,5.9cqw,14px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);}
 
   @media (max-width:640px){
+    /* card size only — the cqw clamps land on their floors at this width,
+       which reproduces the previous mobile sizing (label 13px, meta 10-11px) */
     .cwall{--cw-w:142px;--cw-gap:14px;margin-top:34px;}
-    .cwall-label{font-size:13px;margin-top:8px;}
-    .cwall-plan{padding:10px;}
-    .cwall-backed{left:10px;right:10px;bottom:9px;}
-    .cwall-cta{left:10px;right:10px;bottom:33px;height:26px;}
-    .cwall-av{width:18px;height:18px;}
-    .cwall-av+.cwall-av{margin-left:-5px;}
-    /* plan label 13px, desc + chip 11px — legibility floor */
   }
   @media (prefers-reduced-motion: reduce){
     /* wall renders static in resting state: plan in front, proof peeking */
@@ -2561,11 +2566,14 @@ function toggleMode() {
       img.decoding = 'async';
       proof.appendChild(img);
     }
-    // the label chip is what turns a photo into evidence — required on every proof card
+    // bottom-left column: label chip (the evidence marker — required on every
+    // proof card) with the flex pill beneath it
+    const meta = document.createElement('div');
+    meta.className = 'cwall-proof-meta';
     const chip = document.createElement('span');
     chip.className = 'cwall-chip';
     chip.textContent = plan.label;
-    proof.appendChild(chip);
+    meta.appendChild(chip);
 
     // poster's avatar top-left (same treatment as the proof carousel's pc-avatar)
     const poster = document.createElement('span');
@@ -2589,7 +2597,8 @@ function toggleMode() {
       '<span class="cwall-flex-avs">' +
       flexFaces.map(f => '<span><img src="' + AV + f + '" alt="" loading="lazy" decoding="async"></span>').join('') +
       '</span>';
-    proof.appendChild(flex);
+    meta.appendChild(flex);
+    proof.appendChild(meta);
 
     // plan layer (front at rest) — cadence pill, emoji title, "Backed by" row
     const front = document.createElement('div');
@@ -2610,8 +2619,10 @@ function toggleMode() {
       '<span class="cwall-pill">' + clock + plan.cadence + '</span>' +
       '<div class="cwall-label">' + plan.emoji + ' ' + plan.label + '</div>' +
       (plan.desc ? '<div class="cwall-desc">' + plan.desc + '</div>' : '') +
-      '<div class="cwall-cta" aria-hidden="true"><span class="cwall-cta-ic">' + ctaGlyph + '</span>' + (isSig ? 'Sign to Promise' : 'Capture Proof') + '</div>' +
-      '<div class="cwall-backed">Backed by<span class="cwall-avs">' + avs + '</span></div>';
+      '<div class="cwall-plan-foot">' +
+        '<div class="cwall-cta" aria-hidden="true"><span class="cwall-cta-ic">' + ctaGlyph + '</span>' + (isSig ? 'Sign to Promise' : 'Capture Proof') + '</div>' +
+        '<div class="cwall-backed">Backed by<span class="cwall-avs">' + avs + '</span></div>' +
+      '</div>';
 
     stack.appendChild(proof);
     stack.appendChild(front);
