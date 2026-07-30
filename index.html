@@ -1180,12 +1180,25 @@
     border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.3em .8em;
     font-size:clamp(11px,6.1cqw,15px);font-weight:600;color:#fff;line-height:1.3;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  /* signature variant — for unphotographable plans */
-  .cwall-sig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  /* signature variant — for unphotographable plans. Styled as a mini
+     certificate so a first-time viewer reads it as a signed promise: the plan
+     named in italic serif, the signature, a signing line, then the seal line.
+     Mirrors the app's in-product promise card. */
+  .cwall-sig{position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    /* pad-top clears the poster avatar; pad-bottom reserves the flex-pill band */
+    padding:clamp(31px,17cqw,42px) clamp(12px,7cqw,17px) clamp(40px,22cqw,52px);
     background:linear-gradient(160deg,rgba(111,117,255,.18),rgba(111,117,255,.05));}
-  .cwall-sig svg{width:clamp(64px,39cqw,96px);height:auto;display:block;}
-  .cwall-sig svg path{fill:none;stroke:var(--r-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-  .cwall-signed{font-size:clamp(10px,5.9cqw,14px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);}
+  .cwall-sig-eyebrow{font-size:clamp(7.5px,4.1cqw,10px);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cw-sub);}
+  .cwall-sig-title{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(15px,9cqw,22px);line-height:1.1;letter-spacing:.01em;color:var(--cw-label);margin-top:.24em;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .cwall-sig-mark{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;width:100%;}
+  .cwall-sig-mark svg{width:clamp(56px,34cqw,84px);height:auto;display:block;}
+  .cwall-sig-mark svg path{fill:none;stroke:var(--r-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .cwall-sig-line{width:min(74%,132px);height:1px;margin:0 0 .5em;
+    background:linear-gradient(90deg,transparent,var(--cw-sub),transparent);}
+  .cwall-signed{font-size:clamp(9px,5cqw,12px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--r-accent);line-height:1.25;}
 
   @media (max-width:640px){
     /* card size only — the cqw clamps land on their floors at this width,
@@ -2579,9 +2592,13 @@ function toggleMode() {
     if (plan.proof === 'signature') {
       const sig = document.createElement('div');
       sig.className = 'cwall-sig';
-      sig.setAttribute('aria-hidden', 'true');
+      // certificate framing: the plan title (italic serif) reads as what was
+      // promised, so the signed card is self-explanatory to a first-time viewer
       sig.innerHTML =
-        '<svg viewBox="0 0 74 36"><path d="M5 26 C 13 7, 21 5, 23 15 C 24.5 22, 17 29, 14 25 C 11 21, 23 11, 33 13 C 41 14.5, 35 25, 42 23 C 47 21.5, 48 14, 54 15 C 59 16, 57 22, 62 20 L 69 17"/></svg>' +
+        '<span class="cwall-sig-eyebrow">Promised</span>' +
+        '<span class="cwall-sig-title">' + plan.label + '</span>' +
+        '<span class="cwall-sig-mark" aria-hidden="true"><svg viewBox="0 0 74 36"><path d="M5 26 C 13 7, 21 5, 23 15 C 24.5 22, 17 29, 14 25 C 11 21, 23 11, 33 13 C 41 14.5, 35 25, 42 23 C 47 21.5, 48 14, 54 15 C 59 16, 57 22, 62 20 L 69 17"/></svg></span>' +
+        '<span class="cwall-sig-line" aria-hidden="true"></span>' +
         '<span class="cwall-signed">Signed</span>';
       proof.appendChild(sig);
     } else {
@@ -2597,10 +2614,14 @@ function toggleMode() {
     // proof card) with the flex pill beneath it
     const meta = document.createElement('div');
     meta.className = 'cwall-proof-meta';
-    const chip = document.createElement('span');
-    chip.className = 'cwall-chip';
-    chip.textContent = plan.label;
-    meta.appendChild(chip);
+    // signature cards already name the plan on the certificate itself, so the
+    // bottom title chip would duplicate it — photo cards still need it
+    if (plan.proof !== 'signature') {
+      const chip = document.createElement('span');
+      chip.className = 'cwall-chip';
+      chip.textContent = plan.label;
+      meta.appendChild(chip);
+    }
 
     // poster's avatar top-left (same treatment as the proof carousel's pc-avatar)
     const poster = document.createElement('span');
