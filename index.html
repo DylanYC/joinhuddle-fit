@@ -6,7 +6,6 @@
 <link rel="apple-touch-icon" href="assets/Risers-Favicon-Simple.svg">
 <!-- Prioritize the topmost (hero) imagery so it paints first instead of racing the rest of the page -->
 <link rel="preload" as="image" href="assets/Risers-Icon1-Shadows-Outline.png" fetchpriority="high">
-<link rel="preload" as="image" href="assets/Header%20Phone%20Images/Sunday%20Run_Dylan.JPG" fetchpriority="high">
 <link rel="preload" as="image" href="assets/Avatars/MainUser_Dylan.png">
 <link rel="preload" as="image" href="assets/Avatars/Partner_Klaudia.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -139,24 +138,8 @@
   .ref-callout strong{color:var(--accent2);font-weight:700;}
   .pro-tag{color:var(--pro-color);font-weight:inherit;}
 
-  /* CAROUSEL */
-  /* Vertical padding gives hover shadows room to render inside the overflow:hidden clip */
-  .c-outer{margin-top:20px;position:relative;overflow:hidden;padding:14px 0 60px;cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;}
-  .c-outer.is-dragging{cursor:grabbing;}
-  .c-outer.is-dragging .c-track{transition:none;}
-  .c-outer.is-dragging .pcard{cursor:grabbing;pointer-events:none;}
-  .c-track{display:flex;gap:18px;padding:0 20px;transition:transform .45s cubic-bezier(.22,.61,.36,1);user-select:none;-webkit-user-select:none;will-change:transform;}
-  .c-track img,.c-track *{-webkit-user-drag:none;user-drag:none;}
-  .pcard{flex-shrink:0;width:240px;height:320px;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s cubic-bezier(.22,.61,.36,1),filter .45s ease;}
-  /* Light-mode: indigo-tinted shadow (using brand color #1A165C) for that custom-built feel. */
-  .light .pcard{box-shadow:0 2px 6px rgba(26,22,92,.08),0 8px 20px rgba(26,22,92,.10);}
-  /* Hover effects only apply on real pointer devices (mouse). Touch devices skip
-     the lift entirely — the :hover state sticking after a tap looks broken on mobile. */
-  @media (hover: hover) and (pointer: fine) {
-    .pcard:hover{transform:translateY(-8px);box-shadow:0 6px 14px rgba(91,82,232,.18),0 20px 40px rgba(91,82,232,.22),0 40px 80px rgba(91,82,232,.18);}
-    .light .pcard:hover{transform:translate3d(0,-12px,0) scale(1.015);box-shadow:0 14px 32px rgba(26,22,92,.22),0 28px 56px rgba(26,22,92,.16);filter:brightness(1.02);}
-  }
-  .pc-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
+  /* Proof-card content styles (pc-*) — the old carousel is gone, but the
+     How It Works proof scene still renders with these. */
   .pc-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
   .pc-avatar{position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:2;}
   .pc-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -164,12 +147,6 @@
   .pc-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.45) 45%,rgba(0,0,0,.88));padding:40px 14px 14px;}
   .pc-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;}
   .pc-desc{font-size:11.5px;color:rgba(255,255,255,.92);margin-top:5px;line-height:1.3;}
-  .c-dots{display:flex;justify-content:center;gap:7px;margin-top:-36px;}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .4s,width .4s,border-radius .4s;}
-  .dot.on{background:var(--accent);width:22px;border-radius:4px;}
-  .c-arrows{display:flex;justify-content:center;gap:10px;margin-top:14px;}
-  .arr{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;user-select:none;transition:all .2s;}
-  .arr:hover{background:rgba(91,82,232,.15);border-color:var(--accent);color:var(--text1);}
 
   /* SECTIONS */
   .sec{text-align:center;padding:60px 24px 0;}
@@ -721,10 +698,7 @@
     .hero-waitlist input{border-radius:12px;border-right:1px solid var(--input-border);}
     .hero-waitlist button{border-radius:12px;width:100%;}
 
-    /* CAROUSEL */
-    .c-outer{padding:10px 0 60px;margin-top:18px;}
-    .c-track{padding:0 14px;gap:12px;}
-    .pcard{width:180px;height:240px;}
+    /* pc-* card content (How It Works proof scene) */
     .pc-avatar{width:28px;height:28px;top:8px;left:8px;border-width:2px;}
     .pc-ov{padding:32px 11px 11px;}
     .pc-title{font-size:12px;}
@@ -814,7 +788,9 @@
        top edge with no background strip showing above it in light mode
        (margin-top is cancelled by an equal padding-top — content stays put) */
     margin-top:-84px;
-    padding:84px 0 30px;
+    /* zero bottom padding: the card wall's own 36px shadow foot-room already
+       provides the breathing space before the stance band */
+    padding:84px 0 0;
   }
   /* soft fade so the bright sky blends into the next section's bg */
   .rhero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:160px;z-index:1;pointer-events:none;
@@ -1047,6 +1023,147 @@
     .nav-cta{padding:8px 12px;font-size:12px;}
     .nav-logo svg{height:32px;}
   }
+
+  /* ============================================================= */
+  /* ============  RISERS · HERO CENTRE + CARD WALL  ============= */
+  /* ============================================================= */
+  /* Centred hero column (replaces the two-col daybreak grid). */
+  .rhero-center{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:34px 24px 0;text-align:center;}
+  .rhero-center .rhero-appicon{margin:0 auto 14px;}
+  .rhero-center .rhero-h{max-width:660px;margin:0 auto;}
+  .rhero-center .rhero-sub{margin:20px auto 0;max-width:none;}
+  .rhero-cta-center{margin-top:28px;}
+
+  /* Card wall — sizing tokens live here; motion constants live in the JS. */
+  .cwall{
+    --cw-w:158px; --cw-h:190px; --cw-gap:16px;
+    /* dark (default) — navy-leaning surfaces to match the night sky */
+    --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
+    /* Two-layer soft shadow that casts DOWNWARD only (offset ≥ blur + |spread|):
+       an ordinary blur paints up onto the peeking proof card and sideways onto
+       neighbours, which read as harsh gray bands in light mode. */
+    --cw-card-sh:0 3px 8px -3px rgba(0,0,0,.25),0 14px 24px -12px rgba(0,0,0,.32);
+    --cw-proof-bg:#141224;
+    --cw-label:#ffffff; --cw-sub:rgba(255,255,255,.55); --cw-ring:#1b1930;
+    --cw-pill-bg:rgba(111,117,255,.20); --cw-pill-ink:#CFD1FF;
+    --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
+    --cw-veil:rgba(7,8,22,.72);
+    position:relative;z-index:2;margin-top:44px;overflow:hidden;
+    /* 16px headroom for the peeking proof card; 36px foot-room so the cards'
+       downward shadow fades out fully instead of being clipped to a hard line
+       by this container's overflow:hidden */
+    padding:16px 0 36px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  }
+  .light .cwall{
+    --cw-card-bg:#ffffff; --cw-card-bd:rgba(10,10,24,.10);
+    --cw-card-sh:0 3px 8px -3px rgba(26,22,92,.10),0 14px 24px -12px rgba(26,22,92,.14);
+    --cw-proof-bg:#eceafd;
+    --cw-label:#17151f; --cw-sub:rgba(23,21,31,.55); --cw-ring:#ffffff;
+    --cw-pill-bg:#CFD1FF; --cw-pill-ink:#292D91;
+    --cw-dash:rgba(10,10,24,.18); --cw-cta-bg:rgba(10,10,24,.025); --cw-cta-ink:#4840d4;
+    --cw-veil:rgba(247,248,250,.82);
+  }
+  .cwall-track{display:flex;width:max-content;will-change:transform;animation:cwall-drift var(--cw-dur,62s) linear infinite;}
+  @keyframes cwall-drift{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  /* pause on hover, and while the email input has focus (.is-paused via JS) */
+  .cwall:hover .cwall-track,.cwall.is-paused .cwall-track{animation-play-state:paused;}
+  /* each segment carries its own trailing gap so translateX(-50%) loops seamlessly */
+  .cwall-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
+
+  /* One stack = plan card (front) + proof card (peeking behind). */
+  .cwall-stack{position:relative;width:var(--cw-w);height:var(--cw-h);flex-shrink:0;cursor:pointer;}
+  .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
+    transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
+  .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:10px 11px;text-align:left;}
+  /* Resting recede: -11px peek + scale(.90). Because transform-origin is bottom
+     center, scaling drops the top edge by 10% of the card height — the calc
+     compensates so the receded card genuinely peeks 11px above the front card. */
+  .cwall-card{--cw-recede:translateY(calc(-11px - var(--cw-h) * 0.1)) scale(.90);}
+  .cwall-proof{z-index:1;overflow:hidden;background:var(--cw-proof-bg);border:1px solid var(--cw-card-bd);
+    transform:var(--cw-recede);}
+  /* Receded proof stays opaque; a theme-tinted veil washes it toward the page
+     background instead — element-level opacity dimmed the photo into what read
+     as a harsh dirty shadow band above the plan card in light mode. */
+  .cwall-proof::after{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+    background:var(--cw-veil);opacity:1;transition:opacity .7s cubic-bezier(.33,1,.68,1);}
+  /* centre-flip settle: proof rises to the front, plan recedes behind */
+  .cwall-stack.is-flipped .cwall-proof{transform:translateY(0) scale(1);z-index:2;}
+  .cwall-stack.is-flipped .cwall-proof::after{opacity:0;}
+  .cwall-stack.is-flipped .cwall-plan{transform:var(--cw-recede);opacity:.4;z-index:1;}
+  /* hover reveals the proof immediately for as long as the pointer stays
+     (real pointers only — touch gets the tap-to-reveal in JS instead) */
+  @media (hover:hover) and (pointer:fine){
+    .cwall-stack:hover .cwall-proof{transform:translateY(0) scale(1);z-index:2;}
+    .cwall-stack:hover .cwall-proof::after{opacity:0;}
+    .cwall-stack:hover .cwall-plan{transform:var(--cw-recede);opacity:.4;z-index:1;}
+  }
+
+  /* plan card content — mirrors the app's task-card anatomy:
+     cadence pill (clock icon), emoji title, "Backed by" + avatar row */
+  .cwall-pill{display:inline-flex;align-items:center;gap:4px;background:var(--cw-pill-bg);color:var(--cw-pill-ink);border-radius:999px;padding:3px 8px 3px 7px;font-size:10px;font-weight:600;line-height:1.3;white-space:nowrap;}
+  .cwall-pill svg{display:block;flex-shrink:0;}
+  .cwall-label{margin-top:9px;font-size:14px;font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
+  .cwall-desc{margin-top:4px;font-size:11px;font-weight:500;color:var(--cw-sub);line-height:1.4;}
+  /* compact take on the app's dashed capture CTA (capture_proof_cta.dart) —
+     tapping it (or anywhere on the stack) reveals the proof behind */
+  .cwall-cta{position:absolute;left:11px;right:11px;bottom:36px;display:flex;align-items:center;justify-content:center;gap:6px;
+    height:28px;border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
+    font-size:10px;font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
+  .cwall-cta-ic{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#7C82FF,#3B3FA8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .cwall-cta-ic svg{display:block;}
+  .cwall-backed{position:absolute;left:11px;right:11px;bottom:10px;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:var(--cw-sub);white-space:nowrap;overflow:hidden;}
+  .cwall-avs{display:flex;flex-shrink:0;}
+  .cwall-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cw-ring);background:#CFD1FF;flex-shrink:0;}
+  .cwall-av+.cwall-av{margin-left:-6px;}
+  .cwall-av.is-you{border-color:#5B52E8;position:relative;z-index:1;}
+  .cwall-av img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  /* proof card content */
+  .cwall-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  /* poster's avatar top-left — same treatment as the proof carousel's pc-avatar */
+  .cwall-poster{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:2;}
+  .cwall-poster.is-you{border-color:#5B52E8;}
+  .cwall-poster img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* flex pill — compact echo of the app's FlexPillButton, under the title chip */
+  .cwall-flex{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;
+    background:rgba(0,0,0,.48);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:4px 8px;
+    color:#fff;font-size:10.5px;font-weight:700;line-height:1;}
+  .cwall-flex svg{display:block;flex-shrink:0;}
+  .cwall-flex-avs{display:flex;margin-left:2px;}
+  .cwall-flex-avs span{width:14px;height:14px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(255,255,255,.85);background:#CFD1FF;flex-shrink:0;}
+  .cwall-flex-avs span+span{margin-left:-5px;}
+  .cwall-flex-avs img{width:100%;height:100%;object-fit:cover;display:block;}
+  .cwall-chip{position:absolute;left:8px;bottom:38px;max-width:calc(100% - 16px);
+    background:rgba(0,0,0,.48);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:3px 9px;
+    font-size:11px;font-weight:600;color:#fff;line-height:1.3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  /* signature variant — for unphotographable plans */
+  .cwall-sig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+    background:linear-gradient(160deg,rgba(111,117,255,.18),rgba(111,117,255,.05));}
+  .cwall-sig svg{width:74px;height:36px;display:block;}
+  .cwall-sig svg path{fill:none;stroke:var(--r-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .cwall-signed{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);}
+
+  @media (max-width:640px){
+    .cwall{--cw-w:142px;--cw-h:172px;--cw-gap:14px;margin-top:34px;}
+    .cwall-label{font-size:13px;margin-top:8px;}
+    .cwall-plan{padding:10px;}
+    .cwall-backed{left:10px;right:10px;bottom:9px;}
+    .cwall-cta{left:10px;right:10px;bottom:33px;height:26px;}
+    .cwall-av{width:18px;height:18px;}
+    .cwall-av+.cwall-av{margin-left:-5px;}
+    /* plan label 13px, desc + chip 11px — legibility floor */
+  }
+  @media (prefers-reduced-motion: reduce){
+    /* wall renders static in resting state: plan in front, proof peeking */
+    .cwall-track{animation:none;}
+    .cwall-card{transition:none;}
+    .cwall-proof::after{transition:none;}
+  }
 </style>
 
 <div class="site light" id="site">
@@ -1078,149 +1195,30 @@
       <div class="rhero-cloud rhero-cloud-2"></div>
     </div>
 
-    <div class="rhero-grid">
-      <!-- ===== LEFT: copy ===== -->
-      <div class="rhero-copy">
-        <img class="rhero-appicon" src="assets/Risers-Icon1-Shadows-Outline.png" alt="Risers app icon" width="74" height="74" fetchpriority="high" decoding="async"/>
-        <h1 class="rhero-h"><span class="rhero-accent">Rise each day</span>, backed by your inner circle.</h1>
-        <p class="rhero-sub">A private space for just you and your people to share daily plans and proofs of your movement, nutrition, or health goals — <em>anything</em> you're trying to stick with.</p>
-        <div class="rhero-ctas">
-          <!-- waitlist form kept from existing build (wired to waitlist JS) -->
-          <form class="hero-waitlist" id="heroForm" novalidate>
-            <input type="email" placeholder="your@email.com" required autocomplete="email"/>
-            <button type="submit">Join the Waitlist</button>
-          </form>
-          <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
-          <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
-          <div class="ref-callout" id="heroPerk" hidden></div>
-          <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
-          <div class="rhero-soc" id="rheroSoc"><span class="dot"></span>Coming this year to <span class="stores"><svg viewBox="0 0 384 512" aria-label="iOS"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><svg viewBox="0 0 576 512" aria-label="Android"><path d="M420.55 301.93a24 24 0 1 1 24-24 24 24 0 0 1-24 24m-265.1 0a24 24 0 1 1 24-24 24 24 0 0 1-24 24m273.7-144.48 47.94-83a10 10 0 1 0-17.27-10l-48.54 84.07a301.25 301.25 0 0 0-246.56 0L116.18 64.45a10 10 0 1 0-17.27 10l47.94 83C64.53 202.22 8.24 285.55 0 384h576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg></span></div>
-        </div>
-      </div>
-
-      <!-- ===== RIGHT: orbiting halo + phone ===== -->
-      <div class="rhero-visual">
-        <div class="rhero-stage-wrap">
-          <div class="rhero-stage">
-            <!-- dashed guide ring -->
-            <div class="rhero-guide" id="rGuide"></div>
-            <!-- orbiting avatars (JS-populated) -->
-            <div class="rhero-orbit"><div class="rhero-orbit-spin" id="rOrbit"></div></div>
-
-            <!-- "your inner circle" floating card -->
-            <div class="rhero-iccard">
-              <div class="rhero-iceyebrow"><span class="d"></span><span class="t">Your inner circle</span></div>
-              <div class="rhero-icbody">
-                <div class="rhero-icthumbs" id="rIcThumbs"></div>
-                <div class="rhero-iclabel" id="rIcLabel">You + a partner</div>
-                <div class="rhero-icsub" id="rIcSub">2 people · always under 12</div>
-              </div>
-            </div>
-
-            <!-- phone -->
-            <div class="rhero-phone">
-              <div class="rhero-phone-float">
-                <div class="rhero-phone-body">
-                  <div class="rhero-screen">
-                    <div class="rhero-island"></div>
-
-                    <!-- A · plan (morning) -->
-                    <div class="rhero-pane" data-phase="plan">
-                      <div class="rp-status"><span>9:41</span><span style="display:inline-flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.6" height="4" rx="1"/><rect x="3.8" y="5" width="2.6" height="6" rx="1"/><rect x="7.6" y="2.6" width="2.6" height="8.4" rx="1"/><rect x="11.4" y="0" width="2.6" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.6" y="0.6" width="18" height="9.8" rx="2.4" stroke="currentColor" stroke-width="1.1"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="20" y="3.4" width="1.6" height="4.2" rx="0.8" fill="currentColor"/></svg></span></div>
-                      <div class="rp-head"><span class="rp-mut">📅 Jun</span><span class="rp-title">My Plan</span><span class="rp-mut">Today</span></div>
-                      <div class="rp-week">
-                        <div class="rp-day"><span class="dn">Mon</span><span class="dd">1</span></div>
-                        <div class="rp-day"><span class="dn">Tue</span><span class="dd">2</span></div>
-                        <div class="rp-day sel"><span class="dn">Wed</span><span class="dd">3</span></div>
-                        <div class="rp-day"><span class="dn">Thu</span><span class="dd">4</span></div>
-                        <div class="rp-day"><span class="dn">Fri</span><span class="dd">5</span></div>
-                      </div>
-                      <div class="rp-row"><span class="rp-title">Today</span><span class="rp-chip">💪 Showing Up</span></div>
-                      <div class="rp-list">
-                        <div class="rp-card">
-                          <span class="rp-chip">🕒 6:30 PM</span>
-                          <div class="tt">🏃🏻‍♂️ Morning Jog</div>
-                          <div class="sb">🔁 Weekly · Mon–Fri</div>
-                          <div class="rp-capture"><span class="ic"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#5b54e8"/></svg></span><span class="lb">Capture Proof</span></div>
-                          <div class="rp-seen"><span class="lb">Backed by</span><div class="av"><span><img src="assets/Avatars/Crew_Kev.png" alt=""></span><span><img src="assets/Avatars/Family_Ele.png" alt=""></span><span><img src="assets/Avatars/Family_Gisela.png" alt=""></span></div></div>
-                        </div>
-                        <div class="rp-card">
-                          <span class="rp-chip">🕒 8:30 PM</span>
-                          <div class="tt">📵 No Social Media After 10pm</div>
-                          <div class="sb">🔁 Weekly · Mon–Thu</div>
-                          <div class="rp-capture"><span class="ic"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="lb">Sign to Prove</span></div>
-                          <div class="rp-seen"><span class="lb">Backed by</span><div class="av"><span><img src="assets/Avatars/Partner_Klaudia.png" alt=""></span><span><img src="assets/Avatars/Family_Richard.png" alt=""></span><span><img src="assets/Avatars/Crew_Leila.png" alt=""></span></div></div>
-                        </div>
-                      </div>
-                      <div class="rp-tab">
-                        <span class="me"><img src="assets/Avatars/MainUser_Dylan.png" alt=""></span>
-                        <span style="color:var(--r-indigo);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>
-                        <span class="cam"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#5b54e8"/></svg></span>
-                        <span style="color:var(--p-mute);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="6.5" cy="9" r="2.1"/><circle cx="17.5" cy="9" r="2.1"/><circle cx="9" cy="15.5" r="2.1"/><circle cx="15" cy="15.5" r="2.1"/></svg></span>
-                        <span class="nub"></span>
-                      </div>
-                    </div>
-
-                    <!-- B · proof (midday) — default -->
-                    <div class="rhero-pane on" data-phase="proof">
-                      <div class="rp-status"><span>6:10</span><span style="display:inline-flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.6" height="4" rx="1"/><rect x="3.8" y="5" width="2.6" height="6" rx="1"/><rect x="7.6" y="2.6" width="2.6" height="8.4" rx="1"/><rect x="11.4" y="0" width="2.6" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.6" y="0.6" width="18" height="9.8" rx="2.4" stroke="currentColor" stroke-width="1.1"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="20" y="3.4" width="1.6" height="4.2" rx="0.8" fill="currentColor"/></svg></span></div>
-                      <div class="rp-proofhead"><span class="tt">🏃🏻‍♂️ Morning Jog</span><span class="x">✕</span></div>
-                      <div class="rp-cam">
-                        <img class="rp-photo" src="assets/Header Phone Images/Sunday Run_Dylan.JPG" alt="Morning Jog" fetchpriority="high" decoding="async">
-                        <div class="veil"></div>
-                        <div class="left"><div class="rp-ctl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg></div><div class="rp-ctl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div></div>
-                        <div class="zoom"><span>0.5x</span><span class="on">1.0x</span></div>
-                        <div class="flip"><div class="rp-ctl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg></div></div>
-                        <div class="x1">1×</div>
-                      </div>
-                      <div class="rp-shutter"><div><svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#5b54e8"/></svg></div></div>
-                      <div class="rp-tab">
-                        <span class="me"><img src="assets/Avatars/MainUser_Dylan.png" alt=""></span>
-                        <span style="color:var(--p-mute);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>
-                        <span class="quip">Look’n good.</span>
-                        <span style="color:var(--p-mute);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="6.5" cy="9" r="2.1"/><circle cx="17.5" cy="9" r="2.1"/><circle cx="9" cy="15.5" r="2.1"/><circle cx="15" cy="15.5" r="2.1"/></svg></span>
-                        <span class="nub"></span>
-                      </div>
-                    </div>
-
-                    <!-- C · recap (night) -->
-                    <div class="rhero-pane" data-phase="recap">
-                      <div class="rp-status"><span>10:09</span><span style="display:inline-flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.6" height="4" rx="1"/><rect x="3.8" y="5" width="2.6" height="6" rx="1"/><rect x="7.6" y="2.6" width="2.6" height="8.4" rx="1"/><rect x="11.4" y="0" width="2.6" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.6" y="0.6" width="18" height="9.8" rx="2.4" stroke="currentColor" stroke-width="1.1"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="20" y="3.4" width="1.6" height="4.2" rx="0.8" fill="currentColor"/></svg></span></div>
-                      <div class="rp-recaphead"><span style="color:var(--r-indigo);display:flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span class="rp-badge">Inner Circle<span class="caret"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></span><span style="color:var(--p-mute);display:flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6-5 6 5M6 15l6 5 6-5"/></svg></span></div>
-                      <div class="rp-feed">
-                        <div class="rp-post"><span class="pic"><img src="assets/Avatars/Partner_Klaudia.png" alt=""></span><div class="body"><div class="nm"><b>Klaudia</b><span class="ck">✓✓</span><span class="tm">8:26 PM</span></div><div class="act">Healthy snacks only</div><div class="proof"><img src="assets/Proof Carousel/Healthy Snacks Only_Klaudia.JPG" alt="" loading="lazy" decoding="async"><i>proof</i></div><div class="react"><span>🫶 4</span><span>💬 2</span></div></div></div>
-                        <div class="rp-post"><span class="pic"><img src="assets/Avatars/Family_Richard.png" alt=""></span><div class="body"><div class="nm"><b>Richard</b><span class="ck">✓✓</span><span class="tm">7:52 PM</span></div><div class="act">30km marathon prep run</div><div class="proof"><img src="assets/Proof Carousel/30km Marathon Prep Run_Richard.JPG" alt="" loading="lazy" decoding="async"><i>proof</i></div><div class="react"><span>🫶 6</span><span>💬 1</span></div></div></div>
-                        <div class="rp-post"><span class="pic"><img src="assets/Avatars/Family_Rachael.png" alt=""></span><div class="body"><div class="nm"><b>Rachel</b><span class="ck">✓✓</span><span class="tm">9:15 PM</span></div><div class="act">10k steps</div><div class="proof"><i>proof</i></div><div class="react"><span>🫶 3</span><span>💬 0</span></div></div></div>
-                      </div>
-                      <div class="rp-tab">
-                        <span class="me"><img src="assets/Avatars/MainUser_Dylan.png" alt=""></span>
-                        <span style="color:var(--p-mute);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>
-                        <span class="cam"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#5b54e8"/></svg></span>
-                        <span style="color:var(--r-indigo);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="6.5" cy="9" r="2.1"/><circle cx="17.5" cy="9" r="2.1"/><circle cx="9" cy="15.5" r="2.1"/><circle cx="15" cy="15.5" r="2.1"/></svg></span>
-                        <span class="nub"></span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- day-arc slider -->
-        <div class="rhero-slider">
-          <div class="rhero-track" id="rTrack">
-            <div class="end l"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 18a4.5 4.5 0 0 1 9 0z" fill="#fff" stroke="none"/><path d="M2.6 18h18.8"/><path d="M12 4.4v2.3M5.5 7.4l1.5 1.5M18.5 7.4l-1.5 1.5M2.8 13.2h2.1M19.1 13.2h2.1"/></svg></div>
-            <div class="end m"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4" fill="#fff" stroke="none"/><path d="M12 2.5v2.4M12 19.1v2.4M21.5 12h-2.4M4.9 12H2.5M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7L17 17M7 7 5.3 5.3"/></svg></div>
-            <div class="end r"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg></div>
-            <div class="rhero-knob" id="rKnob"></div>
-          </div>
-          <div class="rhero-slabel" id="rSlabel">Capturing the proof</div>
-        </div>
+    <!-- ===== Centred copy ===== -->
+    <div class="rhero-center">
+      <img class="rhero-appicon" src="assets/Risers-Icon1-Shadows-Outline.png" alt="Risers app icon" width="74" height="74" fetchpriority="high" decoding="async"/>
+      <h1 class="rhero-h"><span class="rhero-accent">Rise each day</span>, backed by your inner circle.</h1>
+      <p class="rhero-sub">Plan the daily things you want to stick with.<br>Capture proof when you do.<br>Only your inner circle sees it.</p>
+      <div class="rhero-cta-center">
+        <!-- waitlist form kept from existing build (wired to waitlist JS) -->
+        <form class="hero-waitlist" id="heroForm" novalidate>
+          <input type="email" placeholder="your@email.com" required autocomplete="email"/>
+          <button type="submit">Join the Waitlist</button>
+        </form>
+        <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
+        <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
+        <div class="ref-callout" id="heroPerk" hidden></div>
+        <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
       </div>
     </div>
+
+    <!-- ===== CARD WALL — drifting wall of plan→proof stacks (JS-rendered from PLANS) ===== -->
+    <div class="cwall" id="cwall" role="group" aria-label="Example daily plans and the proof that backed them">
+      <div class="cwall-track" id="cwallTrack"></div>
+    </div>
   </section>
+
 
   <!-- 1.5  THE STANCE — drop the noise, rise into proof -->
   <section class="stance is-calm" id="stance" aria-label="What Risers is, and isn't">
@@ -1239,18 +1237,6 @@
         <span class="stance-arrow" aria-hidden="true" style="--si:2"></span>
         <span class="stance-yes" style="--si:2">Just <em>rising together.</em></span>
       </div>
-    </div>
-  </section>
-
-  <!-- 2. PROOF CAROUSEL -->
-  <section>
-    <div class="c-outer">
-      <div class="c-track" id="ctrack"></div>
-    </div>
-    <div class="c-dots" id="cdots"></div>
-    <div class="c-arrows">
-      <div class="arr" id="cprev">&#8592;</div>
-      <div class="arr" id="cnext">&#8594;</div>
     </div>
   </section>
 
@@ -1562,219 +1548,6 @@ function toggleMode() {
   document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
   localStorage.setItem(THEME_KEY, light ? 'light' : 'dark');
 }
-
-const PROOF = 'assets/Proof Carousel/';
-const AVA = 'assets/Avatars/';
-// Real proof photos. `you:true` gives the avatar a blue stroke (the main user, Dylan).
-// `desc` renders as a one-line caption under the title; leave it '' to show just the title.
-const cards = [
-  {img:PROOF+'Sunday Meal Prep_Klaudia.JPG',             t:'Sunday Meal Prep',             avatar:AVA+'Partner_Klaudia.png',  desc:'Healthy meals ready for the week'},
-  {img:PROOF+'Rewe 5K Company Run_Klaudia.JPG',          t:'Rewe 5K Company Run',          avatar:AVA+'Partner_Klaudia.png',  desc:'Team challenge 5k!'},
-  {img:PROOF+'After Work Run with Klausi_Dylan.JPG',     t:'After Work Run with Klausi',   avatar:AVA+'MainUser_Dylan.png', you:true, desc:'Evening loop to unwind after work'},
-  {img:PROOF+'30km Marathon Prep Run_Richard.JPG',       t:'30km Marathon Prep Run',       avatar:AVA+'Family_Richard.png',   desc:'Longest run yet before race day'},
-  {img:PROOF+'Healthy 1 Portion Dinner_Dylan.JPG',       t:'Healthy 1 Portion Dinner',     avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
-  {img:PROOF+'10K Steps_Klaudia.JPG',                    t:'10K Steps',                    avatar:AVA+'Partner_Klaudia.png',  desc:''},
-  {img:PROOF+'Gym Day_Harveer.JPG',                      t:'Gym Day',                      avatar:AVA+'Family-Harveer.png',   desc:'Full body workout'},
-  {img:PROOF+'Gardening and Yard Work_Ele.JPG',          t:'Gardening and Yard Work',      avatar:AVA+'Family_Ele.png',       desc:''},
-  {img:PROOF+'Home Fully Body Workout_Klaudia.JPG',      t:'Home Full Body Workout',       avatar:AVA+'Partner_Klaudia.png',  desc:'Apple Fitness Strength 30min'},
-  {img:PROOF+'Gym Pull Day_Dylan.JPG',                   t:'Gym Pull Day',                 avatar:AVA+'MainUser_Dylan.png', you:true, desc:''},
-  {img:PROOF+'Morning Run by the River_Richard.JPG',     t:'Morning Run by the River',     avatar:AVA+'Family_Richard.png',   desc:'Easy sunrise miles by the water'},
-  {img:PROOF+'Lunchtime Walk_Karl.jpg',                  t:'Daily lunch walk',             avatar:AVA+'Family_Karl.png',      desc:'Loop around the block during the break'},
-  {img:PROOF+'Healthy Snacks Only_Klaudia.JPG',          t:'❌ No Junk Food: Healthy Snack Only Day', avatar:AVA+'Partner_Klaudia.png',  desc:''},
-  {img:PROOF+'10min Apple Fitness Spin Class_Dylan.JPG', t:'🚴Apple Fitness Spin Class', avatar:AVA+'MainUser_Dylan.png', you:true, desc:'10min spin at home on stationary bike'},
-  {img:PROOF+'Knee Exercises_Dylan.JPG',                 t:'Daily Knee Rehab',             avatar:AVA+'MainUser_Dylan.png', you:true, desc:'Recovering from ACL injury with stabilization training every day.'},
-];
-
-const track = document.getElementById('ctrack');
-const dotsEl = document.getElementById('cdots');
-const cOuter = document.querySelector('.c-outer');
-const N = cards.length;
-const CARD_W = 240, GAP = 18;          // keep in sync with .pcard width + .c-track gap
-const STEP = CARD_W + GAP;
-const SMOOTH = 'transform .45s cubic-bezier(.22,.61,.36,1)';
-let cur = N, timer = null, hov = false;
-
-// Triple-render so we always have content on both sides; cur lives in the middle copy
-for (let copy = 0; copy < 3; copy++) {
-  cards.forEach(c => {
-    const el = document.createElement('div');
-    el.className = 'pcard';
-    el.innerHTML = `<img class="pc-photo" src="${c.img}" alt="${c.t}" loading="lazy" decoding="async"><div class="pc-avatar${c.you?' is-you':''}"><img src="${c.avatar}" alt="" loading="lazy" decoding="async"></div><div class="pc-ov"><div class="pc-title">${c.t}</div>${c.desc?`<div class="pc-desc">${c.desc}</div>`:''}</div>`;
-    track.appendChild(el);
-  });
-}
-
-// Dots represent the N underlying cards (cur % N)
-for (let i = 0; i < N; i++) {
-  const d = document.createElement('div');
-  d.className = 'dot' + (i === 0 ? ' on' : '');
-  d.onclick = () => { go(N + i); reset(); };
-  dotsEl.appendChild(d);
-}
-
-// Live measurements — recomputed on each call to handle the 640px breakpoint and resizes.
-function getStep() {
-  const card = track.querySelector('.pcard');
-  if (!card) return STEP;
-  const cs = getComputedStyle(track);
-  const gap = parseFloat(cs.columnGap || cs.gap) || 0;
-  return card.offsetWidth + gap;
-}
-// Offset that centers the active card inside the viewport-width .c-outer container.
-// Without this, the active card sits flush-left against the track's padding.
-function getCenterOffset() {
-  const card = track.querySelector('.pcard');
-  if (!card) return 0;
-  const cs = getComputedStyle(track);
-  const padLeft = parseFloat(cs.paddingLeft) || 0;
-  return (cOuter.clientWidth - card.offsetWidth) / 2 - padLeft;
-}
-function targetTx(i) { return getCenterOffset() - i * getStep(); }
-
-// Position immediately (no transition) to the starting offset
-track.style.transition = 'none';
-track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
-// Force reflow, then re-enable the smooth transition
-void track.offsetWidth;
-track.style.transition = SMOOTH;
-
-function go(i) {
-  cur = i;
-  track.style.transition = SMOOTH;
-  track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
-  const dotIdx = ((cur % N) + N) % N;
-  document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('on', j === dotIdx));
-}
-
-// When we cross into the 3rd copy (or before the 1st), snap back instantly
-// to the equivalent card in the middle copy. The cards look identical so it's seamless.
-track.addEventListener('transitionend', () => {
-  if (cur >= 2 * N || cur < N) {
-    const wrapped = ((cur - N) % N + N) % N + N;  // map cur back into [N, 2N)
-    cur = wrapped;
-    track.style.transition = 'none';
-    track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
-    void track.offsetWidth;
-    track.style.transition = SMOOTH;
-  }
-});
-
-// Re-center on resize / orientation change.
-window.addEventListener('resize', () => {
-  track.style.transition = 'none';
-  track.style.transform = `translate3d(${targetTx(cur)}px,0,0)`;
-  void track.offsetWidth;
-  track.style.transition = SMOOTH;
-});
-
-function reset() {
-  clearTimeout(timer);
-  if (!hov) timer = setTimeout(() => { go(cur + 1); reset(); }, 4000);
-}
-
-document.getElementById('cprev').onclick = () => { go(cur - 1); reset(); };
-document.getElementById('cnext').onclick = () => { go(cur + 1); reset(); };
-track.addEventListener('mouseenter', () => { hov = true; clearTimeout(timer); });
-track.addEventListener('mouseleave', () => { hov = false; reset(); });
-reset();
-
-// ---- Drag / swipe ----
-// Swipe always moves at most 1 card (same as tapping the arrow). During the drag
-// itself we apply rubber-banding so the cards never visually travel more than ~1
-// card width, no matter how far the finger goes — that's what kills the "rapid
-// shuffling" effect of a long finger swipe.
-let dragId = null, dragStartX = 0, dragStartY = 0;
-let baseTx = 0, dragDx = 0, dragLocked = false, didDrag = false;
-let pendingTx = null, rafId = 0;
-
-function flushDragFrame() {
-  rafId = 0;
-  if (pendingTx !== null) {
-    track.style.transform = `translate3d(${pendingTx}px,0,0)`;
-    pendingTx = null;
-  }
-}
-
-// Rubber-band: 1:1 follow up to ~60% of a card, then heavy damping past that.
-// The visual shift is capped well below one card width so the snap is always small.
-function rubberBand(dx, step) {
-  const soft = step * 0.6;
-  const a = Math.abs(dx);
-  if (a <= soft) return dx;
-  const extra = a - soft;
-  const damped = soft + extra * 0.18;
-  return Math.sign(dx) * damped;
-}
-
-cOuter.addEventListener('pointerdown', (e) => {
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
-  dragId = e.pointerId;
-  dragStartX = e.clientX;
-  dragStartY = e.clientY;
-  dragDx = 0;
-  dragLocked = false;
-  didDrag = false;
-  baseTx = targetTx(cur);
-  track.style.transition = 'none';
-  hov = true;
-  clearTimeout(timer);
-});
-
-cOuter.addEventListener('pointermove', (e) => {
-  if (e.pointerId !== dragId) return;
-  const dx = e.clientX - dragStartX;
-  const dy = e.clientY - dragStartY;
-  if (!dragLocked) {
-    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-    if (Math.abs(dx) < Math.abs(dy) * 1.2) {
-      // Vertical intent — release so the page can scroll.
-      dragId = null;
-      track.style.transition = SMOOTH;
-      hov = false;
-      reset();
-      return;
-    }
-    dragLocked = true;
-    cOuter.classList.add('is-dragging');
-    try { cOuter.setPointerCapture(e.pointerId); } catch (_) {}
-  }
-  didDrag = true;
-  dragDx = dx;
-  const visualDx = rubberBand(dx, getStep());
-  pendingTx = baseTx + visualDx;
-  if (!rafId) rafId = requestAnimationFrame(flushDragFrame);
-  e.preventDefault();
-});
-
-function endDrag(e) {
-  if (e.pointerId !== dragId) return;
-  dragId = null;
-  if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
-  pendingTx = null;
-  cOuter.classList.remove('is-dragging');
-  if (!dragLocked) {
-    track.style.transition = SMOOTH;
-    hov = false;
-    reset();
-    return;
-  }
-  // Swipe always moves at most 1 card — exactly like tapping the arrow.
-  const THRESH = 10;
-  let move = 0;
-  if (dragDx <= -THRESH) move = 1;
-  else if (dragDx >= THRESH) move = -1;
-  track.style.transition = SMOOTH;
-  go(cur + move);
-  hov = false;
-  reset();
-}
-cOuter.addEventListener('pointerup', endDrag);
-cOuter.addEventListener('pointercancel', endDrag);
-
-// Suppress the click that follows a real drag (prevents pcard ghost-clicks).
-cOuter.addEventListener('click', (e) => {
-  if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; }
-}, true);
 
 // =============================================================================
 // PROOF SECTION — "Built for the moment of proof"
@@ -2704,130 +2477,212 @@ cOuter.addEventListener('click', (e) => {
   });
 })();
 
-/* ===== Risers "Daybreak" header — orbit cycle + day-arc slider ===== */
+/* ===== Hero sky — light rays (11, fanning from low-center; shown in light mode) ===== */
 (function(){
-  const orbit  = document.getElementById('rOrbit');
-  const guide  = document.getElementById('rGuide');
-  const rays   = document.getElementById('rRays');
-  const track  = document.getElementById('rTrack');
-  const knob   = document.getElementById('rKnob');
-  const slabel = document.getElementById('rSlabel');
-  const icThumbs = document.getElementById('rIcThumbs');
-  const icLabel  = document.getElementById('rIcLabel');
-  const icSub    = document.getElementById('rIcSub');
-  if (!orbit || !track) return;
+  const rays = document.getElementById('rRays');
+  if (!rays || rays.childElementCount) return;
+  for (let i = 0; i < 11; i++) {
+    const d = document.createElement('i');
+    d.style.transform = 'rotate(' + ((i - 5) * 13) + 'deg)';
+    rays.appendChild(d);
+  }
+})();
+
+/* ===== HERO CARD WALL — drifting wall of plan→proof stacks ===== */
+(function(){
+  // ---- Motion constants ----
+  const DRIFT_PX_PER_S    = 28;   // marquee speed (spec: ~25–30px/s)
+  const FLIP_INTERVAL_MS  = 900;  // how often we look for the centre-most stack
+  const FLIP_HOLD_MS      = 5000; // how long a revealed proof stays up (centre flip AND tap)
+  const FLIP_THRESHOLD_PX = 80;   // stack centre must be this close to the wall centre
 
   const AV = 'assets/Avatars/';
-  const DYLAN = 'MainUser_Dylan.png';   // main user — always first (leftmost), always gets the ring
-  // Three inner-circle tiers; members picked by avatar filename prefix, Dylan in each.
-  const STATES = [
-    { label:'You + a partner', faces:[DYLAN, 'Partner_Klaudia.png'] },
-    { label:'Your crew',       faces:[DYLAN, 'Crew_Kev.png', 'Crew_Leila.png', 'Crew_Sabi.png'] },
-    { label:'The whole family', faces:[DYLAN, 'Partner_Klaudia.png', 'Family_Richard.png', 'Family_Ele.png', 'Family_Gisela.png', 'Family_Karl.png', 'Family_Kyle.png', 'Family_Mike.png', 'Family_Rachael.png', 'Family_Vanessa.png', 'Family-Harveer.png'] },
+  const PC = 'assets/Proof Carousel/';
+
+  // proof: an image path, or the string "signature" for unphotographable plans
+  // (signature cards teach the promise-signature feature — keep at least two).
+  // The tiny-to-large spread ("2,000 steps" next to "25,000 steps") is the
+  // no-judgment thesis — deliberate, do not normalise it.
+  // by: who posted the proof (their avatar sits top-left on the proof card).
+  // flexes: how many of the circle flexed the proof.
+  const PLANS = [
+    { emoji:'🚶', label:'2,000 steps',        cadence:'Today',       avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
+    { emoji:'😴', label:'Bed by 11',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
+    { emoji:'🥗', label:'Sunday meal prep',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
+    { emoji:'👟', label:'25,000 steps',       cadence:'Today',       avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
+    { emoji:'🦵', label:'Knee rehab',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'📵', label:'No phone after 10',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'💪', label:'Gym pull day',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
+    { emoji:'💧', label:'Full bottle of water', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'🍎', label:'Healthy snacks only', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
+    { emoji:'🚴', label:'10-min spin class',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'🏃', label:'Morning jog',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
+    { emoji:'🌿', label:'An hour in the garden', cadence:'Saturdays', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
   ];
-  const MAXN = Math.max.apply(null, STATES.map(function(s){ return s.faces.length; }));
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // light rays (11, fanning from low-center)
-  if (rays && !rays.childElementCount){
-    for (let i=0;i<11;i++){ const d=document.createElement('i'); d.style.transform='rotate('+((i-5)*13)+'deg)'; rays.appendChild(d); }
+  // Presence pool for the avatar dots — Dylan (main user) gets the blue ring.
+  const FACES = ['MainUser_Dylan.png','Partner_Klaudia.png','Family_Kyle.png','Crew_Leila.png','Family_Richard.png','Family_Ele.png','Crew_Kev.png','Family_Rachael.png','Crew_Sabi.png','Family_Karl.png','Family_Gisela.png','Family_Mike.png'];
+
+  const wall = document.getElementById('cwall');
+  const track = document.getElementById('cwallTrack');
+  if (!wall || !track) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function buildStack(plan, i){
+    const stack = document.createElement('div');
+    stack.className = 'cwall-stack';
+
+    // proof layer (behind at rest)
+    const proof = document.createElement('div');
+    proof.className = 'cwall-card cwall-proof';
+    if (plan.proof === 'signature') {
+      const sig = document.createElement('div');
+      sig.className = 'cwall-sig';
+      sig.setAttribute('aria-hidden', 'true');
+      sig.innerHTML =
+        '<svg viewBox="0 0 74 36"><path d="M5 26 C 13 7, 21 5, 23 15 C 24.5 22, 17 29, 14 25 C 11 21, 23 11, 33 13 C 41 14.5, 35 25, 42 23 C 47 21.5, 48 14, 54 15 C 59 16, 57 22, 62 20 L 69 17"/></svg>' +
+        '<span class="cwall-signed">Signed</span>';
+      proof.appendChild(sig);
+    } else {
+      const img = document.createElement('img');
+      img.className = 'cwall-photo';
+      img.src = plan.proof;
+      img.alt = 'Proof photo for ' + plan.label;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      proof.appendChild(img);
+    }
+    // the label chip is what turns a photo into evidence — required on every proof card
+    const chip = document.createElement('span');
+    chip.className = 'cwall-chip';
+    chip.textContent = plan.label;
+    proof.appendChild(chip);
+
+    // poster's avatar top-left (same treatment as the proof carousel's pc-avatar)
+    const poster = document.createElement('span');
+    poster.className = 'cwall-poster' + (plan.by === 'MainUser_Dylan.png' ? ' is-you' : '');
+    poster.innerHTML = '<img src="' + AV + plan.by + '" alt="" loading="lazy" decoding="async">';
+    proof.appendChild(poster);
+
+    // flex reactions — compact echo of the app's FlexPillButton (arm icon in a
+    // rounded rect + count + flexer avatars): proof posted → the circle cheers.
+    // one avatar per flex, drawn from the circle, never the poster themselves
+    const flexFaces = [];
+    for (let k = 0; flexFaces.length < plan.flexes && k < FACES.length; k++) {
+      const f = FACES[(i * 3 + k) % FACES.length];
+      if (f !== plan.by) flexFaces.push(f);
+    }
+    const flexArm = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10.0646 9.43626C9.9692 9.48397 7.97046 14.6426 8.20904 14.4518C8.44762 14.2609 9.7712 13.7205 10.8334 13.736C11.8418 13.7507 13.3146 14.4518 13.3146 14.4518C13.3146 14.4518 14.4486 13.5697 15.0801 13.3066C16.082 12.8891 17.1923 12.6468 18.2771 12.6863C18.9928 12.7124 19.8244 12.8732 20.5674 13.3066C21.14 13.6406 21.6143 14.1414 21.808 14.6903C22.0943 15.5015 22.1842 16.2355 21.8981 17.5002C21.6017 18.8108 21.0381 19.5229 19.9895 20.3632C18.9308 21.2114 18.1763 21.3652 16.7448 21.6992C15.3134 22.0332 13.1828 22.101 10.9235 21.8423C9.15843 21.6403 7.67884 21.2698 6.48595 20.8403C5.29306 20.4109 3.0027 18.884 3.0027 18.884C3.0027 18.884 2.19149 18.216 2.09611 17.5002C2.00073 16.7845 2.09609 16.4505 2.09611 15.7347C2.09612 15.019 2.43966 13.116 3.0027 11.5357C3.70249 9.57166 4.26192 8.47568 5.57935 6.85961C6.81434 5.34466 7.53292 4.29004 9.34889 3.56722C11.1169 2.86348 13.4524 2.85129 14.2159 3.32864C14.9794 3.806 15.2629 4.90993 15.2656 6.04844C15.2706 8.07408 12.7367 10.0088 11.9733 10.0566C11.2098 10.1043 10.1601 9.38854 10.0646 9.43626Z" fill="#7C82FF"/></svg>';
+    const flex = document.createElement('div');
+    flex.className = 'cwall-flex';
+    flex.setAttribute('aria-hidden', 'true');
+    flex.innerHTML = flexArm + '<b>' + plan.flexes + '</b>' +
+      '<span class="cwall-flex-avs">' +
+      flexFaces.map(f => '<span><img src="' + AV + f + '" alt="" loading="lazy" decoding="async"></span>').join('') +
+      '</span>';
+    proof.appendChild(flex);
+
+    // plan layer (front at rest) — cadence pill, emoji title, "Backed by" row
+    const front = document.createElement('div');
+    front.className = 'cwall-card cwall-plan';
+    const avs = Array.from({length: plan.avatars}, (_, k) => {
+      const face = FACES[(i * 3 + k) % FACES.length];
+      const you = face === 'MainUser_Dylan.png' ? ' is-you' : '';
+      return '<span class="cwall-av' + you + '"><img src="' + AV + face + '" alt="" loading="lazy" decoding="async"></span>';
+    }).join('');
+    const clock = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.6" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.6V6l1.9 1.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+    // Compact echo of the app's dashed CTA: camera disc + "Capture Proof" for
+    // photo plans, pen disc + "Sign to Promise" for signature plans.
+    const isSig = plan.proof === 'signature';
+    const ctaGlyph = isSig
+      ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>'
+      : '<svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#3B3FA8"/></svg>';
+    front.innerHTML =
+      '<span class="cwall-pill">' + clock + plan.cadence + '</span>' +
+      '<div class="cwall-label">' + plan.emoji + ' ' + plan.label + '</div>' +
+      (plan.desc ? '<div class="cwall-desc">' + plan.desc + '</div>' : '') +
+      '<div class="cwall-cta" aria-hidden="true"><span class="cwall-cta-ic">' + ctaGlyph + '</span>' + (isSig ? 'Sign to Promise' : 'Capture Proof') + '</div>' +
+      '<div class="cwall-backed">Backed by<span class="cwall-avs">' + avs + '</span></div>';
+
+    stack.appendChild(proof);
+    stack.appendChild(front);
+    return stack;
   }
 
-  // build the avatar nodes once (max across states); images swap per state
-  const nodes = Array.from({length:MAXN}, (_,i)=>{
-    const o=document.createElement('div'); o.className='rhero-orb';
-    const sp=document.createElement('div'); sp.className='rhero-orb-spin';
-    const av=document.createElement('div'); av.className='rhero-av'+(i===0?' rhero-orb-ring':'');
-    const im=document.createElement('img'); im.alt=''; im.loading='lazy';
-    av.appendChild(im); sp.appendChild(av); o.appendChild(sp); orbit.appendChild(o);
-    return { o, av, im };
+  // Two identical segments → translateX(0 → -50%) loops seamlessly for any PLANS length.
+  for (let copy = 0; copy < 2; copy++) {
+    const seg = document.createElement('div');
+    seg.className = 'cwall-seg';
+    if (copy === 1) seg.setAttribute('aria-hidden', 'true'); // don't read the wall twice
+    PLANS.forEach((p, i) => seg.appendChild(buildStack(p, i)));
+    track.appendChild(seg);
+  }
+
+  // Drift duration derived from measured width so speed stays constant at any size.
+  function syncDriftDuration(){
+    const half = track.scrollWidth / 2;
+    if (half > 0) wall.style.setProperty('--cw-dur', (half / DRIFT_PX_PER_S) + 's');
+  }
+  syncDriftDuration();
+  let wallResizeTO;
+  window.addEventListener('resize', () => {
+    clearTimeout(wallResizeTO);
+    wallResizeTO = setTimeout(syncDriftDuration, 150);
   });
 
-  let idx = 0; // start at "You + a partner"
+  // Nothing moves while someone is typing.
+  const heroInput = document.querySelector('#heroForm input');
+  if (heroInput) {
+    heroInput.addEventListener('focus', () => wall.classList.add('is-paused'));
+    heroInput.addEventListener('blur',  () => wall.classList.remove('is-paused'));
+  }
 
-  function place(){
-    const st = STATES[idx];
-    const faces = st.faces;
-    const n = faces.length;
-    const r = 196 + n*5;                 // true-circle radius, grows with n
-    const s = Math.max(38, 54 - n*1.3);  // avatars shrink slightly as ring grows
-    guide.style.setProperty('--ring', (r*2)+'px');
-    nodes.forEach((nd,i)=>{
-      const vis = i<n;
-      if (vis && nd.im.getAttribute('src') !== AV+faces[i]) nd.im.src = AV+faces[i];
-      const ang = (i/n)*2*Math.PI;       // evenly spaced, start at right flank
-      const rr = vis ? r : r*0.5;        // hidden ones tuck toward center
-      nd.o.style.left = (Math.cos(ang)*rr)+'px';
-      nd.o.style.top  = (Math.sin(ang)*rr)+'px';
-      nd.o.style.opacity = vis?1:0;
-      const sz = vis? s : s*0.6;
-      nd.av.style.width = sz+'px';
-      nd.av.style.height= sz+'px';
+  // ---- Proof reveals ----
+  // Each stack keeps its own hold timer, so an outgoing reveal can overlap the
+  // incoming one — the wall should never be without a visible proof.
+  const HANDOVER_LINGER_MS = 1200; // outgoing centre proof stays up this long after the next takes over
+  const flipTimers = new WeakMap();
+  function flipStack(stack, hold){
+    stack.classList.add('is-flipped');
+    clearTimeout(flipTimers.get(stack));
+    flipTimers.set(stack, setTimeout(() => stack.classList.remove('is-flipped'), hold || FLIP_HOLD_MS));
+  }
+
+  // Tap / click reveals the stack's proof for the same hold as the centre flip
+  // (this is the touch counterpart of the hover reveal, which is pure CSS).
+  track.addEventListener('click', e => {
+    const stack = e.target.closest('.cwall-stack');
+    if (stack) flipStack(stack);
+  });
+
+  // Centre-flip: the stack nearest the horizontal centre swaps to its proof.
+  // One interval, no per-frame measurement.
+  let lastCentre = null; // last stack the centre pass flipped
+  setInterval(() => {
+    if (reduceMotion.matches || document.hidden) return;
+    if (wall.classList.contains('is-paused')) return;
+    const rect = wall.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    let best = null, bestDist = Infinity;
+    track.querySelectorAll('.cwall-stack').forEach(s => {
+      const r = s.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width / 2 - centerX);
+      if (d < bestDist) { bestDist = d; best = s; }
     });
-    // keep the floating card in sync with the ring
-    icLabel.textContent = st.label;
-    icSub.textContent = n+' people · always under 12';
-    const shown = Math.min(n,5); let html='';
-    for (let i=0;i<shown;i++) html += '<span'+(i===0?' class="me"':'')+'><img src="'+AV+faces[i]+'" alt=""></span>';
-    if (n>5) html += '<span class="more">+'+(n-5)+'</span>';
-    icThumbs.innerHTML = html;
-  }
-  place();
-  if (!reduce) setInterval(()=>{ idx=(idx+1)%STATES.length; place(); }, 5600);
-
-  /* ---- day-arc slider: 3 stops (plan · proof · recap) ---- */
-  const RATIO = { plan:0, proof:0.5, recap:1 };
-  const LABEL = { plan:'Sharing the plan', proof:'Capturing the proof', recap:'The night recap' };
-  const ICON = {
-    plan:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f4922c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 18a4.5 4.5 0 0 1 9 0z" fill="#f4922c" stroke="none"/><path d="M2.6 18h18.8"/><path d="M12 4.4v2.3M5.5 7.4l1.5 1.5M18.5 7.4l-1.5 1.5M2.8 13.2h2.1M19.1 13.2h2.1"/></svg>',
-    proof:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f4a13c" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4" fill="#f4a13c" stroke="none"/><path d="M12 2.5v2.4M12 19.1v2.4M21.5 12h-2.4M4.9 12H2.5M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7L17 17M7 7 5.3 5.3"/></svg>',
-    recap:'<svg width="12" height="12" viewBox="0 0 24 24" fill="#5b54e8"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>'
-  };
-  const KNOB_W = 26, PAD = 3;
-  let phase = 'proof', dragging = false;
-  const panes = document.querySelectorAll('.rhero-pane');
-
-  function positionKnob(ratio){
-    const left = PAD + ratio*(track.clientWidth - KNOB_W - PAD*2);
-    knob.style.left = left+'px';
-  }
-  function setPhase(p){
-    phase = p;
-    panes.forEach(el=>el.classList.toggle('on', el.getAttribute('data-phase')===p));
-    slabel.textContent = LABEL[p];
-    knob.classList.toggle('recap', p==='recap');
-    knob.innerHTML = ICON[p];
-    if (!dragging) positionKnob(RATIO[p]);
-  }
-  function ratioAt(clientX){
-    const rect = track.getBoundingClientRect();
-    const max = rect.width - KNOB_W - PAD*2;
-    return Math.max(0, Math.min(1, (clientX - rect.left - PAD - KNOB_W/2)/max));
-  }
-  const snap = r => r<0.25?'plan':r<0.75?'proof':'recap';
-
-  track.addEventListener('pointerdown', e=>{
-    dragging=true; knob.classList.add('dragging');
-    try{ track.setPointerCapture(e.pointerId); }catch(_){}
-    const r=ratioAt(e.clientX); positionKnob(r); setPhase(snap(r));
-  });
-  track.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const r=ratioAt(e.clientX); positionKnob(r);
-    const p=snap(r); if(p!==phase) setPhase(p);
-  });
-  function endDrag(){
-    if(!dragging) return;
-    dragging=false; knob.classList.remove('dragging');
-    setPhase(phase); // ease the knob to the snapped stop
-  }
-  track.addEventListener('pointerup', endDrag);
-  track.addEventListener('pointercancel', endDrag);
-
-  // init knob at the default (proof) stop
-  knob.innerHTML = ICON.proof;
-  requestAnimationFrame(()=>positionKnob(RATIO.proof));
-  window.addEventListener('resize', ()=>{ if(!dragging) positionKnob(RATIO[phase]); });
+    if (!best || bestDist > FLIP_THRESHOLD_PX) return;
+    if (best !== lastCentre) {
+      // Handover: the new centre rises; the outgoing proof lingers briefly so
+      // the two reveals overlap and the wall is never proofless.
+      flipStack(best);
+      if (lastCentre && lastCentre.classList.contains('is-flipped')) {
+        flipStack(lastCentre, HANDOVER_LINGER_MS);
+      }
+      lastCentre = best;
+    } else {
+      // Still the centre-most stack — keep its proof up while it holds centre.
+      flipStack(best);
+    }
+  }, FLIP_INTERVAL_MS);
 })();
 </script>
 
