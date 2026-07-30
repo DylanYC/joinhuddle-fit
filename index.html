@@ -1036,7 +1036,10 @@
 
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
-    --cw-w:158px; --cw-h:190px; --cw-gap:16px;
+    /* ~7 stacks visible at any desktop width: each card is 1/7 of the viewport
+       minus its gap, clamped so narrow windows don't shrink cards to slivers
+       and ultrawides don't blow them up. Height comes from aspect-ratio. */
+    --cw-w:clamp(150px, calc(100vw / 7 - 18px), 240px); --cw-gap:18px;
     /* dark (default) — navy-leaning surfaces to match the night sky */
     --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
     /* Two-layer soft shadow that casts DOWNWARD only (offset ≥ blur + |spread|):
@@ -1066,21 +1069,22 @@
     --cw-veil:rgba(247,248,250,.82);
   }
   .cwall-track{display:flex;width:max-content;will-change:transform;animation:cwall-drift var(--cw-dur,62s) linear infinite;}
-  @keyframes cwall-drift{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes cwall-drift{from{transform:translate3d(0,0,0);}to{transform:translate3d(-50%,0,0);}}
   /* pause on hover, and while the email input has focus (.is-paused via JS) */
   .cwall:hover .cwall-track,.cwall.is-paused .cwall-track{animation-play-state:paused;}
   /* each segment carries its own trailing gap so translateX(-50%) loops seamlessly */
   .cwall-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
 
   /* One stack = plan card (front) + proof card (peeking behind). */
-  .cwall-stack{position:relative;width:var(--cw-w);height:var(--cw-h);flex-shrink:0;cursor:pointer;}
+  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:pointer;}
   .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
     transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
   .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:10px 11px;text-align:left;}
   /* Resting recede: -11px peek + scale(.90). Because transform-origin is bottom
-     center, scaling drops the top edge by 10% of the card height — the calc
-     compensates so the receded card genuinely peeks 11px above the front card. */
-  .cwall-card{--cw-recede:translateY(calc(-11px - var(--cw-h) * 0.1)) scale(.90);}
+     center, scaling drops the top edge by 10% of the card height — the -10%
+     (translate % = own height) compensates so the receded card genuinely peeks
+     11px above the front card at any card size. */
+  .cwall-card{--cw-recede:translateY(calc(-11px - 10%)) scale(.90);}
   .cwall-proof{z-index:1;overflow:hidden;background:var(--cw-proof-bg);border:1px solid var(--cw-card-bd);
     transform:var(--cw-recede);}
   /* Receded proof stays opaque; a theme-tinted veil washes it toward the page
@@ -1104,13 +1108,13 @@
      cadence pill (clock icon), emoji title, "Backed by" + avatar row */
   .cwall-pill{display:inline-flex;align-items:center;gap:4px;background:var(--cw-pill-bg);color:var(--cw-pill-ink);border-radius:999px;padding:3px 8px 3px 7px;font-size:10px;font-weight:600;line-height:1.3;white-space:nowrap;}
   .cwall-pill svg{display:block;flex-shrink:0;}
-  .cwall-label{margin-top:9px;font-size:14px;font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
+  .cwall-label{margin-top:9px;font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
   .cwall-desc{margin-top:4px;font-size:11px;font-weight:500;color:var(--cw-sub);line-height:1.4;}
   /* compact take on the app's dashed capture CTA (capture_proof_cta.dart) —
      tapping it (or anywhere on the stack) reveals the proof behind */
   .cwall-cta{position:absolute;left:11px;right:11px;bottom:36px;display:flex;align-items:center;justify-content:center;gap:6px;
-    height:28px;border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
-    font-size:10px;font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
+    height:30px;border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
+    font-size:11px;font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
   .cwall-cta-ic{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#7C82FF,#3B3FA8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .cwall-cta-ic svg{display:block;}
   .cwall-backed{position:absolute;left:11px;right:11px;bottom:10px;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:var(--cw-sub);white-space:nowrap;overflow:hidden;}
@@ -1128,7 +1132,7 @@
   .cwall-poster img{width:100%;height:100%;object-fit:cover;display:block;}
   /* flex pill — compact echo of the app's FlexPillButton, under the title chip */
   .cwall-flex{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;
-    background:rgba(0,0,0,.48);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    background:rgba(0,0,0,.58);
     border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:4px 8px;
     color:#fff;font-size:10.5px;font-weight:700;line-height:1;}
   .cwall-flex svg{display:block;flex-shrink:0;}
@@ -1136,8 +1140,11 @@
   .cwall-flex-avs span{width:14px;height:14px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(255,255,255,.85);background:#CFD1FF;flex-shrink:0;}
   .cwall-flex-avs span+span{margin-left:-5px;}
   .cwall-flex-avs img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* No backdrop-filter on chips/pills: blur re-samples the backdrop every frame
+     while the track drifts — with ~48 of them it visibly janks the marquee.
+     A slightly more opaque fill reads the same at this size. */
   .cwall-chip{position:absolute;left:8px;bottom:38px;max-width:calc(100% - 16px);
-    background:rgba(0,0,0,.48);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    background:rgba(0,0,0,.58);
     border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:3px 9px;
     font-size:11px;font-weight:600;color:#fff;line-height:1.3;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -1149,7 +1156,7 @@
   .cwall-signed{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);}
 
   @media (max-width:640px){
-    .cwall{--cw-w:142px;--cw-h:172px;--cw-gap:14px;margin-top:34px;}
+    .cwall{--cw-w:142px;--cw-gap:14px;margin-top:34px;}
     .cwall-label{font-size:13px;margin-top:8px;}
     .cwall-plan{padding:10px;}
     .cwall-backed{left:10px;right:10px;bottom:9px;}
@@ -2494,7 +2501,9 @@ function toggleMode() {
   const DRIFT_PX_PER_S    = 28;   // marquee speed (spec: ~25–30px/s)
   const FLIP_INTERVAL_MS  = 900;  // how often we look for the centre-most stack
   const FLIP_HOLD_MS      = 5000; // how long a revealed proof stays up (centre flip AND tap)
-  const FLIP_THRESHOLD_PX = 80;   // stack centre must be this close to the wall centre
+  const FLIP_THRESHOLD_PX = 160;  // stack centre must be this close to the wall centre
+                                  // (generous: card pitch grew with the responsive
+                                  // sizing, and the closest stack is never edge-clipped)
 
   const AV = 'assets/Avatars/';
   const PC = 'assets/Proof Carousel/';
@@ -2656,19 +2665,26 @@ function toggleMode() {
   });
 
   // Centre-flip: the stack nearest the horizontal centre swaps to its proof.
-  // One interval, no per-frame measurement.
+  // One interval, no per-frame measurement. Stacks sit on a uniform pitch, so
+  // two rect reads (first + second stack) locate all of them arithmetically —
+  // measuring every stack each tick forced 24 layout reads against the
+  // animating track and contributed to marquee jank.
+  const trackStacks = Array.from(track.querySelectorAll('.cwall-stack'));
   let lastCentre = null; // last stack the centre pass flipped
   setInterval(() => {
     if (reduceMotion.matches || document.hidden) return;
     if (wall.classList.contains('is-paused')) return;
+    if (trackStacks.length < 2) return;
     const rect = wall.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    let best = null, bestDist = Infinity;
-    track.querySelectorAll('.cwall-stack').forEach(s => {
-      const r = s.getBoundingClientRect();
-      const d = Math.abs(r.left + r.width / 2 - centerX);
-      if (d < bestDist) { bestDist = d; best = s; }
-    });
+    const r0 = trackStacks[0].getBoundingClientRect();
+    const pitch = trackStacks[1].getBoundingClientRect().left - r0.left;
+    if (pitch <= 0) return;
+    const firstCentre = r0.left + r0.width / 2;
+    const idx = Math.max(0, Math.min(trackStacks.length - 1,
+      Math.round((centerX - firstCentre) / pitch)));
+    const best = trackStacks[idx];
+    const bestDist = Math.abs(firstCentre + idx * pitch - centerX);
     if (!best || bestDist > FLIP_THRESHOLD_PX) return;
     if (best !== lastCentre) {
       // Handover: the new centre rises; the outgoing proof lingers briefly so
