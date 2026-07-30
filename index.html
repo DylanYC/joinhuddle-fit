@@ -12,6 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<!-- Caveat powers the hero's handwritten plan examples. Subset via &text= to A-Z a-z 0-9
+     plus common punctuation — a few KB instead of the full latin set, but still wide
+     enough that new PLANS[] phrases render without touching this line. -->
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap&text=%20ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%2C.%27%26%25-%2B%C3%97%2F%3A%21%3F%28%29" rel="stylesheet">
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -856,13 +860,54 @@
     display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:24px;min-height:680px;}
 
   /* ---- left copy ---- */
-  .rhero-copy{max-width:560px;}
+  .rhero-copy{max-width:560px;position:relative;}
   /* app icon above the headline (soft shadow is baked into the PNG) */
   .rhero-appicon{width:74px;height:auto;display:block;margin:0 0 14px;}
   .rhero-h{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(34px,4.4vw,57px);line-height:1.08;letter-spacing:-0.03em;color:var(--r-head);margin:0;text-wrap:balance;}
   .rhero-h .rhero-accent{color:var(--r-accent);}
   .rhero-sub{font-family:'Inter',sans-serif;font-size:clamp(16px,1.4vw,19px);line-height:1.5;color:var(--r-sub);max-width:560px;margin:22px 0 0;}
   .rhero-sub em{font-style:italic;}
+
+  /* ---- handwritten plan examples ("anything" → dotted rail → phrases) ----
+     Fits in the copy column's spare vertical budget: the column is ~526px against
+     the phone column's 614px, and the grid is align-items:center with min-height:680,
+     so this 62px band does NOT change the hero's height. */
+  .rhero-plans{position:relative;height:62px;margin-top:4px;pointer-events:none;
+    --rp-fs:28px;      /* handwriting size — Caveat has a small x-height, so it runs big */
+    --rp-bleed:0px;    /* how far the rail is allowed left of the copy column (JS-set) */
+    --rp-w:0px;        /* measured phrase width, drives the nib travel (JS-set) */
+    --rp-dur:1s;       /* write duration, chars × 38ms (JS-set) */
+  }
+  /* the examples in text form, for screen readers and crawlers only */
+  .rhero-plans-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
+  .rhero-plans-rail{position:absolute;overflow:visible;}
+  .rhero-plans-rail .dots{fill:none;stroke:var(--r-guide);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round;}
+  .rhero-plans-rail .mp{fill:none;stroke:#fff;stroke-width:9;stroke-linecap:round;}
+  /* the mask path is dashed to its own full length, so pulling the offset to 0
+     lays the dots down in path order — a plain dashoffset animation on a dotted
+     stroke would make the dots travel instead of draw. */
+  .rhero-plans-rail .mp.draw{animation:rpDraw .78s cubic-bezier(.36,0,.24,1) forwards;}
+  @keyframes rpDraw{ from{ stroke-dashoffset:var(--rp-len); } to{ stroke-dashoffset:0; } }
+
+  .rhero-plans-text{position:absolute;left:0;top:0;white-space:nowrap;
+    font-family:'Caveat',ui-rounded,cursive;font-weight:600;font-size:var(--rp-fs);line-height:1;
+    color:var(--r-sub-strong);opacity:.92;clip-path:inset(0 100% 0 0);}
+  .rhero-plans-text.writing{animation:rpWrite var(--rp-dur) linear forwards;}
+  .rhero-plans-text.leaving{animation:rpLeave .26s ease-in forwards;}
+  @keyframes rpWrite{ from{ clip-path:inset(0 100% 0 0); } to{ clip-path:inset(0 -2px 0 0); } }
+  @keyframes rpLeave{ from{ opacity:.92; transform:translateY(0); } to{ opacity:0; transform:translateY(-8px); } }
+
+  /* pen nib — rides the leading edge of the wipe and softens its straight edge */
+  .rhero-plans-nib{position:absolute;left:0;top:0;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;
+    border-radius:50%;background:var(--r-accent);filter:blur(.5px);opacity:0;}
+  .rhero-plans-nib.writing{animation:rpNib var(--rp-dur) linear forwards;}
+  @keyframes rpNib{
+    0%{ opacity:0; transform:translateX(0); }
+    8%{ opacity:.95; }
+    88%{ opacity:.95; }
+    100%{ opacity:0; transform:translateX(var(--rp-w)); }
+  }
+
   .rhero-ctas{margin-top:28px;}
   /* keep the existing waitlist form, but left-align it here */
   .rhero-ctas .hero-waitlist{margin:0;max-width:420px;justify-content:flex-start;}
@@ -1028,6 +1073,15 @@
     .rhero-ctas .hero-waitlist-note,.rhero-h{text-align:center;}
     .rhero-ctas{display:flex;flex-direction:column;align-items:center;}
     .rhero-visual{margin-top:8px;}
+    /* stacked layout: no room (or reason) for the leftward rail — centre the
+       handwriting under the paragraph and let it keep writing on its own. */
+    .rhero-plans{height:50px;margin-top:2px;--rp-fs:26px;}
+    .rhero-plans-rail{display:none;}
+    .rhero-plans-text,.rhero-plans-nib{left:50%;}
+    .rhero-plans-text{transform:translateX(-50%);top:8px;}
+    .rhero-plans-text.leaving{animation:rpLeaveC .26s ease-in forwards;}
+    @keyframes rpLeaveC{ from{ opacity:.92; transform:translateX(-50%) translateY(0); } to{ opacity:0; transform:translateX(-50%) translateY(-8px); } }
+    .rhero-plans-nib{top:26px;margin-left:calc(-1 * var(--rp-w) / 2 - 3.5px);}
   }
   @media (max-width: 900px){
     .rhero-stage-wrap{height:486px;}
@@ -1038,9 +1092,16 @@
     .rhero-stage-wrap{height:432px;}
     .rhero-stage{transform:scale(.72);}
     .rhero-iccard{left:6px;top:104px;width:184px;}
+    .rhero-plans{height:44px;--rp-fs:23px;}
+    .rhero-plans-nib{top:23px;}
   }
   @media (prefers-reduced-motion: reduce){
     .rhero-orbit-spin,.rhero-orb-spin,.rhero-phone-float,.rhero-cloud,.rhero-soc .dot{animation:none !important;}
+    /* one phrase, already written, no rail draw — the JS loop is disabled too */
+    .rhero-plans-rail .mp.draw,.rhero-plans-text.writing,.rhero-plans-nib.writing{animation:none !important;}
+    .rhero-plans-rail .mp{stroke-dashoffset:0 !important;}
+    .rhero-plans-text{clip-path:none;}
+    .rhero-plans-nib{display:none;}
   }
 
   @media (max-width: 360px) {
@@ -1083,7 +1144,23 @@
       <div class="rhero-copy">
         <img class="rhero-appicon" src="assets/Risers-Icon1-Shadows-Outline.png" alt="Risers app icon" width="74" height="74" fetchpriority="high" decoding="async"/>
         <h1 class="rhero-h"><span class="rhero-accent">Rise each day</span>, backed by your inner circle.</h1>
-        <p class="rhero-sub">A private space for just you and your people to share daily plans and proofs of your movement, nutrition, or health goals — <em>anything</em> you're trying to stick with.</p>
+        <p class="rhero-sub">A private space for just you and your people to share daily plans and proofs of your movement, nutrition, or health goals — <em id="rAny">anything</em> you're trying to stick with.</p>
+
+        <!-- handwritten examples of real plans, hung off the word "anything".
+             Decorative: the same examples are in the visually-hidden list below
+             so screen readers and crawlers get the content too. -->
+        <div class="rhero-plans" id="rPlans" aria-hidden="true">
+          <svg class="rhero-plans-rail" id="rPlansRail" focusable="false">
+            <defs><mask id="rPlansMask" maskUnits="userSpaceOnUse" x="-600" y="-300" width="2400" height="900">
+              <path class="mp" id="rPlansMaskPath"/>
+            </mask></defs>
+            <path class="dots" id="rPlansDots" mask="url(#rPlansMask)"/>
+          </svg>
+          <span class="rhero-plans-text" id="rPlansText"></span>
+          <span class="rhero-plans-nib" id="rPlansNib"></span>
+        </div>
+        <p class="rhero-plans-sr">For example: walk 10,000 steps, drink 2 bottles of water daily, no social media before bed, stretch for 20 minutes, do my rehab exercises, a daily gym routine, meditate before work, or a lunchtime walk.</p>
+
         <div class="rhero-ctas">
           <!-- waitlist form kept from existing build (wired to waitlist JS) -->
           <form class="hero-waitlist" id="heroForm" novalidate>
@@ -2828,6 +2905,214 @@ cOuter.addEventListener('click', (e) => {
   knob.innerHTML = ICON.proof;
   requestAnimationFrame(()=>positionKnob(RATIO.proof));
   window.addEventListener('resize', ()=>{ if(!dragging) positionKnob(RATIO[phase]); });
+})();
+
+/* ===== Hero plan examples — dotted rail off "anything" + handwritten loop ===== */
+(function(){
+  const band = document.getElementById('rPlans');
+  const any  = document.getElementById('rAny');
+  const svg  = document.getElementById('rPlansRail');
+  const dots = document.getElementById('rPlansDots');
+  const mask = document.getElementById('rPlansMaskPath');
+  const text = document.getElementById('rPlansText');
+  const nib  = document.getElementById('rPlansNib');
+  if (!band || !any || !svg || !text) return;
+
+  // Curated examples. Order is deliberate — the first two are the most instantly
+  // legible, so whatever a visitor catches first still reads cleanly.
+  // Keep phrases under ~34 chars so they fit the copy column at every width.
+  const PLANS = [
+    'Walk 10,000 Steps',
+    'Drink 2 Bottles of Water Daily',
+    'No Social Media Before Bed',
+    'Stretch for 20min',
+    'Do My Rehab Exercises',
+    'Daily Gym Routine',
+    'Meditate Before Work',
+    'Lunchtime Walk'
+  ];
+
+  const MS_PER_CHAR = 38, MIN_WRITE = 700, HOLD = 1600, OUT = 260, GAP = 180;
+
+  const rmq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const stacked = () => window.matchMedia('(max-width: 1040px)').matches;
+
+  /* ---- geometry: hang the rail off the live position of "anything" ----
+     Which line "anything" lands on (and how much gutter sits to its left) shifts
+     with viewport width, so the path is measured, never hardcoded. */
+  let laidOut = false;
+
+  function layout(){
+    laidOut = true;
+    const copyBox = document.querySelector('.rhero-copy').getBoundingClientRect();
+    const bandBox = band.getBoundingClientRect();
+    const anyBox  = any.getBoundingClientRect();
+
+    // How far left of the copy column the rail may pull. The page gutter is ~370px
+    // at 1920 but only ~50px at 1280, so `reach` scales with what's actually there:
+    // a real excursion into the whitespace on wide screens, a near-vertical drop on
+    // narrow ones. `bleed` is just the svg canvas, always a little wider than reach.
+    const gutter = copyBox.left;
+    const reach = Math.min(82, Math.max(10, gutter - 28));
+    const bleed = reach + 10;
+    band.style.setProperty('--rp-bleed', bleed + 'px');
+
+    // Stacked layout centres the text via CSS, so drop the desktop inline styles —
+    // inline wins over the media query and would otherwise strand it mid-column.
+    if (stacked()){
+      text.style.left = text.style.top = nib.style.left = nib.style.top = '';
+      return;
+    }
+
+    const W = bandBox.width + bleed, H = bandBox.height;
+    svg.style.left = (-bleed) + 'px';
+    svg.style.top = '0px';
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    // Origin: under the italic word itself — a third of the way in, so the line
+    // reads as hanging off "anything" rather than off the em dash before it.
+    // y is negative (the word sits above the band), hence overflow:visible.
+    const ax = anyBox.left - bandBox.left + bleed + anyBox.width * 0.32;
+    const ay = anyBox.bottom - bandBox.top + 2;
+
+    // curl left into the gutter, then drop, then turn right onto the rail
+    const curl = Math.max(6, Math.min(reach, ax - 4));
+    const lx = ax - curl;
+    const railY = Math.round(H * 0.62);
+    const turn = Math.min(18, curl * 0.55 + 6);
+    // deliberate lead-in: the rail runs on a little before the writing starts,
+    // so it reads as the line arriving first and the hand following it
+    const railStartX = lx + turn + 14;
+
+    const d = 'M ' + ax + ',' + ay
+      + ' C ' + (ax - curl * 0.55) + ',' + (ay + 2) + ' ' + lx + ',' + (ay + 5) + ' ' + lx + ',' + (ay + 13)
+      + ' L ' + lx + ',' + (railY - turn)
+      + ' C ' + lx + ',' + (railY - turn * 0.35) + ' ' + (lx + turn * 0.35) + ',' + railY + ' ' + (lx + turn) + ',' + railY
+      + ' L ' + (W - 2) + ',' + railY;
+
+    dots.setAttribute('d', d);
+    mask.setAttribute('d', d);
+    const len = Math.ceil(dots.getTotalLength());
+    mask.style.strokeDasharray = len;
+    band.style.setProperty('--rp-len', len);
+
+    // Seat the handwriting on the rail. railStartX is in the svg's space, which is
+    // shifted left by `bleed`; the text sits in the band's space, so subtract it back.
+    // never start left of the copy column — on wide screens the rail's excursion
+    // puts the turn out in the gutter, and the writing should stay on the text edge
+    const tx = Math.max(0, railStartX - bleed);
+    const fs = parseFloat(getComputedStyle(band).getPropertyValue('--rp-fs'));
+    text.style.left = tx + 'px';
+    text.style.top = (railY - fs * 0.80) + 'px';
+    nib.style.left = tx + 'px';
+    nib.style.top = railY + 'px';
+  }
+
+  function drawRail(){
+    if (stacked()) return;
+    mask.classList.remove('draw');
+    if (rmq.matches) { mask.style.strokeDashoffset = '0'; return; }
+    mask.style.strokeDashoffset = '';
+    void mask.getBoundingClientRect();
+    mask.classList.add('draw');
+  }
+
+  /* ---- the writing loop ---- */
+  let i = 0, timer = null, running = false;
+
+  function show(phrase){
+    text.classList.remove('writing','leaving');
+    nib.classList.remove('writing');
+    void text.offsetWidth;                       // restart the animations
+    text.textContent = phrase;
+    band.style.setProperty('--rp-w', text.offsetWidth + 'px');
+    band.style.setProperty('--rp-dur', Math.max(MIN_WRITE, phrase.length * MS_PER_CHAR) + 'ms');
+    text.classList.add('writing');
+    nib.classList.add('writing');
+  }
+
+  function step(){
+    const phrase = PLANS[i % PLANS.length];
+    i++;
+    show(phrase);
+    const write = Math.max(MIN_WRITE, phrase.length * MS_PER_CHAR);
+    timer = setTimeout(() => {
+      text.classList.add('leaving');
+      timer = setTimeout(step, OUT + GAP);
+    }, write + HOLD);
+  }
+
+  function start(){
+    if (running || rmq.matches) return;
+    // A page that loaded in a background tab never got its initial layout
+    // (no rAF, no paint), so make sure the rail exists before we write on it.
+    if (!laidOut) { layout(); drawRail(); }
+    running = true;
+    step();
+  }
+  function stop(){
+    running = false;
+    clearTimeout(timer);
+    timer = null;
+  }
+
+  // Only animate while the hero is actually on screen and the tab is visible —
+  // this loop runs indefinitely and the hero already carries several infinite
+  // CSS animations (orbit spin, drifting clouds, breathing dot).
+  let onScreen = true;
+  function sync(){
+    if (onScreen && !document.hidden) start(); else stop();
+  }
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver((entries) => {
+      onScreen = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 }).observe(band);
+  }
+  document.addEventListener('visibilitychange', sync);
+
+  // prefers-reduced-motion is a JS decision here, not just a CSS one: a
+  // setTimeout loop doesn't care about `animation:none`.
+  function applyMotionPref(){
+    if (rmq.matches){
+      stop();
+      text.classList.remove('writing','leaving');
+      nib.classList.remove('writing');
+      text.textContent = PLANS[0];
+      band.style.setProperty('--rp-w', text.offsetWidth + 'px');
+      drawRail();
+    } else {
+      i = 0;
+      drawRail();
+      sync();
+    }
+  }
+  rmq.addEventListener('change', applyMotionPref);
+
+  let rt = null;
+  function relayout(){
+    clearTimeout(rt);
+    rt = setTimeout(() => { layout(); if (rmq.matches) drawRail(); }, 140);
+  }
+  // Both are needed. A window resize can move the page gutter while the copy
+  // column stays a fixed 554px (1280 → 1440 does exactly that), so ResizeObserver
+  // alone would miss it; and the column can reflow with no window resize at all
+  // (the waitlist success state swaps content in), which `resize` alone would miss.
+  window.addEventListener('resize', relayout);
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(band);
+
+  // Wait for Caveat before measuring or writing — otherwise the first phrase
+  // renders in the fallback face and the nib travel is measured against it.
+  const ready = document.fonts && document.fonts.load
+    ? document.fonts.load('600 28px Caveat').catch(() => {})
+    : Promise.resolve();
+
+  Promise.resolve(ready).then(() => {
+    layout();            // measurement only — safe to run without waiting for a frame
+    applyMotionPref();
+  });
 })();
 </script>
 
