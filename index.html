@@ -1036,13 +1036,17 @@
 
   /* Caption beneath the card wall — matches the hero sub copy so it reads as
      part of the wall, not a separate band. */
-  .cwall-caption{position:relative;z-index:2;max-width:640px;margin:22px auto 0;padding:0 24px;
+  /* Negative top margin pulls the caption up into the card wall's 36px shadow
+     foot-room so it pairs tightly with the cards — WITHOUT reducing that
+     padding (the cards' downward shadow needs it to render un-clipped). The
+     shadow fades by ~26px below the cards; -8px leaves the caption at ~28px. */
+  .cwall-caption{position:relative;z-index:2;max-width:640px;margin:-8px auto 0;padding:0 24px;
     text-align:center;font-family:'Inter',sans-serif;font-size:clamp(15px,1.5vw,18px);
     line-height:1.6;color:var(--r-sub);}
   /* hand-drawn underline (shared .ul-hand) — thinner stroke than the big spec
      title since the caption text is much smaller */
   .cwall-caption .ul-hand > svg path{stroke-width:3;}
-  @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:18px;} }
+  @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:-8px;} }
 
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
@@ -1062,6 +1066,8 @@
     --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
     --cw-veil:rgba(7,8,22,.72);
     position:relative;z-index:2;margin-top:44px;overflow:hidden;
+    /* grab-to-scrub: horizontal drag is ours, vertical stays native page scroll */
+    cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;
     /* 16px headroom for the peeking proof card; 36px foot-room so the cards'
        downward shadow fades out fully instead of being clipped to a hard line
        by this container's overflow:hidden */
@@ -1078,11 +1084,13 @@
     --cw-dash:rgba(10,10,24,.18); --cw-cta-bg:rgba(10,10,24,.025); --cw-cta-ink:#4840d4;
     --cw-veil:rgba(247,248,250,.82);
   }
-  .cwall-track{display:flex;width:max-content;will-change:transform;animation:cwall-drift var(--cw-dur,62s) linear infinite;}
-  @keyframes cwall-drift{from{transform:translate3d(0,0,0);}to{transform:translate3d(-50%,0,0);}}
-  /* pause on hover, and while the email input has focus (.is-paused via JS) */
-  .cwall:hover .cwall-track,.cwall.is-paused .cwall-track{animation-play-state:paused;}
-  /* each segment carries its own trailing gap so translateX(-50%) loops seamlessly */
+  /* JS drives the transform every frame (drift + drag inertia) — see the wall
+     script. user-select / user-drag off so a scrub never selects text or
+     ghost-drags an image. */
+  .cwall-track{display:flex;width:max-content;will-change:transform;user-select:none;-webkit-user-select:none;}
+  .cwall-track img,.cwall-track svg{-webkit-user-drag:none;user-drag:none;}
+  .cwall.is-dragging{cursor:grabbing;}
+  /* each segment carries its own trailing gap so wrapping at -50% loops seamlessly */
   .cwall-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
 
   /* One stack = plan card (front) + proof card (peeking behind). */
@@ -1090,7 +1098,7 @@
      width, clamped), so bigger desktop cards keep the 188px design's density
      instead of growing whitespace — and the clamp floors keep small cards
      exactly as they are on phones / narrow windows. */
-  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:pointer;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);}
+  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:inherit;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);}
   .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
     transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
   .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:var(--cw-pad);text-align:left;}
@@ -1111,11 +1119,15 @@
   .cwall-stack.is-flipped .cwall-proof::after{opacity:0;}
   .cwall-stack.is-flipped .cwall-plan{transform:var(--cw-recede);opacity:.4;z-index:1;}
   /* hover reveals the proof immediately for as long as the pointer stays
-     (real pointers only — touch gets the tap-to-reveal in JS instead) */
+     (real pointers only — touch browses by dragging + the centre-flip reveal) */
   @media (hover:hover) and (pointer:fine){
     .cwall-stack:hover .cwall-proof{transform:translateY(0) scale(1);z-index:2;}
     .cwall-stack:hover .cwall-proof::after{opacity:0;}
     .cwall-stack:hover .cwall-plan{transform:var(--cw-recede);opacity:.4;z-index:1;}
+    /* while scrubbing, don't let the moving cursor's :hover flicker cards open */
+    .cwall.is-dragging .cwall-stack:hover .cwall-proof{transform:var(--cw-recede);z-index:1;}
+    .cwall.is-dragging .cwall-stack:hover .cwall-proof::after{opacity:1;}
+    .cwall.is-dragging .cwall-stack:hover .cwall-plan{transform:none;opacity:1;z-index:2;}
   }
 
   /* plan card content — mirrors the app's task-card anatomy:
@@ -1153,7 +1165,7 @@
     border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:.4em .75em;
     color:#fff;font-size:clamp(10px,5.6cqw,13px);font-weight:700;line-height:1;}
   .cwall-flex svg{display:block;flex-shrink:0;width:1.35em;height:1.35em;}
-  .cwall-flex-avs{display:flex;margin-left:.2em;}
+  .cwall-flex-avs{display:flex;}
   .cwall-flex-avs span{width:clamp(13px,7.4cqw,18px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.5px solid rgba(255,255,255,.85);background:#CFD1FF;flex-shrink:0;}
   .cwall-flex-avs span+span{margin-left:-.38em;}
   .cwall-flex-avs img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -1181,8 +1193,8 @@
     .cwall{--cw-w:142px;--cw-gap:14px;margin-top:34px;}
   }
   @media (prefers-reduced-motion: reduce){
-    /* wall renders static in resting state: plan in front, proof peeking */
-    .cwall-track{animation:none;}
+    /* static resting state: no drift, no scrub, no flip transition */
+    .cwall{cursor:auto;}
     .cwall-card{transition:none;}
     .cwall-proof::after{transition:none;}
   }
@@ -2608,7 +2620,7 @@ function toggleMode() {
     const flex = document.createElement('div');
     flex.className = 'cwall-flex';
     flex.setAttribute('aria-hidden', 'true');
-    flex.innerHTML = flexArm + '<b>' + plan.flexes + '</b>' +
+    flex.innerHTML = flexArm +
       '<span class="cwall-flex-avs">' +
       flexFaces.map(f => '<span><img src="' + AV + f + '" alt="" loading="lazy" decoding="async"></span>').join('') +
       '</span>';
@@ -2658,53 +2670,150 @@ function toggleMode() {
     track.appendChild(seg);
   }
 
-  // Drift duration derived from measured width so speed stays constant at any size.
-  function syncDriftDuration(){
-    const half = track.scrollWidth / 2;
-    if (half > 0) wall.style.setProperty('--cw-dur', (half / DRIFT_PX_PER_S) + 's');
-  }
-  syncDriftDuration();
+  // ---- Measure: the track is two identical segments; wrapping the offset at
+  // one segment's width keeps the marquee seamless in both directions and under
+  // any drag distance. ----
+  let segWidth = 0;
+  function measure(){ segWidth = track.scrollWidth / 2; }
+  measure();
   let wallResizeTO;
   window.addEventListener('resize', () => {
     clearTimeout(wallResizeTO);
-    wallResizeTO = setTimeout(syncDriftDuration, 150);
+    wallResizeTO = setTimeout(measure, 150);
   });
-
-  // Nothing moves while someone is typing.
-  const heroInput = document.querySelector('#heroForm input');
-  if (heroInput) {
-    heroInput.addEventListener('focus', () => wall.classList.add('is-paused'));
-    heroInput.addEventListener('blur',  () => wall.classList.remove('is-paused'));
-  }
 
   // ---- Proof reveals ----
   // Each stack keeps its own hold timer, so an outgoing reveal can overlap the
   // incoming one — the wall should never be without a visible proof.
-  const HANDOVER_LINGER_MS = 1200; // outgoing centre proof stays up this long after the next takes over
+  const HANDOVER_LINGER_MS = 1200;
   const flipTimers = new WeakMap();
+  let lastCentre = null;
   function flipStack(stack, hold){
     stack.classList.add('is-flipped');
     clearTimeout(flipTimers.get(stack));
     flipTimers.set(stack, setTimeout(() => stack.classList.remove('is-flipped'), hold || FLIP_HOLD_MS));
   }
+  function clearAllFlips(){
+    track.querySelectorAll('.cwall-stack.is-flipped').forEach(s => {
+      clearTimeout(flipTimers.get(s));
+      s.classList.remove('is-flipped');
+    });
+    lastCentre = null;
+  }
 
-  // Tap / click reveals the stack's proof for the same hold as the centre flip
-  // (this is the touch counterpart of the hover reveal, which is pure CSS).
-  track.addEventListener('click', e => {
-    const stack = e.target.closest('.cwall-stack');
-    if (stack) flipStack(stack);
+  // ---- Drift + drag, one continuous motion ----
+  // A single velocity drives the wall: at rest it sits at AUTO_SPEED (the gentle
+  // marquee); a drag sets position directly; a release launches a flick that
+  // eases back to AUTO_SPEED. So scrubbing and drifting are never two modes —
+  // they blend. Replaces the old CSS marquee + tap-to-reveal.
+  const AUTO_SPEED = DRIFT_PX_PER_S;  // px/s, resting leftward drift
+  const FLICK_MAX  = 2600;            // px/s cap so a hard flick can't rocket away
+  const COAST_TAU  = 0.42;            // s, how fast a flick eases back into drift
+  const NEAR_REST  = 45;              // px/s; under this the wall counts as "settled"
+  const DRAG_LOCK  = 4;               // px of travel before a gesture commits to horizontal drag
+
+  let offset = 0;         // px, translateX magnitude (content shifts left as it grows)
+  let vOff = AUTO_SPEED;  // px/s, current offset velocity
+  let dragging = false, isHovering = false, inputFocused = false;
+  let pointerId = null, startX = 0, startY = 0, lastX = 0, lastT = 0, axisLock = null, ptrVel = 0;
+
+  const nowMs = () => performance.now();
+  const settled = () => Math.abs(vOff - AUTO_SPEED) < NEAR_REST;
+
+  function applyTransform(){
+    if (segWidth > 0) offset = ((offset % segWidth) + segWidth) % segWidth;
+    track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
+  }
+
+  let lastFrame = null;
+  function frame(t){
+    if (lastFrame == null) lastFrame = t;
+    const dt = Math.min(0.05, (t - lastFrame) / 1000); // clamp long gaps (tab was hidden)
+    lastFrame = t;
+    if (reduceMotion.matches){ requestAnimationFrame(frame); return; }
+
+    const holding = pointerId !== null;
+    if (dragging){
+      // position is set directly in pointermove
+    } else if (holding){
+      // pressed but not yet dragging horizontally — hold it frozen under the finger
+    } else {
+      const k = 1 - Math.exp(-dt / COAST_TAU);
+      vOff += (AUTO_SPEED - vOff) * k;                  // ease flick → drift
+      const paused = inputFocused || (isHovering && settled());
+      if (!paused) offset += vOff * dt;
+    }
+    applyTransform();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // Hover (desktop mouse): CSS reveals the hovered card; we track state so drift
+  // pauses under the cursor and the centre-flip yields to the manual hover.
+  wall.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') isHovering = true; });
+  wall.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') isHovering = false; });
+
+  // Nothing moves while someone is typing.
+  const heroInput = document.querySelector('#heroForm input');
+  if (heroInput){
+    heroInput.addEventListener('focus', () => { inputFocused = true; });
+    heroInput.addEventListener('blur',  () => { inputFocused = false; });
+  }
+
+  // Press + drag to scrub (mouse & touch). A vertical gesture is handed back to
+  // the page so the wall never traps a scroll.
+  wall.addEventListener('pointerdown', e => {
+    if (reduceMotion.matches) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    pointerId = e.pointerId;
+    startX = lastX = e.clientX; startY = e.clientY;
+    lastT = nowMs(); ptrVel = 0; axisLock = null; dragging = false;
+    vOff = 0; // freeze at the grab point
   });
 
-  // Centre-flip: the stack nearest the horizontal centre swaps to its proof.
-  // One interval, no per-frame measurement. Stacks sit on a uniform pitch, so
-  // two rect reads (first + second stack) locate all of them arithmetically —
-  // measuring every stack each tick forced 24 layout reads against the
-  // animating track and contributed to marquee jank.
+  wall.addEventListener('pointermove', e => {
+    if (e.pointerId !== pointerId) return;
+    if (axisLock == null){
+      const totX = Math.abs(e.clientX - startX), totY = Math.abs(e.clientY - startY);
+      if (totX < DRAG_LOCK && totY < DRAG_LOCK) return;       // not enough travel yet
+      if (totY > totX){ pointerId = null; return; }           // vertical → release to page scroll
+      axisLock = 'x';
+      dragging = true;
+      wall.classList.add('is-dragging');
+      clearAllFlips();
+      try { wall.setPointerCapture(e.pointerId); } catch(_) {}
+    }
+    const dx = e.clientX - lastX;
+    const t = nowMs();
+    offset -= dx;                                             // follow the finger 1:1
+    const v = (dx / Math.max(1, t - lastT)) * 1000;          // px/s
+    ptrVel = ptrVel * 0.7 + v * 0.3;                         // smoothed, for the release flick
+    lastX = e.clientX; lastT = t;
+    applyTransform();
+    e.preventDefault();
+  });
+
+  function endDrag(e){
+    if (e.pointerId !== pointerId) return;
+    const wasDragging = dragging;
+    pointerId = null; dragging = false; axisLock = null;
+    wall.classList.remove('is-dragging');
+    // offset moved by -dx, so the release velocity is -pointerVelocity. A plain
+    // tap (no drag) just resumes drift — no reveal (that was the old tap UX).
+    vOff = wasDragging ? Math.max(-FLICK_MAX, Math.min(FLICK_MAX, -ptrVel)) : AUTO_SPEED;
+  }
+  wall.addEventListener('pointerup', endDrag);
+  wall.addEventListener('pointercancel', endDrag);
+
+  // Centre-flip: the stack nearest the wall's centre swaps to its proof — but
+  // only while the wall is gently drifting. During a scrub, coast, hover, or
+  // typing we leave it be. On mobile (no hover) this IS the reveal: browse by
+  // dragging, release, and the card that lands in the middle shows its proof.
+  // Stacks sit on a uniform pitch, so two rect reads locate them all.
   const trackStacks = Array.from(track.querySelectorAll('.cwall-stack'));
-  let lastCentre = null; // last stack the centre pass flipped
   setInterval(() => {
     if (reduceMotion.matches || document.hidden) return;
-    if (wall.classList.contains('is-paused')) return;
+    if (dragging || pointerId !== null || inputFocused || isHovering || !settled()) return;
     if (trackStacks.length < 2) return;
     const rect = wall.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -2717,16 +2826,13 @@ function toggleMode() {
     const best = trackStacks[idx];
     const bestDist = Math.abs(firstCentre + idx * pitch - centerX);
     if (!best || bestDist > FLIP_THRESHOLD_PX) return;
-    if (best !== lastCentre) {
+    if (best !== lastCentre){
       // Handover: the new centre rises; the outgoing proof lingers briefly so
       // the two reveals overlap and the wall is never proofless.
       flipStack(best);
-      if (lastCentre && lastCentre.classList.contains('is-flipped')) {
-        flipStack(lastCentre, HANDOVER_LINGER_MS);
-      }
+      if (lastCentre && lastCentre.classList.contains('is-flipped')) flipStack(lastCentre, HANDOVER_LINGER_MS);
       lastCentre = best;
     } else {
-      // Still the centre-most stack — keep its proof up while it holds centre.
       flipStack(best);
     }
   }, FLIP_INTERVAL_MS);
