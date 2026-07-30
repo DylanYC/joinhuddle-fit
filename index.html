@@ -1064,14 +1064,14 @@
     --cw-label:#ffffff; --cw-sub:rgba(255,255,255,.55); --cw-ring:#1b1930;
     --cw-pill-bg:rgba(111,117,255,.20); --cw-pill-ink:#CFD1FF;
     --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
-    --cw-veil:rgba(7,8,22,.72);
+    --cw-veil:rgba(7,8,22,.52);
     position:relative;z-index:2;margin-top:44px;overflow:hidden;
     /* grab-to-scrub: horizontal drag is ours, vertical stays native page scroll */
     cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;
-    /* 16px headroom for the peeking proof card; 36px foot-room so the cards'
+    /* 22px headroom for the peeking proof card; 36px foot-room so the cards'
        downward shadow fades out fully instead of being clipped to a hard line
        by this container's overflow:hidden */
-    padding:16px 0 36px;
+    padding:22px 0 36px;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
     mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
   }
@@ -1082,7 +1082,7 @@
     --cw-label:#17151f; --cw-sub:rgba(23,21,31,.55); --cw-ring:#ffffff;
     --cw-pill-bg:#CFD1FF; --cw-pill-ink:#292D91;
     --cw-dash:rgba(10,10,24,.18); --cw-cta-bg:rgba(10,10,24,.025); --cw-cta-ink:#4840d4;
-    --cw-veil:rgba(247,248,250,.82);
+    --cw-veil:rgba(247,248,250,.6);
   }
   /* JS drives the transform every frame (drift + drag inertia) — see the wall
      script. user-select / user-drag off so a scrub never selects text or
@@ -1106,7 +1106,7 @@
      center, scaling drops the top edge by 10% of the card height — the -10%
      (translate % = own height) compensates so the receded card genuinely peeks
      11px above the front card at any card size. */
-  .cwall-card{--cw-recede:translateY(calc(-11px - 10%)) scale(.90);}
+  .cwall-card{--cw-recede:translateY(calc(-17px - 10%)) scale(.90);}
   .cwall-proof{z-index:1;overflow:hidden;background:var(--cw-proof-bg);border:1px solid var(--cw-card-bd);
     transform:var(--cw-recede);}
   /* Receded proof stays opaque; a theme-tinted veil washes it toward the page
