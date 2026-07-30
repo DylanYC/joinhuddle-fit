@@ -2603,8 +2603,13 @@ function toggleMode() {
     // plan layer (front at rest) — cadence pill, emoji title, "Backed by" row
     const front = document.createElement('div');
     front.className = 'cwall-card cwall-plan';
-    const avs = Array.from({length: plan.avatars}, (_, k) => {
-      const face = FACES[(i * 3 + k) % FACES.length];
+    // backers are drawn from the circle — never the poster backing themselves
+    const backerFaces = [];
+    for (let k = 0; backerFaces.length < plan.avatars && k < FACES.length; k++) {
+      const f = FACES[(i * 3 + k) % FACES.length];
+      if (f !== plan.by) backerFaces.push(f);
+    }
+    const avs = backerFaces.map(face => {
       const you = face === 'MainUser_Dylan.png' ? ' is-you' : '';
       return '<span class="cwall-av' + you + '"><img src="' + AV + face + '" alt="" loading="lazy" decoding="async"></span>';
     }).join('');
