@@ -287,8 +287,6 @@
 
   /* Scene 2 — single floating proof card */
   .loop-proof-card{width:286px;height:390px;border-radius:30px;position:relative;overflow:hidden;transform:rotate(2.5deg);background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);box-shadow:0 32px 80px rgba(194,65,12,0.38),0 8px 20px rgba(0,0,0,0.14);}
-  .loop-proof-card .proof-scene-vignette{height:58%;}
-  .loop-proof-card .proof-scene-inner{padding:22px 18px 20px;}
 
   /* Scene 3 — celebration feed card */
   .loop-feed-card{width:352px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.05);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);}
@@ -582,7 +580,7 @@
   /* PHONE */
   .proof-phone-anchor{position:relative;flex-shrink:0;}
   .proof-phone{
-    width:282px;height:580px;
+    width:282px;height:606px;
     background:#131313;
     border-radius:52px;
     border:1.5px solid rgba(0,0,0,0.22);
@@ -590,29 +588,174 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 60px 100px rgba(0,0,0,0.22),0 20px 40px rgba(0,0,0,0.10);
   }
   .proof-island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:112px;height:32px;background:#000;border-radius:20px;z-index:30;}
-  .proof-screen{position:absolute;inset:0;border-radius:50px;overflow:hidden;}
-  .proof-home-bar{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:112px;height:4px;background:rgba(255,255,255,0.22);border-radius:2px;z-index:30;}
+  .proof-screen{position:absolute;inset:0;border-radius:50px;overflow:hidden;background:var(--cam-scaffold);}
+  .proof-home-bar{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:112px;height:4px;background:var(--cam-homebar);border-radius:2px;z-index:30;}
 
-  /* SCENES */
+  /* SCENES — the live viewfinder image inside the camera chrome */
   .proof-scene{position:absolute;inset:0;opacity:0;transition:opacity .55s cubic-bezier(.4,0,.2,1);}
   .proof-scene.is-active{opacity:1;}
   .proof-scene-fallback{position:absolute;inset:0;z-index:1;}
   .proof-scene-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block;}
-  .proof-scene-vignette{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.5));z-index:3;pointer-events:none;}
   .proof-bg-0{background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);}
   .proof-bg-1{background:linear-gradient(158deg,#14532d 0%,#15803d 40%,#16a34a 70%,#4ade80 100%);}
   .proof-bg-2{background:linear-gradient(158deg,#0c1a30 0%,#1e3a5f 40%,#1d4ed8 72%,#60a5fa 100%);}
   .proof-bg-3{background:linear-gradient(158deg,#0c4a6e 0%,#0369a1 40%,#0284c7 70%,#38bdf8 100%);}
   .proof-bg-4{background:linear-gradient(158deg,#3b0764 0%,#7e22ce 42%,#a855f7 74%,#e879f9 100%);}
   .proof-bg-5{background:radial-gradient(ellipse 280px 320px at 50% 35%,#1a2e1a 0%,#080808 100%);}
-  .proof-scene-inner{position:absolute;inset:0;display:flex;flex-direction:column;padding:55px 17px 33px;z-index:4;}
-  .proof-scene-ts{font-size:13px;color:rgba(255,255,255,0.82);letter-spacing:0.04em;}
-  .proof-scene-illo{flex:1;display:flex;align-items:center;justify-content:center;}
-  .proof-scene-badge{background:rgba(0,0,0,0.38);border:1px solid rgba(255,255,255,0.13);border-radius:14px;padding:11px 14px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
-  .proof-scene-badge-label{font-size:8px;text-transform:uppercase;letter-spacing:0.16em;color:rgba(255,255,255,0.55);margin-bottom:4px;}
-  .proof-scene-badge-name{font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.96);margin-bottom:6px;line-height:1.3;}
-  .proof-scene-badge-status{display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.62);}
-  .proof-scene-check{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.85);}
+
+  /* =====================================================================
+     IN-PHONE CAMERA CHROME — a scale model of lib/screens/camera_screen.dart
+     Authored at a fixed 282x600 "screen"; every measurement here is the app's
+     own logical-point value multiplied by 0.7176 (282px web / 393pt iPhone).
+     Smaller viewports scale the whole frame with --cam-k rather than
+     re-laying it out, so the proportions never drift from the real app.
+     ===================================================================== */
+  #site{
+    --cam-scaffold:#F7F8FA; --cam-card:#FFFFFF; --cam-ink:#000000;
+    --cam-muted:#424242; --cam-photo:#0A0F81; --cam-video:#810A0A;
+    --cam-cardline:rgba(158,158,158,0.4); --cam-homebar:rgba(0,0,0,0.28);
+  }
+  #site:not(.light){
+    --cam-scaffold:#0B0C16; --cam-card:#171A2C; --cam-ink:#F2F3F8;
+    --cam-muted:#8E91A3; --cam-photo:#AEB2FF; --cam-video:#FF8A8A;
+    --cam-cardline:rgba(142,145,163,0.28); --cam-homebar:rgba(255,255,255,0.22);
+  }
+
+  .cam{position:absolute;top:0;left:0;width:282px;height:606px;transform-origin:top left;transform:scale(var(--cam-k,1));}
+  .cam svg{display:block;}
+
+  /* Task banner — TaskSelectorCard, selected state. Sits 8px clear of the
+     Dynamic Island (which ends at 45px); the frame is 6px taller than a
+     straight 0.7176 scale purely to buy that gap without squeezing the
+     viewfinder/shutter group below it. */
+  .cam-task{
+    position:absolute;left:11px;right:11px;top:53px;height:40px;
+    background:var(--cam-card);border:1px solid var(--cam-cardline);border-radius:7px;
+    display:flex;align-items:center;padding:0 7px;
+  }
+  .cam-task-name{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--cam-ink);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cam-task-x{width:17px;height:17px;flex-shrink:0;color:var(--cam-muted);opacity:.7;}
+  .cam-task-x svg{width:100%;height:100%;}
+
+  /* Viewfinder — 3:4 window with the app's 5pt light stroke drawn outside it */
+  .cam-vf{position:absolute;left:11px;top:105px;width:260px;height:344px;border:3.5px solid #DEDEDE;border-radius:15px;box-sizing:border-box;}
+  .cam-vf-inner{position:absolute;inset:0;border-radius:11.5px;overflow:hidden;background:#000;}
+  .cam-scenes{position:absolute;inset:0;z-index:1;}
+
+  /* Frosted circle controls (timer / flash / flip) */
+  .cam-fbtn{
+    width:31.5px;height:31.5px;border-radius:50%;
+    background:rgba(0,0,0,0.32);border:1px solid rgba(255,255,255,0.18);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);
+  }
+  .cam-fbtn svg{width:16px;height:16px;}
+  .cam-rail-l{position:absolute;left:5.7px;bottom:5.7px;z-index:6;display:flex;flex-direction:column;gap:5.7px;}
+  /* The app also runs a vertical zoom slider up this rail. Left out on purpose:
+     it's the one control that reads as clutter at this size and says nothing
+     about capture, so the rail carries the flip button alone. */
+  .cam-rail-r{position:absolute;right:5.7px;bottom:5.7px;z-index:6;width:31.5px;display:flex;flex-direction:column;align-items:center;}
+
+  /* Lens chips */
+  .cam-lens{position:absolute;left:0;right:0;bottom:7px;z-index:6;display:flex;justify-content:center;gap:7px;}
+  .cam-chip{
+    padding:4px 8.6px;border-radius:99px;font-size:9.3px;font-weight:700;color:#fff;line-height:1.25;
+    background:rgba(0,0,0,0.32);border:1px solid rgba(255,255,255,0.18);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  /* The app fills the selected lens chip with brand purple. Deliberately muted
+     here: inside the viewfinder that purple competes with the shutter, which
+     has to be the only saturated thing in the frame. Selection reads as
+     elevation instead of hue. */
+  .cam-chip.is-on{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.42);}
+
+  /* Recording indicator — only in video mode */
+  .cam-rec{position:absolute;top:8.6px;right:8.6px;z-index:7;width:10px;height:10px;border-radius:50%;background:#FF3B30;border:1px solid rgba(255,255,255,0.9);box-shadow:0 0 5px 1px rgba(255,59,48,0.5);opacity:0;transition:opacity .3s;}
+  .cam.is-video .cam-rec{opacity:1;animation:cam-blink 1.3s ease-in-out infinite;}
+  @keyframes cam-blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  /* Photo / Video mode labels — slide so the active one centres on the shutter */
+  .cam-modes{position:absolute;left:0;right:0;top:449px;height:26px;}
+  .cam-mode{
+    position:absolute;left:50%;top:0;width:80px;margin-left:-40px;height:26px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10.8px;font-weight:500;letter-spacing:.14px;color:var(--cam-muted);
+    transition:transform .28s cubic-bezier(.65,0,.35,1),color .28s ease;
+  }
+  .cam-mode-photo{transform:translateX(0);color:var(--cam-photo);font-weight:600;}
+  .cam-mode-video{transform:translateX(63px);}
+  .cam.is-video .cam-mode-photo{transform:translateX(-63px);color:var(--cam-muted);font-weight:500;}
+  .cam.is-video .cam-mode-video{transform:translateX(0);color:var(--cam-video);font-weight:600;}
+
+  /* Shutter row — camera roll · shutter · sign-a-promise */
+  .cam-shutter-row{position:absolute;left:0;right:0;top:475px;height:49px;}
+  .cam-chrome{position:absolute;top:9px;width:31.5px;height:31.5px;display:flex;align-items:center;justify-content:center;color:var(--cam-muted);}
+  .cam-chrome svg{width:17px;height:17px;}
+  .cam-chrome-l{left:17px;}
+  .cam-chrome-r{right:17px;}
+  .cam-shutter{position:absolute;left:50%;top:0;margin-left:-24.5px;width:49px;height:49px;}
+  .cam-shutter > *{position:absolute;inset:0;transition:opacity .25s ease;}
+  .cam-shutter-photo{opacity:1;}
+  .cam-shutter-rec{opacity:0;}
+  .cam.is-video .cam-shutter-photo{opacity:0;}
+  .cam.is-video .cam-shutter-rec{opacity:1;}
+  .cam-rec-disc{width:49px;height:49px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  .cam-rec-stop{width:18px;height:18px;border-radius:4px;background:#FF3B30;}
+  .cam-rec-ring{position:absolute;inset:0;transform:rotate(-90deg);}
+  .cam-rec-ring circle{fill:none;stroke:#FF3B30;stroke-width:3;stroke-linecap:round;stroke-dasharray:141.4;stroke-dashoffset:141.4;}
+  .cam.is-video .cam-rec-ring circle{animation:cam-record 10s linear infinite;}
+  @keyframes cam-record{from{stroke-dashoffset:141.4;}to{stroke-dashoffset:0;}}
+
+  /* Bottom nav bar. The card stays fully opaque — it's what makes the screen
+     read as a whole app rather than a floating camera widget — but its contents
+     are held back, since they say nothing about capture and shouldn't pull the
+     eye away from the viewfinder. */
+  .cam-nav{position:absolute;left:0;right:0;bottom:0;height:73px;background:var(--cam-card);border-radius:23px 23px 0 0;box-shadow:0 -2px 9px rgba(0,0,0,0.08);}
+  /* Tiles sit on the app's own x-offsets from screen centre: Profile/Circle
+     41pt in from the edge, My Plan/Today 86pt out (half the 60pt camera slot
+     plus a 32pt gap plus half a 48pt tile). The app labels each tile; the
+     labels are dropped here so the mock doesn't spell out the nav structure —
+     glyphs alone carry "this is a full app". Icons centre in the bar's 49px
+     content zone without them. */
+  .cam-nav-item{position:absolute;top:13px;left:50%;width:40px;margin-left:-20px;display:flex;flex-direction:column;align-items:center;color:var(--cam-muted);opacity:.72;}
+  .cam-nav-glyph{height:23px;display:flex;align-items:center;justify-content:center;}
+  .cam-nav-glyph svg{width:23px;height:23px;}
+  .cam-nav-profile{transform:translateX(-111.6px);}
+  .cam-nav-plan{transform:translateX(-61.7px);}
+  .cam-nav-today{transform:translateX(61.7px);}
+  .cam-nav-circle{transform:translateX(111.6px);}
+  .cam-nav-av{width:17px;height:17px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px #E7E7E7;}
+  .cam-nav-av img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* Our Circle icon in its "nobody's shown up yet" state — the app's
+     ShowUpDayState.none. Sized to match the Profile avatar so the two edge
+     tiles read as a balanced pair, and deliberately colourless: the lit
+     indigo states are the app's reward moment, not something a landing-page
+     mock should be spending attention on.
+     Light: the debossed grey well, reproduced from the CSS spec the Flutter
+     painter is itself imitating. Dark: the dormant ring over a deep inner fill. */
+  .cam-nav-mark{
+    width:17px;height:17px;border-radius:50%;
+    background:linear-gradient(135deg,#CFCADF 0%,#E5E1F0 100%);
+    box-shadow:inset 1.1px 1.1px 1.7px rgba(50,50,100,0.28),
+               inset -0.6px -0.6px 0.9px rgba(255,255,255,0.9);
+  }
+  #site:not(.light) .cam-nav-mark{
+    background:linear-gradient(135deg,rgb(85,89,120) 0%,#1F2349 100%);
+    box-shadow:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #site:not(.light) .cam-nav-mark::after{
+    content:'';width:13px;height:13px;border-radius:50%;background:rgba(14,19,58,0.8);
+  }
+  /* Ambient vibe text that sits behind the shutter slot on the camera tab.
+     Replayed by the carousel on every slide change (see restartAnimation), so
+     the fade is an animation rather than a transition. */
+  .cam-vibe{position:absolute;left:50%;top:16px;transform:translateX(-50%);font-size:9px;font-style:italic;font-weight:500;color:var(--cam-muted);opacity:.62;white-space:nowrap;animation:cam-vibe-in .5s ease-out;}
+  @keyframes cam-vibe-in{from{opacity:0;transform:translate(-50%,3px);}to{opacity:.62;transform:translate(-50%,0);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .cam .cam-rec,.cam .cam-rec-ring circle,.cam .cam-vibe{animation:none;}
+  }
 
   /* CAPTION + NAV */
   .proof-caption{text-align:center;margin-top:26px;min-height:16px;font-size:11px;color:var(--text3);letter-spacing:0.06em;text-transform:lowercase;}
@@ -717,10 +860,11 @@
     .proof-sec{padding:16px 16px 36px;}
     .proof-track{display:none;}
     .proof-stage{justify-content:center;}
-    .proof-phone{width:248px;height:520px;border-radius:46px;}
-    .proof-screen{border-radius:44px;}
+    /* Phone shrinks by a uniform 0.879 so the camera frame can simply scale
+       with it (--cam-k) instead of being re-laid-out at a second size. */
+    .proof-phone{width:248px;height:533px;border-radius:46px;}
+    .proof-screen{border-radius:44px;--cam-k:0.8794;}
     .proof-island{width:98px;height:28px;top:11px;}
-    .proof-scene-inner{padding:48px 14px 28px;}
     .proof-home-bar{width:98px;}
 
     /* INNER CIRCLE stacks */
@@ -1342,7 +1486,104 @@
       <div class="proof-phone-anchor">
         <div class="proof-phone">
           <div class="proof-island"></div>
-          <div class="proof-screen" id="proof-screen"></div>
+          <!-- The camera screen, rebuilt to scale. Static chrome lives here;
+               only the viewfinder image, task name and Photo/Video state are
+               swapped per slide by the carousel script. -->
+          <div class="proof-screen">
+            <div class="cam" id="proof-cam" aria-hidden="true">
+
+              <div class="cam-task">
+                <span class="cam-task-name" id="proof-cam-task">💪 Gym: Pull Day</span>
+                <span class="cam-task-x">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </span>
+              </div>
+
+              <div class="cam-vf">
+                <div class="cam-vf-inner">
+                  <div class="cam-scenes" id="proof-scenes"></div>
+
+                  <div class="cam-rec"></div>
+
+                  <div class="cam-rail-l">
+                    <span class="cam-fbtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M9.5 2.5h5M12 9.5V13l2.4 1.6M3.5 3.5l17 17"/></svg>
+                    </span>
+                    <span class="cam-fbtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M13.5 2.5L6 13h5l-.7 8.5L18 11h-5z"/><path d="M3.5 3.5l17 17"/></svg>
+                    </span>
+                  </div>
+
+                  <div class="cam-rail-r">
+                    <span class="cam-fbtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7l1.4-2.4h3.2L15 7"/><path d="M9.6 13.8a2.7 2.7 0 0 1 4.6-1.9M14.4 15.6a2.7 2.7 0 0 1-4.6 1.9"/><path d="M9.2 11.9v1.9h1.9M14.8 17.5v-1.9h-1.9"/></svg>
+                    </span>
+                  </div>
+
+                  <div class="cam-lens">
+                    <span class="cam-chip">0.5x</span>
+                    <span class="cam-chip is-on">1.0x</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cam-modes">
+                <span class="cam-mode cam-mode-photo">Photo</span>
+                <span class="cam-mode cam-mode-video">Video</span>
+              </div>
+
+              <div class="cam-shutter-row">
+                <span class="cam-chrome cam-chrome-l">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="7" y="3.5" width="13.5" height="13.5" rx="2.5"/><path d="M17 20.5H6a2.5 2.5 0 0 1-2.5-2.5V7"/></svg>
+                </span>
+                <span class="cam-shutter">
+                  <span class="cam-shutter-photo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="49" height="49">
+                      <circle cx="12" cy="12" r="11.5" fill="url(#proofCaptureGrad)"/>
+                      <g transform="translate(12,12) scale(0.575) translate(-12,-12)">
+                        <path d="M7.00 6.05 H17.00 A4.30 4.30 0 0 1 21.30 10.35 V16.35 A4.30 4.30 0 0 1 17.00 20.65 H7.00 A4.30 4.30 0 0 1 2.70 16.35 V10.35 A4.30 4.30 0 0 1 7.00 6.05 Z M6.50 6.65 L8.03 4.35 A1.20 1.20 0 0 1 9.36 3.35 L14.64 3.35 A1.20 1.20 0 0 1 15.97 4.35 L17.50 6.65 Z M15.75 13.35 A3.75 3.75 0 1 0 8.25 13.35 A3.75 3.75 0 1 0 15.75 13.35 Z" fill="white"/>
+                      </g>
+                      <defs>
+                        <linearGradient id="proofCaptureGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#7C82FF"/><stop offset="1" stop-color="#3B3FA8"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </span>
+                  <span class="cam-shutter-rec">
+                    <span class="cam-rec-disc"><span class="cam-rec-stop"></span></span>
+                    <svg class="cam-rec-ring" viewBox="0 0 49 49"><circle cx="24.5" cy="24.5" r="22.5"/></svg>
+                  </span>
+                </span>
+                <span class="cam-chrome cam-chrome-r">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.5h4l11-11a2.4 2.4 0 0 0-3.4-3.4l-11 11z"/><path d="M14.2 7.4l3.4 3.4"/></svg>
+                </span>
+              </div>
+
+              <div class="cam-nav">
+                <span class="cam-vibe" id="proof-cam-vibe">Look'n good.</span>
+                <span class="cam-nav-item cam-nav-profile">
+                  <span class="cam-nav-glyph"><span class="cam-nav-av"><img id="proof-cam-av" src="assets/Avatars/MainUser_Dylan.png" alt="" loading="lazy" decoding="async"></span></span>
+                </span>
+                <span class="cam-nav-item cam-nav-plan">
+                  <span class="cam-nav-glyph">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="2.96" y="2.96" width="18.31" height="18.31" rx="4.22" stroke="currentColor" stroke-width="2.36"/><path d="M1.78 8.85h19.58" stroke="currentColor" stroke-width="2.36"/><circle cx="8.31" cy="12.66" r="1.09" fill="currentColor"/><circle cx="8.31" cy="17.01" r="1.09" fill="currentColor"/><circle cx="12.2" cy="12.66" r="1.09" fill="currentColor"/><circle cx="12.2" cy="17.01" r="1.09" fill="currentColor"/><circle cx="16.2" cy="17.01" r="1.09" fill="currentColor"/><circle cx="16.29" cy="12.66" r="1.09" fill="currentColor"/></svg>
+                  </span>
+                </span>
+                <span class="cam-nav-item cam-nav-today">
+                  <span class="cam-nav-glyph">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.67" r="3.67"/><circle cx="12" cy="19.33" r="3.67"/><circle cx="4.67" cy="12" r="3.67"/><circle cx="19.33" cy="12" r="3.67"/></svg>
+                  </span>
+                </span>
+                <span class="cam-nav-item cam-nav-circle">
+                  <span class="cam-nav-glyph">
+                    <span class="cam-nav-mark"></span>
+                  </span>
+                </span>
+              </div>
+
+            </div>
+          </div>
           <div class="proof-home-bar"></div>
         </div>
       </div>
@@ -1614,42 +1855,57 @@ function toggleMode() {
   //   For images: set mediaSrc to the image path e.g. "assets/proof/run-proof.jpg"
   //   For videos: set mediaType to "video" and mediaSrc to the clip path
   //               e.g. "assets/proof/run-proof.mp4"
-  //   Leave mediaSrc as null to show the gradient + SVG placeholder.
+  //   Leave mediaSrc as null to show the gradient placeholder.
+  //
+  // mediaType also drives the phone's camera state: 'video' puts the viewfinder
+  // mid-record (red shutter, blinking dot, Video label active), 'image' leaves
+  // it armed on Photo — i.e. the instant before the shutter is tapped.
+  //
+  // vibe is the ambient hype word in the nav bar. The app shuffles a deck of
+  // these (lib/widgets/camera_vibe_text.dart); here each slide owns one so the
+  // phrase changes with the slide instead of on a timer of its own.
+  //
+  // owner is whoever is behind the camera on this slide. The nav's Profile tile
+  // always shows the signed-in user, so it has to follow the media — otherwise
+  // Kyle's rehab clip reads as Dylan filming it. `owner` never appears in that
+  // slide's `viewers`: you don't back your own commitment.
+  // Ordered so Photo and Video alternate — the mode labels slide on every
+  // advance, which is the cheapest way to show the viewfinder does both.
   const proofTasks = [
     {
       emoji:'💪', name:'Gym: Pull Day', time:'6:30pm',
-      viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Kyle.png', AV+'Crew_Sabi.png' ],
-      ts:'6:42 PM', caption:'gym: pull day · 6:42 pm',
+      viewers:[ AV+'Family_Kyle.png', AV+'Crew_Sabi.png', AV+'Partner_Klaudia.png' ],
+      caption:'recording · gym: pull day', vibe:"Look'n good.", owner: AV+'MainUser_Dylan.png',
       glowColor:'#6f7cff', bgClass:'proof-bg-0',
-      mediaSrc: 'assets/The App Section Images/Gym Pull Day_Dylan.MP4', mediaType: 'video',
-      illo:`<svg width="112" height="48" viewBox="0 0 112 48" fill="none">
-        <rect x="2" y="14" width="10" height="20" rx="3" fill="rgba(255,255,255,0.5)"/>
-        <rect x="14" y="8" width="9" height="32" rx="3" fill="rgba(255,255,255,0.42)"/>
-        <rect x="40" y="20" width="32" height="8" rx="4" fill="rgba(255,255,255,0.55)"/>
-        <rect x="89" y="8" width="9" height="32" rx="3" fill="rgba(255,255,255,0.42)"/>
-        <rect x="100" y="14" width="10" height="20" rx="3" fill="rgba(255,255,255,0.5)"/>
-      </svg>`
+      mediaSrc: 'assets/The App Section Images/Gym Pull Day_Dylan.MP4', mediaType: 'video'
+    },
+    {
+      emoji:'👟', name:'Get 10,000 Steps Everyday', time:'All day',
+      viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Gisela.png', AV+'Family_Rachael.png' ],
+      caption:'lining up the shot · 10,000 steps', vibe:'Like clockwork.', owner: AV+'Family_Mike.png',
+      glowColor:'#22c55e', bgClass:'proof-bg-1',
+      mediaSrc: 'assets/The App Section Images/Get 10000 Steps Everyday_Mike.jpg', mediaType: 'image'
     },
     {
       emoji:'🦵', name:'Home Knee Exercises', time:'10:00pm',
-      viewers:[ AV+'MainUser_Dylan.png', AV+'Partner_Klaudia.png', AV+'Family_Gisela.png' ],
-      ts:'10:06 PM', caption:'knee exercises · 10:06 pm',
+      viewers:[ AV+'Partner_Klaudia.png', AV+'Family_Gisela.png', AV+'Family_Kyle.png' ],
+      caption:'recording · knee exercises', vibe:'Undeniable.', owner: AV+'MainUser_Dylan.png',
       glowColor:'#a855f7', bgClass:'proof-bg-2',
-      mediaSrc: 'assets/The App Section Images/Home Knee Exercises_Dylan.MP4', mediaType: 'video', illo:''
-    },
-    {
-      emoji:'💪', name:'Shoulder Rehab', time:'5:00pm',
-      viewers:[ AV+'Family_Kyle.png', AV+'MainUser_Dylan.png', AV+'Family_Rachael.png' ],
-      ts:'5:14 PM', caption:'shoulder rehab · 5:14 pm',
-      glowColor:'#0ea5e9', bgClass:'proof-bg-3',
-      mediaSrc: 'assets/The App Section Images/Shoulder Rehab_Kyle.MP4', mediaType: 'video', illo:''
+      mediaSrc: 'assets/The App Section Images/Home Knee Exercises_Dylan.MP4', mediaType: 'video'
     },
     {
       emoji:'💧', name:'Drink Full Bottle of Water', time:'All day',
       viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Rachael.png', AV+'Family_Ele.png' ],
-      ts:'8:45 PM', caption:'full bottle done · 8:45 pm',
+      caption:'lining up the shot · full bottle of water', vibe:'Money.', owner: AV+'Partner_Klaudia.png',
       glowColor:'#0ea5e9', bgClass:'proof-bg-4',
-      mediaSrc: 'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', mediaType: 'image', illo:''
+      mediaSrc: 'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', mediaType: 'image'
+    },
+    {
+      emoji:'💪', name:'Shoulder Rehab', time:'5:00pm',
+      viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Rachael.png', AV+'Family_Mike.png' ],
+      caption:'recording · shoulder rehab', vibe:'Hello again.', owner: AV+'Family_Kyle.png',
+      glowColor:'#0ea5e9', bgClass:'proof-bg-3',
+      mediaSrc: 'assets/The App Section Images/Shoulder Rehab_Kyle.MP4', mediaType: 'video'
     },
   ];
 
@@ -1711,7 +1967,10 @@ function toggleMode() {
 
   function buildCardInner(idx) {
     const t = proofTasks[pMod(idx, proofTasks.length)];
-    const avs = t.viewers.slice(0, 4).map(src =>
+    // You can't back your own commitment — the backers are the rest of the
+    // circle. Filtered here as well as kept out of the data, so a future edit
+    // to `viewers` can't quietly put the poster back among their own backers.
+    const avs = t.viewers.filter(src => src !== t.owner).slice(0, 4).map(src =>
       `<div class="proof-av${src.indexOf('MainUser_Dylan')!==-1?' is-you':''}"><img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.background='#CFD1FF';this.remove();"></div>`
     ).join('');
     return (
@@ -1729,7 +1988,8 @@ function toggleMode() {
   }
 
   function buildScene(t, i) {
-    // Media slot — img or video — sits on top of gradient+illo fallback.
+    // Scenes are just the viewfinder image — the camera chrome around them is
+    // static markup in the phone and only changes state (see renderScene).
     let mediaHtml = '';
     if (t.mediaSrc) {
       if (t.mediaType === 'video') {
@@ -1742,25 +2002,23 @@ function toggleMode() {
       '<div class="proof-scene' + (i === pActive ? ' is-active' : '') + '" data-glow="' + t.glowColor + '">' +
         '<div class="proof-scene-fallback ' + t.bgClass + '"></div>' +
         mediaHtml +
-        '<div class="proof-scene-vignette"></div>' +
-        '<div class="proof-scene-inner">' +
-          '<span class="proof-scene-ts">' + t.ts + '</span>' +
-          '<div class="proof-scene-illo">' + (t.mediaSrc ? '' : t.illo) + '</div>' +
-          '<div class="proof-scene-badge">' +
-            '<div class="proof-scene-badge-label">Risers Proof</div>' +
-            '<div class="proof-scene-badge-name">' + t.emoji + ' ' + t.name + '</div>' +
-            '<div class="proof-scene-badge-status">' +
-              '<div class="proof-scene-check">&#10003;</div>' +
-              'Proved · sent to your circle' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
       '</div>'
     );
   }
 
   function initScenes() {
-    document.getElementById('proof-screen').innerHTML = proofTasks.map(buildScene).join('');
+    document.getElementById('proof-scenes').innerHTML = proofTasks.map(buildScene).join('');
+  }
+
+  // Replay a CSS animation from frame zero. Clearing the property, forcing a
+  // style flush, then restoring it is the only reliable way — reassigning the
+  // same animation name is a no-op to the engine. getBoundingClientRect() is
+  // the flush: offsetWidth is undefined on SVG elements.
+  function restartAnimation(el){
+    if (!el) return;
+    el.style.animation = 'none';
+    el.getBoundingClientRect();
+    el.style.animation = '';
   }
 
   function renderScene() {
@@ -1769,6 +2027,18 @@ function toggleMode() {
     );
     const t = proofTasks[pActive];
     document.getElementById('proof-caption').textContent = t.caption;
+    // Drive the phone's camera chrome from the same slide: the task banner
+    // names what's being proved, and video clips put the shutter mid-record.
+    document.getElementById('proof-cam-task').textContent = t.emoji + ' ' + t.name;
+    document.getElementById('proof-cam').classList.toggle('is-video', t.mediaType === 'video');
+    document.getElementById('proof-cam-av').src = t.owner;
+    // A new clip is a new recording — the progress ring has to wind back to
+    // zero rather than carry on from wherever the last slide left it.
+    restartAnimation(document.querySelector('.cam-rec-ring circle'));
+    // Fresh hype word per slide, replayed so it fades in with the scene.
+    const vibeEl = document.getElementById('proof-cam-vibe');
+    vibeEl.textContent = t.vibe;
+    restartAnimation(vibeEl);
   }
 
   function applyCardSlot(cardEl, slot, animate){
