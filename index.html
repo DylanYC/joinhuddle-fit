@@ -748,14 +748,38 @@
   #site:not(.light) .cam-nav-mark::after{
     content:'';width:13px;height:13px;border-radius:50%;background:rgba(14,19,58,0.8);
   }
-  /* Ambient vibe text that sits behind the shutter slot on the camera tab.
-     Replayed by the carousel on every slide change (see restartAnimation), so
-     the fade is an animation rather than a transition. */
-  .cam-vibe{position:absolute;left:50%;top:16px;transform:translateX(-50%);font-size:9px;font-style:italic;font-weight:500;color:var(--cam-muted);opacity:.62;white-space:nowrap;animation:cam-vibe-in .5s ease-out;}
-  @keyframes cam-vibe-in{from{opacity:0;transform:translate(-50%,3px);}to{opacity:.62;transform:translate(-50%,0);}}
+  /* Ambient vibe text in the camera nav bar — a faithful port of the app's
+     CameraVibeText (lib/widgets/camera_vibe_text.dart). It self-cycles a
+     shuffled phrase deck independently of the carousel: enter (700ms easeOut,
+     drift+scale+letter-spacing settle) → hold (5–9s by length) → exit (700ms
+     easeIn, opacity only) → 2s gap → next. A continuous warm-sand shimmer
+     sweeps across it. All spatial values are the app's ×0.7176 (see cam scale).
+     JS drives the phase; CSS owns the shimmer + the eased property changes. */
+  #site{ --cam-vibe-base:#A89880; --cam-vibe-hi:#D4C4A8; }
+  .cam-vibe{
+    position:absolute;left:50%;top:16px;--vy:0px;--vs:1;
+    transform:translate(-50%,var(--vy)) scale(var(--vs));transform-origin:center;
+    font-size:9.3px;font-style:italic;font-weight:300;letter-spacing:.22px;
+    white-space:nowrap;opacity:1;
+    background:linear-gradient(100deg,var(--cam-vibe-base) 0%,var(--cam-vibe-hi) 50%,var(--cam-vibe-base) 100%);
+    background-size:250% 100%;background-position:150% 0;
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;-webkit-text-fill-color:transparent;
+    animation:cam-vibe-shimmer 2700ms linear infinite;
+    /* enter easing; the exit phase swaps to ease-in via .is-vibe-exit */
+    transition:opacity 700ms ease-out,transform 700ms ease-out,letter-spacing 700ms ease-out;
+  }
+  /* Pre-enter pose, applied with transitions off so the settle animates from here. */
+  .cam-vibe.is-vibe-enter-from{--vy:4.3px;--vs:.95;letter-spacing:1.08px;opacity:0;transition:none;}
+  /* Exit fades opacity only (easeIn), matching the app — drift/scale hold at rest. */
+  .cam-vibe.is-vibe-exit{opacity:0;transition:opacity 700ms ease-in;}
+  /* Quick exit used only on a plan change — the old word clears out crisply at
+     the moment the plan swaps so it doesn't linger into the new scene. */
+  .cam-vibe.is-vibe-exit-fast{opacity:0;transition:opacity 300ms ease-in;}
+  @keyframes cam-vibe-shimmer{ from{background-position:150% 0;} to{background-position:-50% 0;} }
 
   @media (prefers-reduced-motion: reduce){
-    .cam .cam-rec,.cam .cam-rec-ring circle,.cam .cam-vibe{animation:none;}
+    .cam .cam-rec,.cam .cam-rec-ring circle,.cam .cam-vibe{animation:none;transition:none;}
   }
 
   /* CAPTION + NAV */
@@ -1562,7 +1586,7 @@
               </div>
 
               <div class="cam-nav">
-                <span class="cam-vibe" id="proof-cam-vibe">Look'n good.</span>
+                <span class="cam-vibe" id="proof-cam-vibe">Proof.</span>
                 <span class="cam-nav-item cam-nav-profile">
                   <span class="cam-nav-glyph"><span class="cam-nav-av"><img id="proof-cam-av" src="assets/Avatars/MainUser_Dylan.png" alt="" loading="lazy" decoding="async"></span></span>
                 </span>
@@ -2036,10 +2060,9 @@ function toggleMode() {
     // A new clip is a new recording — the progress ring has to wind back to
     // zero rather than carry on from wherever the last slide left it.
     restartAnimation(document.querySelector('.cam-rec-ring circle'));
-    // Fresh hype word per slide, replayed so it fades in with the scene.
-    const vibeEl = document.getElementById('proof-cam-vibe');
-    vibeEl.textContent = t.vibe;
-    restartAnimation(vibeEl);
+    // The hype word is NOT driven per-slide — it self-cycles on its own timer,
+    // mirroring the app's CameraVibeText (see startCamVibe). Leaving it decoupled
+    // is what makes it feel like the live app rather than a slide caption.
   }
 
   function applyCardSlot(cardEl, slot, animate){
@@ -2130,6 +2153,7 @@ function toggleMode() {
     if (newIdx === pActive) return;
     pActive = newIdx;
     renderScene();
+    cueFreshVibe();     // new plan on screen → fresh hype word focuses in
     refreshCardsContent();
     renderDots();
   }
@@ -2142,6 +2166,7 @@ function toggleMode() {
     if (prefersReducedMotion()){
       pActive = pMod(pActive + delta, proofTasks.length);
       renderScene();
+      cueFreshVibe();   // no-op under reduced motion, but keep the call symmetric
       refreshCardsContent();
       renderDots();
       finishTransition();
@@ -2170,6 +2195,7 @@ function toggleMode() {
       // Cross-fade phone scene mid-slide (scene CSS transition is .55s).
       pActive = pMod(pActive + delta, proofTasks.length);
       renderScene();
+      cueFreshVibe();   // new plan on screen → fresh hype word focuses in
       renderDots();
 
       // Wait for one of the sliding cards to finish its transform transition before
@@ -2286,13 +2312,153 @@ function toggleMode() {
     return r.bottom > 0 && r.top < window.innerHeight;
   }
 
-  // Pause autoplay when the tab is hidden.
+  // ===========================================================================
+  // Ambient camera vibe text — a port of lib/widgets/camera_vibe_text.dart.
+  // Self-cycles a shuffled phrase deck on its own timer: enter (700ms) → hold
+  // (5–9s by phrase length) → exit (700ms) → 2s gap → next. The warm-sand
+  // shimmer is CSS; this drives the phase changes. Same phrase list and timing
+  // constants as the app so it reads identically.
+  //
+  // On top of the ambient cycle, every time a NEW PLAN lands in the phone
+  // (carousel advance) we interrupt with a fresh word that focuses in a beat
+  // later — see cueFreshVibe, called from the scene-change sites. That beat is
+  // what makes the phone feel like it's reacting to the proof, not captioning.
+  // ===========================================================================
+  const CAM_VIBE_PHRASES = [
+    'Receipt.', 'Clocked in.', 'Send it.', 'Showed up.', 'Present.', 'Witnessed.',
+    'Logged.', "That'll do.", 'Certified.', 'Ship it.', 'Simply perfect.', 'On record.',
+    'No edits.', 'Still showed up.', 'Do it.', 'Go.', 'Hello again.', 'Anotha one.',
+    'Not too shabby.', 'Wow.', 'Impressive.', 'Count it.', 'Mic drop.', 'Right on.',
+    'Ya. You did that.', 'Classy.', "Kill'n it.", 'Again.', 'Easy.', 'Habit.',
+    'Still here.', 'Did the thing.', 'Got it done.', "You're on fire.", 'Crushing it.',
+    'Nailing it.', 'Looks good.', 'Solid.', 'Done.', 'Clean.', 'Sharp.', "That's a rep.",
+    'Stamped.', 'Filed.', 'Noted.', 'Proof.', 'Earned.', 'Locked in.', 'Checked in.',
+    'In the books.', "That's the one.", 'Nailed.', 'Boom.', 'There it is.', 'Yep.',
+    'Undeniable.', 'Consistent.', 'Every time.', 'Once more.', 'No days off.',
+    'Exceptional.', 'Built different.', 'Respect.', 'Legend.', 'There we go.',
+    "Let's go.", 'Perfect.', 'Top shelf.', 'As expected.', 'Textbook.', 'No complaints.',
+    'Approved.', 'Verified.', 'Confirmed.', 'Submitted.', 'That tracks.', 'Say less.',
+    'Facts.', 'Legit.', 'Final answer.', 'Locked.', 'Done deal.', 'Wrapped.', 'Print it.',
+    'Beautiful.', 'Superb.', 'Bravo.', 'Effortless.', 'Official.', 'Tap it.', 'Obviously.',
+    'Of course.', 'On cue.', 'As usual.', 'Routine.', 'Relentless.', 'Never in doubt.',
+    'Expected.', 'Like clockwork.', 'Proof acquired.'
+  ];
+  const vibeEl = document.getElementById('proof-cam-vibe');
+  let vibeDeck = [], vibeDeckPos = 0, vibeGen = 0, vibeTimer = null, vibeActive = false;
+
+  function shuffleVibeDeck(){
+    const d = CAM_VIBE_PHRASES.map((_, i) => i);
+    for (let i = d.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [d[i], d[j]] = [d[j], d[i]];
+    }
+    vibeDeck = d; vibeDeckPos = 0;
+  }
+  function nextVibePhrase(){
+    if (vibeDeckPos >= vibeDeck.length) shuffleVibeDeck();
+    return CAM_VIBE_PHRASES[vibeDeck[vibeDeckPos++]];
+  }
+  // Display duration scales linearly with phrase length: 5s (short) → 9s (long),
+  // same clamp/bounds as the app's _displayDuration.
+  function vibeHoldMs(phrase){
+    const t = Math.min(1, Math.max(0, (phrase.length - 2) / (22 - 2)));
+    return Math.round(5000 + t * 4000);
+  }
+  function clearVibeTimer(){ if (vibeTimer){ clearTimeout(vibeTimer); vibeTimer = null; } }
+
+  function enterVibe(text){
+    const gen = vibeGen;
+    vibeEl.textContent = text;
+    vibeEl.classList.remove('is-vibe-exit', 'is-vibe-exit-fast');
+    // Snap to the pre-enter pose (transitions off), commit, then release to rest
+    // so drift/scale/letter-spacing/opacity all ease in together over 700ms.
+    vibeEl.classList.add('is-vibe-enter-from');
+    void vibeEl.offsetWidth;
+    vibeEl.classList.remove('is-vibe-enter-from');
+    vibeTimer = setTimeout(() => {
+      if (gen !== vibeGen) return;
+      // hold, then exit
+      vibeTimer = setTimeout(() => {
+        if (gen !== vibeGen) return;
+        vibeEl.classList.add('is-vibe-exit');          // opacity → 0, easeIn
+        vibeTimer = setTimeout(() => {
+          if (gen !== vibeGen) return;
+          vibeTimer = setTimeout(() => {                // 2s gap of nothing
+            if (gen !== vibeGen) return;
+            enterVibe(nextVibePhrase());
+          }, 2000);
+        }, 700);
+      }, vibeHoldMs(text));
+    }, 700);
+  }
+
+  function startCamVibe(){
+    if (!vibeDeck.length) shuffleVibeDeck();
+    if (prefersReducedMotion()){
+      // No cycling — the media query kills the transitions/shimmer anyway.
+      // Just show one phrase at rest so the slot isn't blank.
+      vibeEl.classList.remove('is-vibe-enter-from', 'is-vibe-exit');
+      vibeEl.textContent = nextVibePhrase();
+      return;
+    }
+    if (vibeActive) return;
+    vibeActive = true;
+    vibeGen++;              // invalidate any stragglers from a prior run
+    clearVibeTimer();
+    enterVibe(nextVibePhrase());
+  }
+  function stopCamVibe(){
+    vibeActive = false;
+    vibeGen++;              // pending phase callbacks bail on the gen mismatch
+    clearVibeTimer();
+  }
+
+  // A new plan just landed in the phone. Rather than let the old word linger
+  // into the new scene, we clear it out crisply the instant the plan swaps
+  // (300ms fade), hold an empty, luxurious pause, then reveal the fresh word
+  // with the full enter animation. bumping vibeGen cancels whatever ambient
+  // phase was mid-flight. No-op when the vibe isn't running (off-screen /
+  // reduced motion) so off-screen advances and the initial render don't work.
+  const VIBE_CUE_PAUSE = 1000;   // empty beat between the old word clearing and the reveal
+  function cueFreshVibe(){
+    if (!vibeActive || prefersReducedMotion()) return;
+    vibeGen++;
+    const gen = vibeGen;
+    clearVibeTimer();
+    // Clear the old word out now (crisp 300ms fade, see .is-vibe-exit-fast)...
+    vibeEl.classList.remove('is-vibe-enter-from', 'is-vibe-exit');
+    vibeEl.classList.add('is-vibe-exit-fast');
+    // ...then, after the pause, the fresh word focuses in.
+    vibeTimer = setTimeout(() => {
+      if (gen !== vibeGen) return;
+      enterVibe(nextVibePhrase());
+    }, VIBE_CUE_PAUSE);
+  }
+
+  // Run the vibe only while the proof phone is on screen and the tab is visible.
+  let vibeInView = true;
+  function syncCamVibe(){
+    if (vibeInView && !document.hidden) startCamVibe();
+    else stopCamVibe();
+  }
+  if ('IntersectionObserver' in window){
+    const vibeIO = new IntersectionObserver((entries) => {
+      vibeInView = entries[0].isIntersecting;
+      syncCamVibe();
+    }, { threshold: 0.15 });
+    const proofSec = document.querySelector('.proof-sec');
+    if (proofSec) vibeIO.observe(proofSec);
+  }
+
+  // Pause autoplay + vibe when the tab is hidden.
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stopProofAuto();
     else startProofAuto();
+    syncCamVibe();
   });
 
   startProofAuto();
+  syncCamVibe();
 })();
 
 // =============================================================================
