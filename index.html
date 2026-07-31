@@ -624,12 +624,13 @@
   .cam{position:absolute;top:0;left:0;width:282px;height:606px;transform-origin:top left;transform:scale(var(--cam-k,1));}
   .cam svg{display:block;}
 
-  /* Task banner — TaskSelectorCard, selected state. Sits 8px clear of the
-     Dynamic Island (which ends at 45px); the frame is 6px taller than a
-     straight 0.7176 scale purely to buy that gap without squeezing the
-     viewfinder/shutter group below it. */
+  /* Task banner — TaskSelectorCard, selected state. Centred in the gap between
+     the Dynamic Island (which ends at 45px) and the viewfinder (starts at
+     105px): 40px tall at top:55px leaves an even 10px above and below. The
+     frame is 6px taller than a straight 0.7176 scale purely to buy that gap
+     without squeezing the viewfinder/shutter group below it. */
   .cam-task{
-    position:absolute;left:11px;right:11px;top:53px;height:40px;
+    position:absolute;left:11px;right:11px;top:55px;height:40px;
     background:var(--cam-card);border:1px solid var(--cam-cardline);border-radius:7px;
     display:flex;align-items:center;padding:0 7px;
   }
@@ -1534,7 +1535,7 @@
 
               <div class="cam-shutter-row">
                 <span class="cam-chrome cam-chrome-l">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="7" y="3.5" width="13.5" height="13.5" rx="2.5"/><path d="M17 20.5H6a2.5 2.5 0 0 1-2.5-2.5V7"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M4.6 4.2h14.8A2.6 2.6 0 0 1 22 6.8v10.4a2.6 2.6 0 0 1-2.6 2.6H4.6A2.6 2.6 0 0 1 2 17.2V6.8a2.6 2.6 0 0 1 2.6-2.6ZM8 7.6a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2ZM3.9 17.5 9.2 12l2.4 2.4L15.1 11l5 6.1a.85.85 0 0 1-.66 1.39H4.6a.85.85 0 0 1-.7-1Z"/></svg>
                 </span>
                 <span class="cam-shutter">
                   <span class="cam-shutter-photo">
@@ -1556,7 +1557,7 @@
                   </span>
                 </span>
                 <span class="cam-chrome cam-chrome-r">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.5h4l11-11a2.4 2.4 0 0 0-3.4-3.4l-11 11z"/><path d="M14.2 7.4l3.4 3.4"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.55 14.3 6.25l3.95 3.95L6.95 21.5H3v-3.95Z"/><path d="M15.4 5.15 17.5 3.05a1.6 1.6 0 0 1 2.26 0l1.69 1.69a1.6 1.6 0 0 1 0 2.26l-2.1 2.1-3.95-3.95Z"/></svg>
                 </span>
               </div>
 
