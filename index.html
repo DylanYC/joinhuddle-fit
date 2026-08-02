@@ -42,6 +42,10 @@
     --pro-color:#E5B454;
     --spec-card-bg:rgba(255,255,255,0.045); --spec-hero-fill:#0d0d22;
     --spec-neutral-bg:rgba(255,255,255,0.10); --spec-neutral-ink:rgba(255,255,255,0.78);
+    /* Climb card chrome — the app's DARK theme tokens (climb_card.dart / theme.dart) */
+    --climb-card-bg:#171A2C; --climb-heading:#ECEDF2; --climb-subtitle:#9CA0B5;
+    --summit-badge-bg:#3A3212; --summit-badge-text:#F5D879;
+    --climb-summiters-ink:rgba(174,178,255,0.7);
   }
 
   .light {
@@ -70,6 +74,10 @@
     --pro-color:#A87810;
     --spec-card-bg:rgba(255,255,255,0.72); --spec-hero-fill:#ffffff;
     --spec-neutral-bg:rgba(10,10,24,0.07); --spec-neutral-ink:rgba(10,10,24,0.68);
+    /* Climb card chrome — the app's LIGHT theme tokens */
+    --climb-card-bg:#FFFFFF; --climb-heading:#323232; --climb-subtitle:#676767;
+    --summit-badge-bg:#FFF4C7; --summit-badge-text:#8A6A00;
+    --climb-summiters-ink:rgba(10,15,129,0.7);
   }
 
   /* overflow-x: clip (not hidden) so position:sticky descendants still work.
@@ -411,6 +419,34 @@
   .ic-copy h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:12px;}
   .ic-copy p{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
   .hlc{color:var(--text1);font-weight:500;}
+  /* SHARED PLANS sample card — a 1:1 model of the app's task card. Chrome from
+     task_card_shell.dart (16px radius, 2.5px #C8C8C8 stroke @90%, the pinched
+     bottom-only shadow); the green "With …" badge from pact_badge.dart, which
+     is TimePill's chip recipe (8x4 padding, radius 8, 12px/700) in the pact
+     green. Like the loop-stack cards, it stays in the app's LIGHT theme in both
+     site modes — it reads as a screenshot, not as site chrome. */
+  .sp-card{
+    width:100%;max-width:326px;margin:22px 0 16px;box-sizing:border-box;
+    background:#FFFFFF;
+    border:2.5px solid rgba(200,200,200,0.9);
+    border-radius:16px;
+    padding:14px 12px 12px;
+    box-shadow:0 6px 2px -2.25px rgba(0,0,0,0.15);
+  }
+  .sp-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;line-height:1;}
+  .sp-chip svg{flex-shrink:0;}
+  .sp-time{background:#EEEFFF;color:#6F75FF;}
+  .sp-with{background:#DFF5EA;color:#0E8F62;}
+  /* Badge + member avatars sit on one row, 6px apart (PactBadge.build). */
+  .sp-withrow{display:flex;align-items:center;gap:6px;margin-top:4px;}
+  /* 20px, 1.5px card-coloured separator ring — invisible against the white
+     card by design: absence is never rendered, so a member who hasn't shown
+     up yet gets nothing at all. */
+  .sp-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid #FFFFFF;flex-shrink:0;background:#CFD1FF;box-sizing:border-box;}
+  .sp-av img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sp-title{margin-top:4px;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.2px;color:#1C1C1C;}
+  .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;line-height:1.3;color:#8A8DA8;}
+  .sp-repeat svg{flex-shrink:0;}
   /* POSITIONING SPECTRUM — BeReal + Strava = Risers */
   .spec-sec{padding:64px 40px 56px;max-width:1120px;margin:0 auto;text-align:center;}
   .spec-formula{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
@@ -476,6 +512,77 @@
     .spec-proofs{margin-top:16px;}
   }
   @media (prefers-reduced-motion: reduce){ .spec-card{transition:none;} }
+
+  /* THE CLIMB — monthly consistency challenge.
+     A live port of the app's ClimbPostcard (climb_card.dart): the card chrome
+     is HTML, the scene is a canvas running the real _ClimbGraphPainter geometry
+     off a real 30-day score series. Unlike the other app mocks on this page the
+     climb card IS theme-aware, because the app's own card is — only the sky and
+     mountain palette stays literal ("the illustration palette stays literal"),
+     and that reads identically in both modes.
+     Rendered at app-native pixel sizes and scaled up as a unit, so every
+     absolute constant in the painter (14px sun, 3.2px dots, 18px pads) keeps
+     its true proportion. */
+  .climb-sec{padding:64px 40px 40px;text-align:center;}
+  /* Stage is sized by JS to the SCALED card box, so the scaled card never
+     overflows its own footprint. */
+  .climb-stage{margin:38px auto 0;width:352px;max-width:100%;}
+  .climb-scaler{transform-origin:top left;}
+  .climb-card{
+    width:352px;box-sizing:border-box;
+    padding:14px 16px 16px;
+    background:var(--climb-card-bg);
+    border:2px solid #6F75FF;
+    border-radius:20px;
+    text-align:left;
+    transition:background .4s,border-color .4s;
+  }
+  .climb-head{display:flex;align-items:center;gap:8px;}
+  /* Card owner, top-left. Not in the app's postcard header — a site-only cue so
+     a cold visitor knows whose month this is. Blue stroke marks the main user,
+     same convention as every other Dylan avatar on the page. */
+  .climb-you{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;
+    border:2px solid #6F75FF;background:#CFD1FF;box-sizing:border-box;}
+  .climb-you img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* flex:1 + min-width:0 mirrors the app's Expanded(child: Text(...)) — "June
+     2026" clears it with room to spare, but a longer month clips instead of
+     shoving the score and badge past the card's padding. */
+  .climb-month{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--climb-heading);}
+  .climb-score{font-size:14px;font-weight:600;color:var(--climb-subtitle);}
+  /* SummitedBadge — stadium pill, 8x3 padding, 0.8px border at 50% */
+  .climb-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
+    background:var(--summit-badge-bg);border:0.8px solid rgba(232,197,71,0.5);
+    font-size:11px;font-weight:700;letter-spacing:.2px;line-height:1.1;color:var(--summit-badge-text);}
+  .climb-graph-wrap{position:relative;margin-top:12px;}
+  .climb-graph{display:block;width:100%;}
+  /* "The Summit" — an overlay in the app too, so it can shimmer. Sits just
+     below the summit line where the background is always plain card. */
+  .climb-summit-lbl{
+    position:absolute;left:6px;
+    font-size:11px;font-weight:700;letter-spacing:.2px;
+    background:linear-gradient(100deg,#6F75FF 0%,#6F75FF 34%,#E6B769 50%,#6F75FF 66%,#6F75FF 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:climb-shimmer 2.6s linear infinite;
+  }
+  @keyframes climb-shimmer{from{background-position:130% 0;}to{background-position:-130% 0;}}
+  /* _PostcardSummitersRow — the circle members who also topped out that month.
+     A shared memory, not a leaderboard: no counts, and nobody who didn't
+     summit is ever rendered. PillAvatarStack at size 22 / overlap 10. */
+  .climb-summiters{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  /* Dialled back from the app's 13px — the site card renders 1.75x larger than
+     a phone, so the label was outweighing the avatars it introduces. */
+  .climb-summiters-lbl{font-size:11.5px;font-weight:500;color:var(--climb-summiters-ink);}
+  .climb-avstack{display:flex;}
+  .climb-av{width:22px;height:22px;border-radius:50%;overflow:hidden;flex-shrink:0;
+    border:1.5px solid #fff;background:#CFD1FF;margin-left:-10px;box-sizing:border-box;}
+  .climb-av:first-child{margin-left:0;}
+  .climb-av img{width:100%;height:100%;object-fit:cover;display:block;}
+  .climb-caption{margin:26px auto 0;max-width:460px;font-size:13.5px;color:var(--text3);line-height:1.6;}
+  @media (prefers-reduced-motion: reduce){ .climb-summit-lbl{animation:none;} }
+  @media (max-width:980px){ .climb-sec{padding:52px 24px 32px;} }
+  @media (max-width:560px){ .climb-sec{padding:44px 16px 28px;} }
 
   /* WAITLIST SECTION */
   .waitlist-sec{padding:60px 36px 88px;text-align:center;}
@@ -1712,6 +1819,24 @@
       <h2>Up to 12 people.<br/>Your private circle.</h2>
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
+
+      <div class="sp-card">
+        <span class="sp-chip sp-time">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Anytime
+        </span>
+        <div class="sp-withrow">
+          <span class="sp-chip sp-with">
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Klaudia
+          </span>
+          <span class="sp-av"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span>
+        </div>
+        <div class="sp-title">🥘 Meal Prep Sunday</div>
+        <div class="sp-repeat">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every 2 weeks on Sun
+        </div>
+      </div>
+
+      <p>You can even share a plan with someone in your circle. Same commitment, regardless of continents or time zones.</p>
     </div>
   </section>
 
@@ -1782,6 +1907,43 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- 5c. THE CLIMB — monthly consistency challenge -->
+  <section class="climb-sec" id="climb">
+    <div class="slbl">The Climb Challenge</div>
+    <h2 class="stitle">Consistency is the goal.<br/><em>Show up daily, rise to the summit.</em></h2>
+    <p class="ssub">The monthly climb challenge is where your personal consistency gets celebrated. Rise to the summit by posting proof daily. Every month you'll get a snapshot to look back on.</p>
+
+    <div class="climb-stage" id="climb-stage">
+      <div class="climb-scaler" id="climb-scaler">
+        <div class="climb-card">
+          <div class="climb-head">
+            <span class="climb-you"><img src="assets/Avatars/MainUser_Dylan.png" alt="" loading="lazy" decoding="async"></span>
+            <span class="climb-month">June 2026</span>
+            <span class="climb-score">19/15</span>
+            <span class="climb-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.2a1 1 0 0 1 1-1h9.6a.7.7 0 0 1 .58 1.09L15.4 6l1.78 2.71a.7.7 0 0 1-.58 1.09H8v11a1 1 0 1 1-2 0z"/></svg>
+              Summit Reached
+            </span>
+          </div>
+          <div class="climb-graph-wrap">
+            <canvas class="climb-graph" id="climb-graph" role="img"
+              aria-label="A finished climb: June 2026, 19 of 15 days, summit reached. The mountain ridge is drawn from the month's own day-by-day score."></canvas>
+            <span class="climb-summit-lbl" id="climb-summit-lbl">The Summit</span>
+          </div>
+          <div class="climb-summiters">
+            <span class="climb-summiters-lbl">Also summited this month:</span>
+            <span class="climb-avstack">
+              <span class="climb-av"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span>
+              <span class="climb-av"><img src="assets/Avatars/Family_Richard.png" alt="" loading="lazy" decoding="async"></span>
+              <span class="climb-av"><img src="assets/Avatars/Family_Ele.png" alt="" loading="lazy" decoding="async"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="climb-caption">Every climb is a unique 1-of-1. The ridgeline is your own month, plotted day by day; post to rise and miss to slip. The higher you rise, the better the view.</p>
   </section>
 
   <!-- 6. WAITLIST SECTION -->
@@ -3376,6 +3538,282 @@ function toggleMode() {
       flipStack(best);
     }
   }, FLIP_INTERVAL_MS);
+})();
+
+/* ============================ THE CLIMB ============================
+   A port of _ClimbGraphPainter (climb_card.dart) — same constants, same
+   geometry, same palette, driven by a real 30-day score series rather than a
+   traced picture. The ridgeline you see IS this month's climb: every crest is
+   one day's running score, which is the whole point of the feature.
+
+   June 2026: a saved miss on the 1st, a steady build, two solo misses
+   mid-month, a bounce back, and a finish four days past the summit. 19 of 15.
+   Deltas are ClimbService's — post +1, bounceBack +2, missSaved −1,
+   missAlone −2, rest 0 — and the running score never drops below zero.
+=================================================================== */
+(function(){
+  const canvas = document.getElementById('climb-graph');
+  const stage  = document.getElementById('climb-stage');
+  const scaler = document.getElementById('climb-scaler');
+  const summitLbl = document.getElementById('climb-summit-lbl');
+  if (!canvas || !stage || !scaler) return;
+  const ctx = canvas.getContext('2d');
+
+  // ---- the month ----------------------------------------------------------
+  const P='post', B='bounce', S='missSaved', A='missAlone', R='rest';
+  const DAYS  = [S,P,P,P,P,R,P,P,P,P,R,P,P,P,P,P,A,A,B,P,P,R,P,P,P,P,R,P,P,R];
+  const DELTA = {post:1, bounce:2, missSaved:-1, missAlone:-2, rest:0};
+  const TARGET = 15, DIM = DAYS.length;
+
+  const pts = [];
+  let running = 0, peak = 0;
+  for (let i = 0; i < DIM; i++){
+    running = Math.max(0, running + DELTA[DAYS[i]]);
+    if (running > peak) peak = running;
+    pts.push({ day:i+1, score:running, outcome:DAYS[i] });
+  }
+  const SCORE = running;
+
+  // ---- geometry (painter constants, verbatim) -----------------------------
+  const TOP_PAD = 18, BOT_PAD = 18, CHART_BODY = 116;
+  const SKY_MIN = 72, SKY_MAX = 104, SUN_R = 14;
+  const DOT_R = 3.2;
+  const W = 320;                                   // app-native graph width
+  const peace = Math.min(1, Math.max(0, (SCORE - TARGET) / (DIM - TARGET)));
+  const skyExtra = SKY_MIN + (SKY_MAX - SKY_MIN) * peace;
+  const H = CHART_BODY + skyExtra;
+  const plotLeft = 6, plotRight = W - 6;
+  const plotTop = TOP_PAD + skyExtra;
+  const plotBottom = H - BOT_PAD;
+  const plotH = plotBottom - plotTop;              // always exactly 80
+  const yMax = Math.max(TARGET, peak);
+  const xFor = d => plotLeft + ((d - 1) / (DIM - 1)) * (plotRight - plotLeft);
+  const yFor = v => plotBottom - Math.min(1, Math.max(0, v / yMax)) * plotH;
+  const summitY = yFor(TARGET);
+  const ridgeBand = Math.min(Math.max(summitY * 0.62, 24), Math.max(summitY - 14, 24));
+  const ridgeBase = ridgeBand * 0.14;
+
+  // ---- palette ------------------------------------------------------------
+  const lerp = (a,b,t) => a + (b - a) * t;
+  const mix  = (c1,c2,t,a) => 'rgba(' + Math.round(lerp(c1[0],c2[0],t)) + ',' +
+    Math.round(lerp(c1[1],c2[1],t)) + ',' + Math.round(lerp(c1[2],c2[2],t)) + ',' +
+    (a === undefined ? 1 : a) + ')';
+  const dayTop=[63,139,236], dayMid=[141,190,244], dayBot=[214,233,255];
+  const setTop=[81,47,148],  setMid=[228,95,146],  setBot=[255,178,89];
+  const PRIMARY = '#6F75FF';                       // same in both app themes
+  const isLight = () => document.getElementById('site').classList.contains('light');
+  // Only two painter colours are theme-resolved; the sky/mountain stay literal.
+  const dashColor = () => isLight() ? '#CFD1FF' : '#292D91';   // primaryContainer
+  const axisColor = () => isLight() ? 'rgba(10,15,129,0.6)' : 'rgba(174,178,255,0.6)';
+
+  // Per-card drift phase, derived from the month itself (June 2026).
+  const driftSeed = 2026 * 12 + 6;
+  const phaseFor = m => (driftSeed * m) % 1;
+  const canBlur = typeof ctx.filter === 'string';
+
+  function drawCloud(cx, cy, w, color){
+    const h = w * 0.32;
+    ctx.save();
+    if (canBlur) ctx.filter = 'blur(3px)';
+    ctx.fillStyle = color;
+    const oval = (x,y,rw,rh) => { ctx.beginPath(); ctx.ellipse(x,y,rw/2,rh/2,0,0,Math.PI*2); ctx.fill(); };
+    oval(cx, cy, w, h);
+    oval(cx + w*0.22, cy - h*0.25, w*0.65, h*0.85);
+    oval(cx - w*0.22, cy + h*0.05, w*0.55, h*0.7);
+    ctx.restore();
+  }
+
+  function drawBird(cx, cy, w, color){
+    const h = w * 0.45;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - w/2, cy);
+    ctx.quadraticCurveTo(cx - w/4, cy - h, cx, cy - h*0.25);
+    ctx.quadraticCurveTo(cx + w/4, cy - h, cx + w/2, cy);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function dashedLine(x1, y1, x2, y2, color, dash, gap, width){
+    ctx.save();
+    ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.setLineDash([dash, gap]);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.restore();
+  }
+
+  function dotColor(outcome, aboveSummit){
+    if (aboveSummit) return '#FFD700';
+    if (outcome === S) return '#F0997B';   // circle softened the blow
+    if (outcome === A) return '#BCC0C4';   // solo miss
+    return PRIMARY;
+  }
+
+  // driftT: 0..1 over 28s, exactly the app's controller period.
+  function paint(driftT){
+    ctx.clearRect(0, 0, W, H);
+
+    // --- sky, clipped to the card's rounded top ---
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, summitY); ctx.lineTo(0, 14);
+    ctx.quadraticCurveTo(0, 0, 14, 0);
+    ctx.lineTo(W - 14, 0);
+    ctx.quadraticCurveTo(W, 0, W, 14);
+    ctx.lineTo(W, summitY); ctx.closePath();
+    ctx.clip();
+
+    const sky = ctx.createLinearGradient(0, 0, 0, summitY);
+    sky.addColorStop(0,    mix(dayTop, setTop, peace));
+    sky.addColorStop(0.55, mix(dayMid, setMid, peace));
+    sky.addColorStop(1,    mix(dayBot, setBot, peace));
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, summitY);
+
+    // --- sun: descends toward the ridge as the climb pushes past summit ---
+    const sunDay = Math.min(DIM, Math.max(1, Math.round(1 + (DIM - 1) * 0.28)));
+    const sunX = xFor(sunDay);
+    const fSun = pts[sunDay - 1].score / yMax;
+    const sunCrestY = summitY - (ridgeBase + fSun * (ridgeBand - ridgeBase));
+    const sunY = lerp(-SUN_R * 0.40, sunCrestY + SUN_R * 0.35, peace);
+
+    ctx.save();
+    if (canBlur) ctx.filter = 'blur(9px)';
+    ctx.fillStyle = 'rgba(255,217,160,' + (0.30 + 0.32 * peace) + ')';
+    ctx.beginPath(); ctx.arc(sunX, sunY, SUN_R + 8, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = mix([255,227,166], [255,126,66], peace, 0.88 + 0.10 * peace);
+    ctx.beginPath(); ctx.arc(sunX, sunY, SUN_R, 0, Math.PI*2); ctx.fill();
+
+    // --- drifting atmosphere ---
+    const span = W + 60;
+    const cloudDrift = (driftT + phaseFor(0.391)) % 1;
+    const birdDrift  = (driftT + phaseFor(0.673)) % 1;
+
+    drawCloud(-30 + cloudDrift * span, 14 + (driftSeed % 3) * 6, 38,
+      mix([255,255,255], [255,208,168], peace, 0.35 * (1 - 0.4 * peace)));
+
+    const t1 = (birdDrift + 0.10) % 1, t2 = (birdDrift + 0.55) % 1;
+    drawBird(W + 20 - t1 * span, 14, 7.5, mix([107,127,170], [58,45,85], peace, 0.55));
+    drawBird(W + 20 - t2 * span, 26, 6.5, mix([107,127,170], [58,45,85], peace, 0.40));
+
+    // --- the mountain: one crest per day, straight off the running score ---
+    const ridgeYFor = oy => summitY -
+      (ridgeBase + Math.min(1, Math.max(0, (plotBottom - oy) / plotH)) * (ridgeBand - ridgeBase));
+    const ridgePts = [{x: xFor(1), y: summitY}];
+    for (const p of pts) ridgePts.push({x: xFor(p.day), y: ridgeYFor(yFor(p.score))});
+    ridgePts.push({x: xFor(DIM), y: summitY});
+
+    const midOf = i => ({ x:(ridgePts[i].x + ridgePts[i+1].x)/2, y:(ridgePts[i].y + ridgePts[i+1].y)/2 });
+    ctx.beginPath();
+    ctx.moveTo(ridgePts[0].x, ridgePts[0].y);
+    let m = midOf(0); ctx.lineTo(m.x, m.y);
+    for (let i = 1; i < ridgePts.length - 1; i++){
+      m = midOf(i);
+      ctx.quadraticCurveTo(ridgePts[i].x, ridgePts[i].y, m.x, m.y);
+    }
+    ctx.lineTo(ridgePts[ridgePts.length-1].x, ridgePts[ridgePts.length-1].y);
+    ctx.closePath();
+    ctx.fillStyle = mix([132,147,194], [74,58,110], peace,
+      Math.min(1, 0.50 + 0.70 * peace));
+    ctx.fill();
+    ctx.restore();   // release the sky clip
+
+    // --- dashed summit line ---
+    dashedLine(plotLeft, summitY, plotRight, summitY, dashColor(), 4, 4, 1.2);
+
+    // --- the climb line ---
+    ctx.save();
+    ctx.strokeStyle = PRIMARY; ctx.lineWidth = 2;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    pts.forEach((p, i) => {
+      const x = xFor(p.day), y = yFor(p.score);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    // --- day dots (rest days render as no dot; the line passes through) ---
+    for (const p of pts){
+      if (p.outcome === R) continue;
+      const x = xFor(p.day), y = yFor(p.score);
+      const above = p.score >= TARGET;
+      ctx.fillStyle = dotColor(p.outcome, above);
+      ctx.beginPath(); ctx.arc(x, y, DOT_R, 0, Math.PI*2); ctx.fill();
+      if (above){
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x, y, DOT_R, 0, Math.PI*2); ctx.stroke();
+      }
+    }
+
+    // --- axis ---
+    ctx.fillStyle = axisColor();
+    ctx.font = '500 11px Inter, sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'left';  ctx.fillText('1', plotLeft, plotBottom + 4);
+    ctx.textAlign = 'right'; ctx.fillText(String(DIM), plotRight, plotBottom + 4);
+  }
+
+  // ---- sizing: draw at app-native scale, then scale the card as a unit -----
+  let backing = 0;
+  function layout(){
+    // clientWidth INCLUDES the section's padding, so measure the content box —
+    // otherwise the scaled card spills past the section's gutters on mobile.
+    const host = stage.parentElement, hs = getComputedStyle(host);
+    const avail = host.clientWidth - parseFloat(hs.paddingLeft) - parseFloat(hs.paddingRight);
+    const k = Math.min(1.75, avail / 352);
+
+    // Size the canvas FIRST — the stage's height is measured off the laid-out
+    // card, and an unsized canvas would report its 150px default.
+    // Backing store accounts for BOTH device pixels and the card's scale-up,
+    // so the 1px hairlines stay hairlines at 1.75x.
+    const want = Math.min(4, (window.devicePixelRatio || 1) * k);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    if (want !== backing){
+      backing = want;
+      canvas.width = Math.round(W * want);
+      canvas.height = Math.round(H * want);
+    }
+    ctx.setTransform(want, 0, 0, want, 0, 0);
+    if (summitLbl) summitLbl.style.top = (summitY + 5) + 'px';
+
+    scaler.style.transform = 'scale(' + k + ')';
+    stage.style.width  = (352 * k) + 'px';
+    stage.style.height = (scaler.offsetHeight * k) + 'px';
+  }
+
+  // ---- drift loop, gated on visibility (the app gates it the same way) ----
+  const DRIFT_MS = 28000;
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let raf = 0, visible = false, t0 = null;
+
+  function frame(now){
+    if (t0 === null) t0 = now;
+    paint(((now - t0) % DRIFT_MS) / DRIFT_MS);
+    raf = requestAnimationFrame(frame);
+  }
+  function sync(){
+    const animate = visible && !still.matches;
+    if (animate && !raf){ raf = requestAnimationFrame(frame); }
+    else if (!animate && raf){ cancelAnimationFrame(raf); raf = 0; paint(0); }
+    else if (!animate){ paint(0); }
+  }
+
+  layout();
+  paint(0);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; sync(); },
+    { rootMargin: '80px' }).observe(canvas);
+  still.addEventListener('change', sync);
+  window.addEventListener('resize', () => { layout(); if (!raf) paint(0); });
+  // Theme flips are picked up on the next frame while drifting; repaint the
+  // still frame when it isn't.
+  document.getElementById('toggle')?.addEventListener('click', () => {
+    if (!raf) requestAnimationFrame(() => paint(0));
+  });
 })();
 </script>
 
