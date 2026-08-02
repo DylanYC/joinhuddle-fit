@@ -290,17 +290,19 @@
 
   /* Scene 3 — celebration. A model of the real app's *completed friend card*
      (lib/widgets/expandable_task_card.dart on top of task_card_shell.dart),
-     not a generic social post. Same stacking order as the app: the feed's
-     per-person header (avatar + name, feed_screen.dart) above a haloed card
-     that runs time pill → title → repeat → 3:4 proof → Flex/Comment pills →
-     comment preview. Colours are the app's light-theme tokens (theme.dart):
-     completed border = primary #6F75FF over a #E6E7FF halo, time pill
-     #EEEFFF, meta #8A8DA8, comment names #292D91, pill-inactive #E9E9E9. */
+     not a generic social post. Same stacking order as the app — poster +
+     time pill → title → repeat → 3:4 proof → Flex/Comment pills → comment
+     preview — except the poster (avatar + name, sized like the feed's
+     per-person header in feed_screen.dart) rides inside the card here: the
+     scene shows one card on its own, with no section header to sit under.
+     Colours are the app's light-theme tokens (theme.dart): completed border
+     = primary #6F75FF over a #E6E7FF halo, time pill #EEEFFF, meta #8A8DA8,
+     comment names #292D91, pill-inactive #E9E9E9. */
   .loop-feed-scene{width:288px;}
-  .loop-feed-poster{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .loop-feed-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
+  .ftask-who{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .loop-feed-av{width:32px;height:32px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
   .loop-feed-av img{width:100%;height:100%;object-fit:cover;display:block;}
-  .loop-feed-name{font-size:16px;font-weight:700;color:#1C1C1C;letter-spacing:-.2px;}
+  .loop-feed-name{font-size:14px;font-weight:700;color:#1C1C1C;letter-spacing:-.2px;margin-right:2px;}
   /* Completed cards wear a soft halo instead of a shadow (TaskCardShell.useHalo). */
   .loop-feed-halo{background:#E6E7FF;border-radius:20px;padding:4px;}
   .loop-feed-card{background:#FFFFFF;border:2px solid #6F75FF;border-radius:16px;padding:14px 12px 12px;}
@@ -2787,14 +2789,15 @@ function toggleMode() {
   }
 
   document.getElementById('loop-feed-scene').innerHTML = (
-    // feed section header — 40px avatar + name, the app's per-person divider row
-    '<div class="loop-feed-poster">' +
-      '<div class="loop-feed-av"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
-      '<div class="loop-feed-name">Kyle</div>' +
-    '</div>' +
     '<div class="loop-feed-halo">' +
       '<div class="loop-feed-card">' +
-        '<div class="ftask-pill">' + clockPillSVG + '6:47 AM</div>' +
+        // Poster identity leads the card, left of the time pill, so the card
+        // stands on its own outside the feed's per-person section header.
+        '<div class="ftask-who">' +
+          '<div class="loop-feed-av"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
+          '<div class="loop-feed-name">Kyle</div>' +
+          '<div class="ftask-pill">' + clockPillSVG + '10:10 PM</div>' +
+        '</div>' +
         '<div class="ftask-title">👟 Walk 10,000 Steps</div>' +
         '<div class="ftask-repeat">' + repeatMetaSVG + 'Everyday until Dec 31 2026</div>' +
         '<div class="ftask-media">' +
