@@ -1,3 +1,7 @@
 # macOS
 .DS_Store
 **/.DS_Store
+
+# Full-size proof originals — 34MB, and nothing on the site loads them.
+# The climb card uses the 96px derivatives in assets/climb-thumbs/ instead.
+assets/The Climb Thumbnails/

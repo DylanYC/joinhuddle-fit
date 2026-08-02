@@ -1926,8 +1926,8 @@
   <!-- 5c. THE CLIMB — monthly consistency challenge -->
   <section class="climb-sec" id="climb">
     <div class="slbl">The Climb Challenge</div>
-    <h2 class="stitle">Consistency is the goal.<br/><em>Show up daily, rise to the summit.</em></h2>
-    <p class="ssub">The monthly climb challenge is where your personal consistency gets celebrated. Rise to the summit by posting proof daily. Every month you'll get a snapshot to look back on.</p>
+    <h2 class="stitle">Show up consistently.<br/><em>Rise to the summit.</em></h2>
+    <p class="ssub">The monthly climb challenge is where your personal consistency gets celebrated. Rise to the summit (and beyond) by posting proof daily. Every month you'll get a snapshot to look back on.</p>
 
     <div class="climb-stage" id="climb-stage">
       <div class="climb-scaler" id="climb-scaler">
@@ -1957,7 +1957,7 @@
         </div>
       </div>
     </div>
-    <p class="climb-caption">Every climb is a unique 1-of-1. The ridgeline is your own month, plotted day by day; post to rise and miss to slip. The higher you rise, the better the view.</p>
+    <p class="climb-caption" style="max-width:520px;">Every climb is uniquely <em>yours</em>. The ridgeline is your own month, plotted day by day; post to rise and miss to slip. The higher you rise, the better the view.</p>
   </section>
 
   <!-- 6. WAITLIST SECTION -->
@@ -3665,6 +3665,90 @@ function toggleMode() {
     return PRIMARY;
   }
 
+  /* ---- the proof ridge -------------------------------------------------
+     One thumbnail per day that earned a step, tucked behind the mountain so
+     only the top clears the crest. The gaps carry the meaning: no thumbnail
+     means no proof that day, so the two misses and the rest days read as
+     breaks in the run. Never thin this out to reduce density — shrink the
+     thumbnails instead, or a gap stops meaning anything.                   */
+  const THUMB_RATIO = 0.05;   // of graph width — 16px at W=320
+  const THUMB_PEEK  = 0.70;   // share of the thumbnail clearing the crest
+  const THUMB_R     = 0.32;   // squircle corner radius, share of size
+
+  const proofDays = pts.filter(p => p.outcome === P || p.outcome === B);
+  const THUMBS = Array.from({length:19}, (_,i) =>
+    'assets/climb-thumbs/' + String(i+1).padStart(2,'0') + '.jpg');
+  proofDays.forEach((p,i) => {
+    p.img = new Image(); p.img.decoding = 'async'; p.img.loading = 'eager';
+    // The drift loop parks off-screen after one static frame, so a thumbnail
+    // that decodes later would never be drawn without this nudge.
+    p.img.addEventListener('load', () => { if (!raf) paint(0); }, {once:true});
+    p.img.src = THUMBS[i % THUMBS.length];
+  });
+
+  // Ridge geometry is static — the drift only moves sky. Build it once.
+  const ridgePts = (() => {
+    const ridgeYFor = oy => summitY -
+      (ridgeBase + Math.min(1, Math.max(0, (plotBottom - oy) / plotH)) * (ridgeBand - ridgeBase));
+    const rp = [{x: xFor(1), y: summitY}];
+    for (const p of pts) rp.push({x: xFor(p.day), y: ridgeYFor(yFor(p.score))});
+    rp.push({x: xFor(DIM), y: summitY});
+    return rp;
+  })();
+
+  const RIDGE_PATH = (() => {
+    const midOf = i => ({x:(ridgePts[i].x+ridgePts[i+1].x)/2, y:(ridgePts[i].y+ridgePts[i+1].y)/2});
+    const p = new Path2D();
+    p.moveTo(ridgePts[0].x, ridgePts[0].y);
+    let m = midOf(0); p.lineTo(m.x, m.y);
+    for (let i = 1; i < ridgePts.length - 1; i++){
+      m = midOf(i); p.quadraticCurveTo(ridgePts[i].x, ridgePts[i].y, m.x, m.y);
+    }
+    p.lineTo(ridgePts[ridgePts.length-1].x, ridgePts[ridgePts.length-1].y);
+    p.closePath();
+    return p;
+  })();
+
+  const SKY_PATH = (() => {
+    const p = new Path2D();
+    p.moveTo(0, summitY); p.lineTo(0, 14);
+    p.quadraticCurveTo(0, 0, 14, 0);
+    p.lineTo(W - 14, 0); p.quadraticCurveTo(W, 0, W, 14);
+    p.lineTo(W, summitY); p.closePath();
+    return p;
+  })();
+
+  /* The smoothed ridge does NOT pass through its own control points, so a
+     thumbnail parked at ridgePts[d].y floats or sinks a couple of px. Each
+     day sits at t=0.5 of the quadratic mid(d-1) -> mid(d) with ridgePts[d]
+     as control, and the uniform x-spacing puts that midpoint exactly on
+     ridgePts[d].x. Expanding B(0.5) collapses to a three-term average. */
+  const crestAt = d =>
+    0.125 * ridgePts[d-1].y + 0.75 * ridgePts[d].y + 0.125 * ridgePts[d+1].y;
+
+  function paintProofRidge(){
+    const size = W * THUMB_RATIO, r = size / 2;
+    ctx.save();
+    // Clip to sky MINUS mountain so each thumbnail is cut exactly at the
+    // crest. The silhouette is only ~69% opaque here, so simply drawing
+    // behind it would ghost the photos through and muddy the mountain.
+    const cut = new Path2D();
+    cut.addPath(SKY_PATH); cut.addPath(RIDGE_PATH);
+    ctx.clip(cut, 'evenodd');
+    for (const p of proofDays){
+      const img = p.img;
+      if (!img.complete || !img.naturalWidth) continue;   // draw what has arrived
+      const x = xFor(p.day), top = crestAt(p.day) - size * THUMB_PEEK;
+      ctx.beginPath();
+      ctx.roundRect(x - r, top, size, size, size * THUMB_R);
+      ctx.save(); ctx.clip();
+      ctx.drawImage(img, x - r, top, size, size);
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.72)'; ctx.lineWidth = 0.9; ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   // driftT: 0..1 over 28s, exactly the app's controller period.
   function paint(driftT){
     ctx.clearRect(0, 0, W, H);
@@ -3714,25 +3798,13 @@ function toggleMode() {
     drawBird(W + 20 - t2 * span, 26, 6.5, mix([107,127,170], [58,45,85], peace, 0.40));
 
     // --- the mountain: one crest per day, straight off the running score ---
-    const ridgeYFor = oy => summitY -
-      (ridgeBase + Math.min(1, Math.max(0, (plotBottom - oy) / plotH)) * (ridgeBand - ridgeBase));
-    const ridgePts = [{x: xFor(1), y: summitY}];
-    for (const p of pts) ridgePts.push({x: xFor(p.day), y: ridgeYFor(yFor(p.score))});
-    ridgePts.push({x: xFor(DIM), y: summitY});
-
-    const midOf = i => ({ x:(ridgePts[i].x + ridgePts[i+1].x)/2, y:(ridgePts[i].y + ridgePts[i+1].y)/2 });
-    ctx.beginPath();
-    ctx.moveTo(ridgePts[0].x, ridgePts[0].y);
-    let m = midOf(0); ctx.lineTo(m.x, m.y);
-    for (let i = 1; i < ridgePts.length - 1; i++){
-      m = midOf(i);
-      ctx.quadraticCurveTo(ridgePts[i].x, ridgePts[i].y, m.x, m.y);
-    }
-    ctx.lineTo(ridgePts[ridgePts.length-1].x, ridgePts[ridgePts.length-1].y);
-    ctx.closePath();
     ctx.fillStyle = mix([132,147,194], [74,58,110], peace,
       Math.min(1, 0.50 + 0.70 * peace));
-    ctx.fill();
+    ctx.fill(RIDGE_PATH);
+
+    // --- the proof ridge: what the month was actually made of ---
+    paintProofRidge();
+
     ctx.restore();   // release the sky clip
 
     // --- dashed summit line ---
