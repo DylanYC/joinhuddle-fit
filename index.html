@@ -288,29 +288,45 @@
   /* Scene 2 — single floating proof card */
   .loop-proof-card{width:286px;height:390px;border-radius:30px;position:relative;overflow:hidden;transform:rotate(2.5deg);background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);box-shadow:0 32px 80px rgba(194,65,12,0.38),0 8px 20px rgba(0,0,0,0.14);}
 
-  /* Scene 3 — celebration feed card */
-  .loop-feed-card{width:352px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.05);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);}
-  .loop-feed-header{padding:16px 16px 12px;display:flex;align-items:center;gap:10px;}
-  .loop-feed-av{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;box-shadow:0 0 0 2px #5b54e8;}
+  /* Scene 3 — celebration. A model of the real app's *completed friend card*
+     (lib/widgets/expandable_task_card.dart on top of task_card_shell.dart),
+     not a generic social post. Same stacking order as the app: the feed's
+     per-person header (avatar + name, feed_screen.dart) above a haloed card
+     that runs time pill → title → repeat → 3:4 proof → Flex/Comment pills →
+     comment preview. Colours are the app's light-theme tokens (theme.dart):
+     completed border = primary #6F75FF over a #E6E7FF halo, time pill
+     #EEEFFF, meta #8A8DA8, comment names #292D91, pill-inactive #E9E9E9. */
+  .loop-feed-scene{width:288px;}
+  .loop-feed-poster{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .loop-feed-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
   .loop-feed-av img{width:100%;height:100%;object-fit:cover;display:block;}
-  .loop-feed-user{flex:1;min-width:0;}
-  .loop-feed-name{font-size:13px;font-weight:700;color:#1C1C1C;letter-spacing:-.1px;}
-  .loop-feed-meta{font-size:11px;color:#787878;margin-top:2px;}
-  .loop-feed-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:#292D91;background:rgba(111,117,255,0.12);padding:4px 10px;border-radius:999px;white-space:nowrap;}
-  .loop-feed-img{margin:0 12px;border-radius:14px;height:140px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-  .loop-feed-img-vignette{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.42));}
-  .loop-feed-img-badge{position:absolute;bottom:8px;left:10px;font-size:9.5px;color:rgba(255,255,255,0.88);background:rgba(0,0,0,0.32);padding:3px 8px;border-radius:6px;letter-spacing:0.02em;}
-  .loop-feed-react{padding:12px 16px 9px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(0,0,0,0.05);margin-top:12px;}
-  .loop-flex-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(111,117,255,0.08);border:1px solid rgba(111,117,255,0.18);border-radius:999px;padding:5px 12px;font-size:12px;color:#292D91;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
-  .loop-flex-count{color:#787878;font-weight:500;}
-  .loop-flex-who{font-size:11px;color:#787878;}
-  .loop-feed-comments{padding:8px 16px 16px;display:flex;flex-direction:column;gap:9px;}
-  .loop-comment{display:flex;align-items:flex-start;gap:8px;}
-  .loop-comment-av{width:24px;height:24px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
-  .loop-comment-av img{width:100%;height:100%;object-fit:cover;display:block;}
-  .loop-comment-body{font-size:12.5px;color:#1C1C1C;line-height:1.45;}
-  .loop-comment-handle{font-weight:700;color:#292D91;margin-right:4px;}
-  .loop-comment-time{font-size:10px;color:rgba(120,120,120,0.7);margin-left:6px;}
+  .loop-feed-name{font-size:16px;font-weight:700;color:#1C1C1C;letter-spacing:-.2px;}
+  /* Completed cards wear a soft halo instead of a shadow (TaskCardShell.useHalo). */
+  .loop-feed-halo{background:#E6E7FF;border-radius:20px;padding:4px;}
+  .loop-feed-card{background:#FFFFFF;border:2px solid #6F75FF;border-radius:16px;padding:14px 12px 12px;}
+  .ftask-pill{display:inline-flex;align-items:center;gap:4px;background:#EEEFFF;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;color:#6F75FF;line-height:1;}
+  .ftask-pill svg{display:block;flex-shrink:0;}
+  .ftask-title{margin-top:6px;font-size:16px;font-weight:700;color:#1C1C1C;line-height:1.3;}
+  .ftask-repeat{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#8A8DA8;}
+  .ftask-repeat svg{display:block;flex-shrink:0;}
+  .ftask-media{margin-top:8px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#EDEDF5;}
+  .ftask-media img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* Flex + Comment pills — FlexPillButton / CommentPillButton: 40px tall,
+     3px border, r9, 22px icon + count + a 22px avatar stack overlapped by 9. */
+  .ftask-pills{margin-top:10px;display:flex;gap:12px;}
+  .app-pill{display:inline-flex;align-items:center;gap:4px;height:40px;padding:0 10px;border-radius:9px;border:3px solid #E9E9E9;background:transparent;}
+  .app-pill.is-active{border-color:#6F75FF;background:#CFD1FF;}
+  .app-pill svg{display:block;width:22px;height:22px;flex-shrink:0;}
+  .app-pill-n{font-size:11px;font-weight:700;color:#8E8E8E;}
+  .app-pill.is-active .app-pill-n{color:#6F75FF;}
+  .app-pill-avs{display:flex;margin-left:4px;}
+  .app-pill-avs span{width:22px;height:22px;border-radius:50%;overflow:hidden;border:1.5px solid #fff;background:#CFD1FF;flex-shrink:0;}
+  .app-pill-avs span+span{margin-left:-9px;}
+  .app-pill-avs img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* Comment preview strip — up to 3 lines of "First: text", names in indigo. */
+  .ftask-comments{margin-top:8px;}
+  .ftask-cline{padding:4px 0;font-size:12px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ftask-cline b{color:#292D91;font-weight:700;}
 
 
   /* PHONES */
@@ -567,6 +583,10 @@
   .proof-kdots{width:28px;height:28px;border-radius:50%;border:none;background:#F2F2F8;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5px;flex-shrink:0;padding:0;}
   .proof-kdots span{width:3px;height:3px;border-radius:50%;background:#9090B0;display:block;}
   .proof-card-taskname{font-size:13px;font-weight:700;color:#1C1C1C;line-height:1.35;margin-bottom:12px;}
+  /* Repeat interval — sits under the task name on recurring commitments.
+     Tighter top gap than the seen-by row below it so it reads as a
+     qualifier on the task, not a separate section. */
+  .proof-card-repeat{display:inline-flex;align-items:center;gap:5px;margin:-6px 0 11px;padding:3px 8px;border-radius:6px;background:rgba(111,117,255,0.12);font-size:10.5px;font-weight:500;color:#292D91;white-space:nowrap;}
   .proof-card-seenby{display:flex;align-items:center;gap:6px;}
   .proof-seen-icon{width:18px;height:18px;border-radius:50%;background:rgba(111,117,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .proof-seen-icon::after{content:'';width:8px;height:8px;border-radius:50%;background:#6F75FF;}
@@ -835,7 +855,7 @@
     .loop-row:nth-of-type(2){order:5;}
     .loop-row:nth-of-type(3){order:7;}
     .loop-cardstack{transform:scale(0.92);transform-origin:center;}
-    .loop-feed-card{width:100%;max-width:352px;}
+    .loop-feed-scene{transform:scale(0.94);transform-origin:top center;}
   }
 
   /* ============ RESPONSIVE: mobile ============ */
@@ -1458,12 +1478,12 @@
             <button class="loop-step" type="button" role="tab" aria-selected="false" data-step="1">
               <span class="loop-step-n">02</span>
               <span class="loop-step-title">Show Up &amp; Capture Proof</span>
-              <span class="loop-step-sub">Open the app to capture the moment raw — still sweating, no filter, no edits. That's your proof.</span>
+              <span class="loop-step-sub">Open Risers and prove you did it. No filters or edits. Just the honest win, as it really is, in all of its simple or epic glory.</span>
             </button>
             <button class="loop-step" type="button" role="tab" aria-selected="false" data-step="2">
               <span class="loop-step-n">03</span>
               <span class="loop-step-title">Celebrate Consistently, Together</span>
-              <span class="loop-step-sub">Your circle sees it instantly. Flexes, comments, real reactions from the people who actually care if you showed up.</span>
+              <span class="loop-step-sub">Your circle sees your proof, and you’ll see theirs throughout the day. As you flex and comment, you create the positive and energized space to build momentum into the next.</span>
             </button>
           </div>
         </div>
@@ -1488,7 +1508,7 @@
         <!-- ROW 3 — Celebration feed card -->
         <div class="loop-row" data-step="2">
           <div class="loop-scene">
-            <div class="loop-feed-card" id="loop-feed-card"></div>
+            <div class="loop-feed-scene" id="loop-feed-scene"></div>
           </div>
         </div>
 
@@ -2661,6 +2681,17 @@ function toggleMode() {
 
   const AV = 'assets/Avatars/';
   const clockSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#292D91" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  const repeatSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  // Scene 3 borrows the app's own icon set so the celebration card reads as a
+  // screenshot rather than a lookalike: the time pill's clock and the repeat
+  // row in #6F75FF / #8A8DA8 (TimePill + ExpandableTaskCard._buildBody), and
+  // the arm + bubble straight out of assets/images/ic_flex_full.svg and
+  // ic_comment_full.svg — the same arm the proof wall's flex pill uses.
+  const clockPillSVG = '<svg width="13" height="13" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#6F75FF" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#6F75FF" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#6F75FF" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  const repeatMetaSVG = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const flexFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M10.0646 9.43626C9.9692 9.48397 7.97046 14.6426 8.20904 14.4518C8.44762 14.2609 9.7712 13.7205 10.8334 13.736C11.8418 13.7507 13.3146 14.4518 13.3146 14.4518C13.3146 14.4518 14.4486 13.5697 15.0801 13.3066C16.082 12.8891 17.1923 12.6468 18.2771 12.6863C18.9928 12.7124 19.8244 12.8732 20.5674 13.3066C21.14 13.6406 21.6143 14.1414 21.808 14.6903C22.0943 15.5015 22.1842 16.2355 21.8981 17.5002C21.6017 18.8108 21.0381 19.5229 19.9895 20.3632C18.9308 21.2114 18.1763 21.3652 16.7448 21.6992C15.3134 22.0332 13.1828 22.101 10.9235 21.8423C9.15843 21.6403 7.67884 21.2698 6.48595 20.8403C5.29306 20.4109 3.0027 18.884 3.0027 18.884C3.0027 18.884 2.19149 18.216 2.09611 17.5002C2.00073 16.7845 2.09609 16.4505 2.09611 15.7347C2.09612 15.019 2.43966 13.116 3.0027 11.5357C3.70249 9.57166 4.26192 8.47568 5.57935 6.85961C6.81434 5.34466 7.53292 4.29004 9.34889 3.56722C11.1169 2.86348 13.4524 2.85129 14.2159 3.32864C14.9794 3.806 15.2629 4.90993 15.2656 6.04844C15.2706 8.07408 12.7367 10.0088 11.9733 10.0566C11.2098 10.1043 10.1601 9.38854 10.0646 9.43626Z" fill="#6F75FF"/></svg>';
+  const commentFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 2.74996C7.66738 2.74996 3.75 6.66734 3.75 11.5C3.74926 12.7892 4.03341 14.0626 4.58213 15.2292L3.76838 19.1991C3.7394 19.3408 3.74603 19.4875 3.78766 19.6261C3.82929 19.7647 3.90463 19.8907 4.00693 19.993C4.10923 20.0953 4.2353 20.1707 4.37386 20.2123C4.51242 20.2539 4.65913 20.2606 4.80088 20.2316L8.77075 19.4178C9.903 19.9516 11.1683 20.2491 12.5 20.2491C17.3326 20.2491 21.25 16.3326 21.25 11.4991C21.25 6.66733 17.3326 2.74908 12.5 2.74908" fill="#6F75FF"/></svg>';
 
   const runIllo = `<svg width="80" height="94" viewBox="0 0 88 104" fill="none">
     <circle cx="52" cy="13" r="12" fill="rgba(255,255,255,0.52)"/>
@@ -2690,6 +2721,7 @@ function toggleMode() {
   const stackCards = [
     {
       emoji:'👟', name:'Walk 10,000 Steps', time:'7:00am',
+      repeat:'Everyday until Dec 31 2026',
       viewers:stackBackers,
       cls:'loop-card-front'
     },
@@ -2718,6 +2750,7 @@ function toggleMode() {
           '<button class="proof-kdots" aria-label="More" tabindex="-1"><span></span><span></span><span></span></button>' +
         '</div>' +
         '<div class="proof-card-taskname">' + c.emoji + ' ' + c.name + '</div>' +
+        (c.repeat ? '<div class="proof-card-repeat">' + repeatSVG + c.repeat + '</div>' : '') +
         '<div class="proof-card-seenby">' +
           '<div class="proof-seen-icon"></div>' +
           '<span class="proof-seen-label">Backed by</span>' +
@@ -2741,33 +2774,43 @@ function toggleMode() {
     '</div>'
   );
 
-  // ── SCENE 3 — celebration feed card ──
-  document.getElementById('loop-feed-card').innerHTML = (
-    '<div class="loop-feed-header">' +
+  // ── SCENE 3 — celebration: the app's completed friend card ──
+  // Kyle posted; you (Dylan) flexed and commented, so both pills render in
+  // their active state — filled #CFD1FF with the solid icon, exactly like
+  // FlexPillButton/CommentPillButton after a tap.
+  function pillAvs(faces) {
+    return '<span class="app-pill-avs">' +
+      faces.map(function (f) {
+        return '<span><img src="' + AV + f + '" alt="" loading="lazy" decoding="async"></span>';
+      }).join('') +
+      '</span>';
+  }
+
+  document.getElementById('loop-feed-scene').innerHTML = (
+    // feed section header — 40px avatar + name, the app's per-person divider row
+    '<div class="loop-feed-poster">' +
       '<div class="loop-feed-av"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
-      '<div class="loop-feed-user">' +
-        '<div class="loop-feed-name">Kyle</div>' +
-        '<div class="loop-feed-meta">Walk 10,000 Steps · 6:47 AM</div>' +
-      '</div>' +
-      '<div class="loop-feed-badge">&#10003; Proved</div>' +
+      '<div class="loop-feed-name">Kyle</div>' +
     '</div>' +
-    '<div class="loop-feed-img proof-bg-0">' +
-      '<img class="pc-photo" src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Walk 10,000 Steps" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' +
-      '<div class="loop-feed-img-vignette"></div>' +
-      '<div class="loop-feed-img-badge">6:47 AM · Today</div>' +
-    '</div>' +
-    '<div class="loop-feed-react">' +
-      '<button class="loop-flex-btn" type="button">💪 Flex <span class="loop-flex-count">5</span></button>' +
-      '<span class="loop-flex-who">Mike, Gisela + 3 others</span>' +
-    '</div>' +
-    '<div class="loop-feed-comments">' +
-      '<div class="loop-comment">' +
-        '<div class="loop-comment-av"><img src="' + AV + 'Family_Rachael.png" alt="" loading="lazy" decoding="async"></div>' +
-        '<div class="loop-comment-body">whoa ...that\'s a lot! 😮<span class="loop-comment-time">just now</span></div>' +
-      '</div>' +
-      '<div class="loop-comment">' +
-        '<div class="loop-comment-av"><img src="' + AV + 'Family_Richard.png" alt="" loading="lazy" decoding="async"></div>' +
-        '<div class="loop-comment-body">way to go !<span class="loop-comment-time">just now</span></div>' +
+    '<div class="loop-feed-halo">' +
+      '<div class="loop-feed-card">' +
+        '<div class="ftask-pill">' + clockPillSVG + '6:47 AM</div>' +
+        '<div class="ftask-title">👟 Walk 10,000 Steps</div>' +
+        '<div class="ftask-repeat">' + repeatMetaSVG + 'Everyday until Dec 31 2026</div>' +
+        '<div class="ftask-media">' +
+          '<img src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Kyle\'s proof for Walk 10,000 Steps" loading="lazy" decoding="async">' +
+        '</div>' +
+        '<div class="ftask-pills">' +
+          '<div class="app-pill is-active">' + flexFullSVG + '<span class="app-pill-n">5</span>' +
+            pillAvs(['MainUser_Dylan.png', 'Family_Mike.png', 'Family_Gisela.png']) + '</div>' +
+          '<div class="app-pill is-active">' + commentFullSVG + '<span class="app-pill-n">3</span>' +
+            pillAvs(['MainUser_Dylan.png', 'Family_Richard.png', 'Family_Rachael.png']) + '</div>' +
+        '</div>' +
+        '<div class="ftask-comments">' +
+          '<div class="ftask-cline"><b>Rachael:</b> whoa ...that\'s a lot! 😮</div>' +
+          '<div class="ftask-cline"><b>Richard:</b> way to go!</div>' +
+          '<div class="ftask-cline"><b>Dylan:</b> 👏 👏 👏</div>' +
+        '</div>' +
       '</div>' +
     '</div>'
   );
