@@ -285,8 +285,23 @@
   .loop-card-mid{top:48px;left:18px;transform:rotate(2.5deg);z-index:2;opacity:.72 !important;}
   .loop-card-front{top:0;left:0;transform:rotate(0);z-index:3;}
 
-  /* Scene 2 — single floating proof card */
-  .loop-proof-card{width:286px;height:390px;border-radius:30px;position:relative;overflow:hidden;transform:rotate(2.5deg);background:linear-gradient(158deg,#7c1d0a 0%,#c2410c 30%,#ea580c 65%,#fb923c 100%);box-shadow:0 32px 80px rgba(194,65,12,0.38),0 8px 20px rgba(0,0,0,0.14);}
+  /* Scene 2 — the capture moment. Deliberately lighter than the proof
+     section's full camera_screen model: only the two controls that make a
+     viewfinder read as *our* camera — the task selector box above the frame
+     and the shutter below it, both borrowed from .cam-task / .cam-shutter.
+     No mode switch, lens chips, flash rail or nav bar; those live downpage. */
+  .loop-capture{width:286px;display:flex;flex-direction:column;align-items:center;}
+  /* Light-theme values are inlined rather than taken from the --cam-* vars:
+     the other two scenes render the app's light chrome in both site themes,
+     so this box has to stay light with them instead of flipping on its own. */
+  .loop-cap-task{align-self:stretch;height:44px;background:#FFFFFF;border:1px solid rgba(158,158,158,0.4);border-radius:9px;display:flex;align-items:center;padding:0 10px;box-shadow:0 6px 20px rgba(0,0,0,0.06);}
+  .loop-cap-task-name{flex:1;text-align:center;font-size:13px;font-weight:700;color:#000000;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .loop-cap-task-x{width:18px;height:18px;flex-shrink:0;color:#424242;opacity:.7;}
+  .loop-cap-task-x svg{width:100%;height:100%;display:block;}
+  /* 3:4 viewfinder with the app's light stroke drawn around it */
+  .loop-cap-vf{margin-top:14px;align-self:stretch;aspect-ratio:3/4;position:relative;overflow:hidden;background:#000;border:4px solid #DEDEDE;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,0.18);}
+  .loop-cap-shutter{margin-top:16px;width:56px;height:56px;}
+  .loop-cap-shutter svg{width:100%;height:100%;display:block;}
 
   /* Scene 3 — celebration. A model of the real app's *completed friend card*
      (lib/widgets/expandable_task_card.dart on top of task_card_shell.dart),
@@ -1500,10 +1515,10 @@
           </div>
         </div>
 
-        <!-- ROW 2 — Single proof card -->
+        <!-- ROW 2 — Capture: task box + viewfinder + shutter -->
         <div class="loop-row" data-step="1">
           <div class="loop-scene">
-            <div class="loop-proof-card" id="loop-proof-card"></div>
+            <div class="loop-capture" id="loop-capture"></div>
           </div>
         </div>
 
@@ -2766,13 +2781,32 @@ function toggleMode() {
   document.getElementById('loop-cardstack').innerHTML =
     [stackCards[2], stackCards[1], stackCards[0]].map(buildStackCard).join('');
 
-  // ── SCENE 2 — single proof card (reuses .proof-scene-* visual language) ──
-  // Reuse the proof carousel's card language: full-bleed photo, avatar top-left, title overlay.
-  document.getElementById('loop-proof-card').innerHTML = (
-    '<img class="pc-photo" src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Walk 10,000 Steps" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' +
-    '<div class="pc-avatar"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
-    '<div class="pc-ov">' +
-      '<div class="pc-title">👟 Walk 10,000 Steps</div>' +
+  // ── SCENE 2 — the capture moment ──
+  // The task you're proving sits in the camera's selector box above the
+  // frame, the shutter waits below it: the instant before the tap. Both
+  // pieces are the camera_screen ones (TaskSelectorCard + capture button),
+  // just at this scene's larger scale; the gradient id is scoped to the
+  // scene so it can't collide with the proof section's own shutter.
+  document.getElementById('loop-capture').innerHTML = (
+    '<div class="loop-cap-task">' +
+      '<span class="loop-cap-task-name">👟 Walk 10,000 Steps</span>' +
+      '<span class="loop-cap-task-x">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+      '</span>' +
+    '</div>' +
+    '<div class="loop-cap-vf">' +
+      '<img class="pc-photo" src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Walk 10,000 Steps in the viewfinder" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' +
+    '</div>' +
+    '<div class="loop-cap-shutter">' +
+      '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="12" cy="12" r="11.5" fill="url(#loopCaptureGrad)"/>' +
+        '<g transform="translate(12,12) scale(0.575) translate(-12,-12)">' +
+          '<path d="M7.00 6.05 H17.00 A4.30 4.30 0 0 1 21.30 10.35 V16.35 A4.30 4.30 0 0 1 17.00 20.65 H7.00 A4.30 4.30 0 0 1 2.70 16.35 V10.35 A4.30 4.30 0 0 1 7.00 6.05 Z M6.50 6.65 L8.03 4.35 A1.20 1.20 0 0 1 9.36 3.35 L14.64 3.35 A1.20 1.20 0 0 1 15.97 4.35 L17.50 6.65 Z M15.75 13.35 A3.75 3.75 0 1 0 8.25 13.35 A3.75 3.75 0 1 0 15.75 13.35 Z" fill="white"/>' +
+        '</g>' +
+        '<defs><linearGradient id="loopCaptureGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">' +
+          '<stop stop-color="#7C82FF"/><stop offset="1" stop-color="#3B3FA8"/>' +
+        '</linearGradient></defs>' +
+      '</svg>' +
     '</div>'
   );
 
