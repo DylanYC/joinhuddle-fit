@@ -248,16 +248,16 @@
   .loop-step-sub{display:block;font-size:14px;font-weight:400;color:var(--text2);line-height:1.7;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .32s ease,margin-top .32s ease;}
   .loop-step.is-active .loop-step-sub{max-height:180px;opacity:1;margin-top:10px;}
 
-  /* Right column = three stacked scene rows. Each row is sized to
-     control the spacing between consecutive scenes — narrower row means
-     less scroll distance (and less visual gap) between scenes. Scenes
-     are then pulled onto the anchor line (center of left nav) by both
-     native scroll-snap and the JS soft-snap, so they always settle
-     correctly even though the row's natural midpoint sits above the
-     anchor. --loop-row-h is set by JS to ~1.25× anchor-Y; fallback below
-     is the value for a typical desktop viewport. */
-  .loop-right{display:flex;flex-direction:column;}
-  .loop-row{display:flex;align-items:center;justify-content:center;padding:0;min-height:var(--loop-row-h,44vh);scroll-snap-stop:normal;}
+  /* Right column = three stacked scene rows. Each row hugs its scene and
+     contributes half of --loop-gap above and below it, so the space
+     between any two scenes is exactly --loop-gap no matter how tall they
+     are. (A uniform row min-height can't do this: it pads short scenes
+     with slack while tall ones overflow it and end up touching.) Scenes
+     are pulled onto the anchor line (center of left nav) by both native
+     scroll-snap and the JS soft-snap; with content-sized rows the row's
+     midpoint IS the scene's, which is what that math already assumes. */
+  .loop-right{display:flex;flex-direction:column;--loop-gap:104px;}
+  .loop-row{display:flex;align-items:center;justify-content:center;padding:calc(var(--loop-gap) / 2) 0;scroll-snap-stop:normal;}
   .loop-scene{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
   /* Subtle native scroll-snap, scoped to when the loop section is on
