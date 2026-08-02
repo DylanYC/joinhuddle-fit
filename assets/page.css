@@ -131,3 +131,12 @@
   .page{padding:32px 20px 64px;}
   .footer{padding:28px 24px;}
 }
+
+/* Same width ladder as the home page: .nav-links is absolutely centred and so
+   is out of flow — it overlaps the toggle + CTA instead of pushing them. With
+   "The Climb" added, the centred strip stops clearing that cluster at ~890px,
+   so below 940 the links drop back into flow and the flex row distributes
+   them. Must stay after the 760px block: equal specificity, source order wins,
+   and display:none there still applies. */
+@media (max-width:940px){ .nav-links{position:static;transform:none;gap:20px;} }
+@media (max-width:860px){ .nav-links{gap:16px;font-size:13.5px;} }
