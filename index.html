@@ -426,7 +426,7 @@
      green. Like the loop-stack cards, it stays in the app's LIGHT theme in both
      site modes — it reads as a screenshot, not as site chrome. */
   .sp-card{
-    width:100%;max-width:326px;margin:22px 0 16px;box-sizing:border-box;
+    width:100%;max-width:326px;margin:22px auto 10px;box-sizing:border-box;
     background:#FFFFFF;
     border:2.5px solid rgba(200,200,200,0.9);
     border-radius:16px;
@@ -447,6 +447,9 @@
   .sp-title{margin-top:4px;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.2px;color:#1C1C1C;}
   .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;line-height:1.3;color:#8A8DA8;}
   .sp-repeat svg{flex-shrink:0;}
+  /* Caption under the sample card — reads as a note about the screenshot, not
+     as body copy: centred to the card, smaller and lighter than .ic-copy p. */
+  .ic-copy p.sp-note{max-width:326px;margin:0 auto;text-align:center;font-size:13px;line-height:1.6;color:var(--text3);}
   /* POSITIONING SPECTRUM — BeReal + Strava = Risers */
   .spec-sec{padding:64px 40px 56px;max-width:1120px;margin:0 auto;text-align:center;}
   .spec-formula{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
@@ -1850,7 +1853,7 @@
         </div>
       </div>
 
-      <p>You can even share a plan with someone in your circle. Same commitment, regardless of continents or time zones.</p>
+      <p class="sp-note">You can even share a plan with someone in your circle. Same commitment, regardless of continents or time zones.</p>
     </div>
   </section>
 
