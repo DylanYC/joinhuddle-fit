@@ -6,10 +6,15 @@
   --bg:#050510; --bg2:#0a0a1a;
   --surface:rgba(255,255,255,0.03);
   --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
-  --text1:#ffffff; --text2:rgba(255,255,255,0.55); --text3:rgba(255,255,255,0.35);
+  /* Ink ramp — must stay in step with the same block in index.html. Every rung
+     carries real sentences (.meta, .prose, .contact-note, .cf-status all use
+     text3), so every rung clears WCAG AA 4.5:1: text2 7.8:1, text3 5.3:1. */
+  --text1:#ffffff; --text2:rgba(255,255,255,0.62); --text3:rgba(255,255,255,0.50);
   --accent:#5B52E8; --accent2:#9B94F5;
+  /* Small text on a tinted chip — see the matching note in index.html. */
+  --accent-ink:#9B94F5;
   --btn-bg:rgba(255,255,255,0.06); --btn-border:rgba(255,255,255,0.14); --btn-text:#ffffff;
-  --input-bg:rgba(255,255,255,0.06); --input-border:rgba(255,255,255,0.12); --input-text:#fff; --input-ph:rgba(255,255,255,0.28);
+  --input-bg:rgba(255,255,255,0.06); --input-border:rgba(255,255,255,0.12); --input-text:#fff; --input-ph:rgba(255,255,255,0.50);
   --footer-border:rgba(255,255,255,0.07);
   --toggle-bg:rgba(255,255,255,0.08); --toggle-border:rgba(255,255,255,0.15);
   --eyebrow-bg:rgba(91,82,232,0.15); --eyebrow-border:rgba(91,82,232,0.3);
@@ -20,10 +25,11 @@
   --bg:#f4f4f8; --bg2:#ffffff;
   --surface:rgba(0,0,0,0.025);
   --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-  --text1:#0a0a18; --text2:rgba(10,10,24,0.55); --text3:rgba(10,10,24,0.38);
-  --accent:#4840d4; --accent2:#6B63F0;
+  --text1:#0a0a18; --text2:rgba(10,10,24,0.65); --text3:rgba(10,10,24,0.58);
+  --accent:#4840d4; --accent2:#5B52E8;
+  --accent-ink:#4840d4;
   --btn-bg:#ffffff; --btn-border:rgba(0,0,0,0.14); --btn-text:#0a0a18;
-  --input-bg:#ffffff; --input-border:rgba(0,0,0,0.15); --input-text:#0a0a18; --input-ph:rgba(10,10,24,0.35);
+  --input-bg:#ffffff; --input-border:rgba(0,0,0,0.15); --input-text:#0a0a18; --input-ph:rgba(10,10,24,0.58);
   --footer-border:rgba(0,0,0,0.08);
   --toggle-bg:rgba(0,0,0,0.06); --toggle-border:rgba(0,0,0,0.13);
   --eyebrow-bg:rgba(91,82,232,0.1); --eyebrow-border:rgba(91,82,232,0.25);
@@ -49,7 +55,7 @@
 .nav-links li a{color:inherit;text-decoration:none;}
 .nav-links li:hover{color:var(--text1);}
 .nav-right{display:flex;align-items:center;gap:14px;}
-.toggle{display:flex;align-items:center;gap:8px;background:var(--toggle-bg);border:1px solid var(--toggle-border);border-radius:100px;padding:5px 12px 5px 8px;cursor:pointer;font-size:12px;color:var(--text2);user-select:none;}
+.toggle{display:flex;align-items:center;gap:8px;background:var(--toggle-bg);border:1px solid var(--toggle-border);border-radius:100px;padding:5px 12px 5px 8px;cursor:pointer;font-size:12px;color:var(--text2);user-select:none;font-family:inherit;}
 .t-icon{font-size:13px;line-height:1;}
 .t-pill{width:30px;height:17px;background:var(--accent);border-radius:100px;position:relative;transition:background .3s;}
 .t-thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:transform .3s;}
@@ -60,7 +66,7 @@
 
 /* PAGE CONTENT */
 .page{flex:1;width:100%;max-width:760px;margin:0 auto;padding:48px 24px 80px;}
-.page .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;}
+.page .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent-ink);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;}
 .page h1{font-size:clamp(36px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;margin-bottom:10px;}
 .page .meta{font-size:13px;color:var(--text3);margin-bottom:36px;}
 .prose{font-size:16px;line-height:1.7;color:var(--text2);}

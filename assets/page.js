@@ -9,11 +9,15 @@ const THEME_KEY = 'huddle-theme';
 const site = document.getElementById('site');
 const ticon = document.getElementById('ticon');
 const tlbl = document.getElementById('tlbl');
+const tbtn = document.getElementById('toggle');
 
 function applyTheme(light) {
   site.classList.toggle('light', light);
   if (ticon) ticon.textContent = light ? '☀️' : '🌙';
   if (tlbl) tlbl.textContent = light ? 'Light' : 'Dark';
+  // Button is labelled "Dark mode" and pressed === dark, so a screen reader
+  // announces the state being toggled rather than the icon currently showing.
+  if (tbtn) tbtn.setAttribute('aria-pressed', String(!light));
 }
 
 // A #dark / #light hash (e.g. risers.fit/contact.html#dark) forces a theme on
@@ -23,8 +27,9 @@ if (hash === '#dark' || hash === '#light') {
   localStorage.setItem(THEME_KEY, hash.slice(1));
 }
 
+// Called either way so aria-pressed is correct on load, not just after a click.
 const stored = localStorage.getItem(THEME_KEY);
-if (stored === 'dark') applyTheme(false);
+applyTheme(stored !== 'dark');
 
 window.toggleMode = function () {
   const nowLight = !site.classList.contains('light');

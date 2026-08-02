@@ -1,4 +1,5 @@
 <!doctype html>
+<html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms of Service — Risers</title>
@@ -16,11 +17,11 @@
       <li><a href="/#climb">The Climb</a></li>
     </ul>
     <div class="nav-right">
-      <div class="toggle" id="toggle" onclick="toggleMode()">
-        <span class="t-icon" id="ticon">☀️</span>
-        <div class="t-pill"><div class="t-thumb"></div></div>
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
         <span class="t-lbl" id="tlbl">Light</span>
-      </div>
+      </button>
       <a class="nav-cta" href="/#waitlist">Join Waitlist</a>
     </div>
   </nav>

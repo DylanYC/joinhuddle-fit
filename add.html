@@ -25,12 +25,16 @@
   <style>
     :root {
       --primary: #6F75FF;
+      /* White on --primary is only 3.7:1, so the filled button uses this
+         darkened tint (6.0:1) while --primary keeps the app's exact brand
+         value for fills and borders, which only owe 3:1. */
+      --primary-btn: #4B51DE;
       --primary-dark: #292D91;
       --primary-light: #CFD1FF;
       --scaffold: #F7F8FA;
       --surface: #FFFFFF;
       --ink: #1C1C1C;
-      --muted: #787878;
+      --muted: #6B6B6B; /* was #787878 — 4.2:1 on --scaffold */
     }
     * { box-sizing: border-box; }
     body {
@@ -69,7 +73,7 @@
     a.btn {
       display: block; text-decoration: none; font-weight: 700; font-size: 15px;
       padding: 15px 0; border-radius: 14px; margin: 10px 0;
-      background: var(--primary); color: #fff;
+      background: var(--primary-btn); color: #fff;
       transition: transform .08s ease, background .15s ease;
     }
     a.btn:active { transform: scale(0.98); }

@@ -1,4 +1,5 @@
 <!doctype html>
+<html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risers — Everyday wins, shared with your inner circle</title>
@@ -20,16 +21,27 @@
     --bg:#050510; --bg2:#0a0a1a;
     --surface:rgba(255,255,255,0.03);
     --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
-    --text1:#ffffff; --text2:rgba(255,255,255,0.55); --text3:rgba(255,255,255,0.35);
+    /* Ink ramp. Every step carries real sentences somewhere on the page, so
+       every step clears WCAG AA 4.5:1 on the surfaces it actually lands on.
+       The ramp therefore descends toward the 4.5:1 floor and stops — text3 is
+       the lightest legal ink, not an arbitrary "very faint".
+       On --bg: text1 19:1, text2 7.8:1, text3 5.3:1. */
+    --text1:#ffffff; --text2:rgba(255,255,255,0.62); --text3:rgba(255,255,255,0.50);
     --accent:#5B52E8; --accent2:#9B94F5;
+    /* --accent is a FILL (buttons, dots, bars) and only owes 3:1. As small text
+       on --bg it is 3.7:1, so eyebrows/step-numbers use --accent-ink instead:
+       lifted here in dark, identical to --accent in light where it already
+       clears. --strava-ink is the same idea for Strava's brand orange, which
+       passes untouched on dark but needs darkening on its light tint. */
+    --accent-ink:#9B94F5; --strava-ink:#FC4C02;
     --hl1:#A09AF5; --hl2:#6B63F0;
     --sh1:6px 8px 0px #1A165C; --sh2:12px 16px 0px rgba(26,22,92,0.4);
     --sh3:6px 8px 0px #0D0B3A; --sh4:12px 16px 0px rgba(13,11,58,0.5);
     --btn-bg:rgba(255,255,255,0.06); --btn-border:rgba(255,255,255,0.14); --btn-text:#ffffff; --btn-sub:rgba(255,255,255,0.5); --btn-hover:rgba(255,255,255,0.1);
     --apple-fill:#ffffff;
-    --vs-bg:rgba(255,255,255,0.04); --vs-border:rgba(255,255,255,0.08); --vs-text:rgba(255,255,255,0.4); --vs-title:rgba(255,255,255,0.7); --vs-row-border:rgba(255,255,255,0.07);
+    --vs-bg:rgba(255,255,255,0.04); --vs-border:rgba(255,255,255,0.08); --vs-text:rgba(255,255,255,0.55); --vs-title:rgba(255,255,255,0.7); --vs-row-border:rgba(255,255,255,0.07);
     --domain-bg:rgba(255,255,255,0.04); --domain-border:rgba(255,255,255,0.12);
-    --input-bg:rgba(255,255,255,0.06); --input-border:rgba(255,255,255,0.12); --input-text:#fff; --input-ph:rgba(255,255,255,0.28);
+    --input-bg:rgba(255,255,255,0.06); --input-border:rgba(255,255,255,0.12); --input-text:#fff; --input-ph:rgba(255,255,255,0.50);
     --footer-border:rgba(255,255,255,0.07);
     --toggle-bg:rgba(255,255,255,0.08); --toggle-border:rgba(255,255,255,0.15);
     --phone-border:rgba(255,255,255,0.12);
@@ -52,16 +64,19 @@
     --bg:#f4f4f8; --bg2:#ffffff;
     --surface:rgba(0,0,0,0.025);
     --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-    --text1:#0a0a18; --text2:rgba(10,10,24,0.55); --text3:rgba(10,10,24,0.38);
-    --accent:#4840d4; --accent2:#6B63F0;
+    /* Light has less headroom than dark, so the ramp compresses: on --bg
+       text1 17:1, text2 6.0:1, text3 4.7:1. text3 sits just above the floor. */
+    --text1:#0a0a18; --text2:rgba(10,10,24,0.65); --text3:rgba(10,10,24,0.58);
+    --accent:#4840d4; --accent2:#5B52E8;
+    --accent-ink:#4840d4; --strava-ink:#B03500;
     --hl1:#534AB7; --hl2:#3C3489;
     --sh1:5px 7px 0px #c5c0f0; --sh2:10px 14px 0px rgba(175,169,236,0.3);
     --sh3:5px 7px 0px #d0ccf5; --sh4:10px 14px 0px rgba(200,196,246,0.35);
-    --btn-bg:#ffffff; --btn-border:rgba(0,0,0,0.14); --btn-text:#0a0a18; --btn-sub:rgba(10,10,24,0.45); --btn-hover:#f0f0f6;
+    --btn-bg:#ffffff; --btn-border:rgba(0,0,0,0.14); --btn-text:#0a0a18; --btn-sub:rgba(10,10,24,0.58); --btn-hover:#f0f0f6;
     --apple-fill:#0a0a18;
-    --vs-bg:rgba(0,0,0,0.03); --vs-border:rgba(0,0,0,0.08); --vs-text:rgba(10,10,24,0.5); --vs-title:rgba(10,10,24,0.75); --vs-row-border:rgba(0,0,0,0.06);
+    --vs-bg:rgba(0,0,0,0.03); --vs-border:rgba(0,0,0,0.08); --vs-text:rgba(10,10,24,0.62); --vs-title:rgba(10,10,24,0.75); --vs-row-border:rgba(0,0,0,0.06);
     --domain-bg:rgba(91,82,232,0.07); --domain-border:rgba(91,82,232,0.22);
-    --input-bg:#ffffff; --input-border:rgba(0,0,0,0.15); --input-text:#0a0a18; --input-ph:rgba(10,10,24,0.35);
+    --input-bg:#ffffff; --input-border:rgba(0,0,0,0.15); --input-text:#0a0a18; --input-ph:rgba(10,10,24,0.58);
     --footer-border:rgba(0,0,0,0.08);
     --toggle-bg:rgba(0,0,0,0.06); --toggle-border:rgba(0,0,0,0.13);
     --phone-border:rgba(0,0,0,0.13);
@@ -71,7 +86,9 @@
     --card-shadow:0 16px 36px rgba(0,0,0,0.1),0 4px 12px rgba(0,0,0,0.07);
     --eyebrow-bg:rgba(91,82,232,0.1); --eyebrow-border:rgba(91,82,232,0.25);
     --waitlist-bg:rgba(91,82,232,0.06); --waitlist-border:rgba(91,82,232,0.2);
-    --pro-color:#A87810;
+    /* Dark enough to clear 4.5:1 on the referral callout's tinted bg, which is
+       the darkest surface .pro-tag lands on in light mode (5.4:1 there). */
+    --pro-color:#7A5507;
     --spec-card-bg:rgba(255,255,255,0.72); --spec-hero-fill:#ffffff;
     --spec-neutral-bg:rgba(10,10,24,0.07); --spec-neutral-ink:rgba(10,10,24,0.68);
     /* Climb card chrome — the app's LIGHT theme tokens */
@@ -97,10 +114,13 @@
   .nav-logo .logo-word{fill:#ECEAFD;transition:fill .4s;}
   .light .nav-logo .logo-word{fill:#0A0F81;}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--text2);list-style:none;}
-  .nav-links li{cursor:pointer;transition:color .2s ease;}
+  .nav-links li{transition:color .2s ease;}
   .nav-links li:hover{color:var(--text1);}
+  /* Nav items are real anchors so they're focusable and announced as links;
+     they inherit the ul's ink rather than the UA's link blue. */
+  .nav-links a{color:inherit;text-decoration:none;cursor:pointer;}
   .nav-right{display:flex;align-items:center;gap:12px;}
-  .toggle{display:flex;align-items:center;gap:8px;background:var(--toggle-bg);border:1px solid var(--toggle-border);border-radius:12px;padding:5px 12px;cursor:pointer;user-select:none;transition:all .3s;}
+  .toggle{display:flex;align-items:center;gap:8px;background:var(--toggle-bg);border:1px solid var(--toggle-border);border-radius:12px;padding:5px 12px;cursor:pointer;user-select:none;transition:all .3s;font:inherit;color:inherit;}
   .t-icon{font-size:13px;}
   .t-pill{width:30px;height:17px;background:var(--accent);border-radius:100px;position:relative;transition:background .3s;}
   .t-thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:transform .3s cubic-bezier(.65,0,.35,1);}
@@ -143,7 +163,7 @@
   .hero-waitlist button:hover{background:#4a42d4;}
   .hero-waitlist-note{margin-top:10px;font-size:12px;color:var(--text3);text-align:center;}
   .ref-callout{margin:14px auto 0;max-width:480px;padding:12px 14px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:10px;font-size:13px;color:var(--text1);line-height:1.5;text-align:center;}
-  .ref-callout strong{color:var(--accent2);font-weight:700;}
+  .ref-callout strong{color:var(--accent-ink);font-weight:700;}
   .pro-tag{color:var(--pro-color);font-weight:inherit;}
 
   /* Proof-card content styles (pc-*) — the old carousel is gone, but the
@@ -158,7 +178,7 @@
 
   /* SECTIONS */
   .sec{text-align:center;padding:60px 24px 0;}
-  .slbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  .slbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px;}
   .stitle{font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;color:var(--text1);max-width:560px;margin:0 auto;}
   .stitle em{font-style:normal;color:var(--accent2);}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
@@ -249,7 +269,7 @@
   .loop-step.is-active{border-left-color:var(--accent);}
   .loop-step:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px;}
   .loop-step-n{display:block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;transition:color .3s;}
-  .loop-step.is-active .loop-step-n{color:var(--accent);}
+  .loop-step.is-active .loop-step-n{color:var(--accent-ink);}
   .loop-step-title{display:block;font-size:19px;font-weight:800;line-height:1.25;letter-spacing:-.3px;color:var(--text3);transition:color .35s ease;}
   .loop-step:hover:not(.is-active) .loop-step-title{color:var(--text2);}
   .loop-step.is-active .loop-step-title{color:var(--text1);}
@@ -322,7 +342,13 @@
      scene shows one card on its own, with no section header to sit under.
      Colours are the app's light-theme tokens (theme.dart): completed border
      = primary #6F75FF over a #E6E7FF halo, time pill #EEEFFF, meta #8A8DA8,
-     comment names #292D91, pill-inactive #E9E9E9. */
+     comment names #292D91, pill-inactive #E9E9E9.
+     TWO DELIBERATE DIVERGENCES from theme.dart, both contrast-only: pill TEXT
+     is #4B51DE not #6F75FF (3.3:1 → 5.2:1) and meta TEXT is #6B6E85 not
+     #8A8DA8 (3.3:1 → 5.0:1). Every non-text use of those two colours — the
+     border, halo, icons, avatars — still matches the app exactly, since
+     graphics only owe 3:1 and already clear it. The app itself fails AA on
+     these same two inks; when theme.dart is fixed, re-sync to it. */
   .loop-feed-scene{width:288px;}
   .ftask-who{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
   .loop-feed-av{width:32px;height:32px;border-radius:50%;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
@@ -331,10 +357,10 @@
   /* Completed cards wear a soft halo instead of a shadow (TaskCardShell.useHalo). */
   .loop-feed-halo{background:#E6E7FF;border-radius:20px;padding:4px;}
   .loop-feed-card{background:#FFFFFF;border:2px solid #6F75FF;border-radius:16px;padding:14px 12px 12px;}
-  .ftask-pill{display:inline-flex;align-items:center;gap:4px;background:#EEEFFF;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;color:#6F75FF;line-height:1;}
+  .ftask-pill{display:inline-flex;align-items:center;gap:4px;background:#EEEFFF;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;color:#4B51DE;line-height:1;}
   .ftask-pill svg{display:block;flex-shrink:0;}
   .ftask-title{margin-top:6px;font-size:16px;font-weight:700;color:#1C1C1C;line-height:1.3;}
-  .ftask-repeat{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#8A8DA8;}
+  .ftask-repeat{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#6B6E85;}
   .ftask-repeat svg{display:block;flex-shrink:0;}
   .ftask-media{margin-top:8px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#EDEDF5;}
   .ftask-media img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -387,7 +413,7 @@
   .vignette-chip svg{width:3.33cqw;height:3.33cqw;display:block;flex-shrink:0;}
   .vignette-chip span{font-size:3.33cqw;font-weight:700;letter-spacing:0.056cqw;color:#0A0F81;line-height:1;}
   .vignette-caption{position:absolute;left:0;right:0;bottom:1.88%;height:5%;}
-  .vignette-caption-line{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.06cqw;font-weight:700;letter-spacing:0.42cqw;color:#6F75FF;line-height:1;text-transform:uppercase;opacity:0;transform:translateY(1.11cqw);transition:opacity 500ms ease-out 200ms,transform 500ms ease-out 200ms;}
+  .vignette-caption-line{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.06cqw;font-weight:700;letter-spacing:0.42cqw;color:var(--accent-ink);line-height:1;text-transform:uppercase;opacity:0;transform:translateY(1.11cqw);transition:opacity 500ms ease-out 200ms,transform 500ms ease-out 200ms;}
   .vignette-caption-line.is-current{opacity:1;transform:translateY(0);}
   .vignette-caption-line.is-prev{opacity:0;transform:translateY(1.11cqw);}
 
@@ -435,8 +461,10 @@
   }
   .sp-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;line-height:1;}
   .sp-chip svg{flex-shrink:0;}
-  .sp-time{background:#EEEFFF;color:#6F75FF;}
-  .sp-with{background:#DFF5EA;color:#0E8F62;}
+  /* Chip inks diverge from the app's #6F75FF / #0E8F62 for contrast only —
+     see the .loop-feed-scene note above. */
+  .sp-time{background:#EEEFFF;color:#4B51DE;}
+  .sp-with{background:#DFF5EA;color:#0A7350;}
   /* Badge + member avatars sit on one row, 6px apart (PactBadge.build). */
   .sp-withrow{display:flex;align-items:center;gap:6px;margin-top:4px;}
   /* 20px, 1.5px card-coloured separator ring — invisible against the white
@@ -445,16 +473,20 @@
   .sp-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid #FFFFFF;flex-shrink:0;background:#CFD1FF;box-sizing:border-box;}
   .sp-av img{width:100%;height:100%;object-fit:cover;display:block;}
   .sp-title{margin-top:4px;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.2px;color:#1C1C1C;}
-  .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;line-height:1.3;color:#8A8DA8;}
+  .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;line-height:1.3;color:#6B6E85;}
   .sp-repeat svg{flex-shrink:0;}
   /* Caption under the sample card — reads as a note about the screenshot, not
-     as body copy: centred to the card, smaller and lighter than .ic-copy p. */
+     as body copy. The step down is size + centring; the ink only drops one
+     rung on the ramp, because at 13px this is still body-size text to WCAG. */
   .ic-copy p.sp-note{max-width:326px;margin:0 auto;text-align:center;font-size:13px;line-height:1.6;color:var(--text3);}
   /* POSITIONING SPECTRUM — BeReal + Strava = Risers */
   .spec-sec{padding:64px 40px 56px;max-width:1120px;margin:0 auto;text-align:center;}
   .spec-formula{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
   .spec-fpill{font-size:12px;font-weight:700;letter-spacing:.2px;border-radius:8px;padding:5px 12px;background:var(--spec-neutral-bg);color:var(--spec-neutral-ink);line-height:1.3;}
-  .spec-fpill.strava{background:rgba(252,76,2,0.13);color:#FC4C02;}
+  /* Strava's brand orange is #FC4C02, but as small bold TEXT on its own 13%
+     tint that lands at 2.7:1. Text uses a darkened #B03500 (4.9:1); the tint,
+     and the check icon below, keep the true brand orange. */
+  .spec-fpill.strava{background:rgba(252,76,2,0.13);color:var(--strava-ink);}
   .spec-fpill.risers{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(91,82,232,0.4);}
   .spec-fop{font-size:16px;font-weight:600;color:var(--text3);}
   .spec-title{font-size:clamp(26px,3.6vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.14;color:var(--text1);max-width:640px;margin:0 auto;}
@@ -485,7 +517,7 @@
 
   .spec-badge{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.4px;border-radius:8px;padding:5px 11px;line-height:1.3;}
   .spec-badge.bereal{background:var(--spec-neutral-bg);color:#fff;}
-  .spec-badge.strava{background:rgba(252,76,2,0.14);color:#FC4C02;}
+  .spec-badge.strava{background:rgba(252,76,2,0.14);color:var(--strava-ink);}
   .spec-badge.risers{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(91,82,232,0.45);}
 
   .spec-role{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);margin:18px 0 7px;}
@@ -608,14 +640,17 @@
   .waitlist-success .ws-sub{font-size:14px;color:var(--text2);margin-bottom:18px;line-height:1.55;}
   .waitlist-success .ws-link{display:flex;gap:0;margin-bottom:14px;}
   .waitlist-success .ws-link input{flex:1;min-width:0;background:var(--input-bg);border:1px solid var(--input-border);border-right:none;border-radius:12px 0 0 12px;padding:12px 16px;color:var(--input-text);font-size:13px;font-family:'Inter',sans-serif;outline:none;}
+  /* This field suppresses its outline like the other two waitlist inputs, so
+     like them it has to hand focus back a visible indicator. */
+  .waitlist-success .ws-link input:focus{border-color:var(--accent);}
   .waitlist-success .ws-link button{background:var(--accent);color:#fff;border:none;border-radius:0 12px 12px 0;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:background .2s;}
   .waitlist-success .ws-link button:hover{background:#4a42d4;}
   .waitlist-success .ws-link button.copied{background:#3a9d6b;}
   .waitlist-success .ws-count{font-size:13px;font-weight:600;color:var(--text2);}
-  .waitlist-success .ws-count strong{color:var(--accent2);font-weight:700;}
+  .waitlist-success .ws-count strong{color:var(--accent-ink);font-weight:700;}
   .waitlist-success .ws-count-hint{font-size:12px;color:var(--text2);opacity:.7;margin-top:6px;line-height:1.5;}
   .waitlist-success .ws-perk{margin-top:16px;padding:12px 14px;background:var(--eyebrow-bg);border:1px solid var(--eyebrow-border);border-radius:10px;font-size:13px;color:var(--text1);line-height:1.5;}
-  .waitlist-success .ws-perk strong{color:var(--accent2);font-weight:700;}
+  .waitlist-success .ws-perk strong{color:var(--accent-ink);font-weight:700;}
 
   /* FOOTER */
   .footer{padding:36px 40px;border-top:1px solid var(--footer-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
@@ -719,7 +754,7 @@
   .proof-card-seenby{display:flex;align-items:center;gap:6px;}
   .proof-seen-icon{width:18px;height:18px;border-radius:50%;background:rgba(111,117,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .proof-seen-icon::after{content:'';width:8px;height:8px;border-radius:50%;background:#6F75FF;}
-  .proof-seen-label{font-size:11px;color:#787878;white-space:nowrap;}
+  .proof-seen-label{font-size:11px;color:#6F6F6F;white-space:nowrap;}
   .proof-avatars{display:flex;}
   .proof-av{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;margin-left:-5px;overflow:hidden;background:#CFD1FF;flex-shrink:0;}
   .proof-av:first-child{margin-left:0;}
@@ -973,7 +1008,7 @@
     .loop-title{order:1;text-align:center;margin:0 auto 24px;}
     .loop-step{order:2;border-left:0;border-top:2px solid var(--border2);padding:18px 0 0;cursor:default;width:100%;}
     .loop-step + .loop-step{margin-top:0;}
-    .loop-step .loop-step-n{color:var(--accent);}
+    .loop-step .loop-step-n{color:var(--accent-ink);}
     .loop-step .loop-step-title{color:var(--text1);}
     .loop-step .loop-step-sub{max-height:none;opacity:1;margin-top:8px;overflow:visible;}
     .loop-step:nth-of-type(1){order:2;}
@@ -1394,6 +1429,10 @@
     --cw-card-sh:0 3px 8px -3px rgba(0,0,0,.25),0 14px 24px -12px rgba(0,0,0,.32);
     --cw-proof-bg:#141224;
     --cw-label:#ffffff; --cw-sub:rgba(255,255,255,.55); --cw-ring:#1b1930;
+    /* "Signed" is 9px, so it can't ride --r-accent (#646aff = 4.4:1 on the
+       proof-card bg); it gets a lifted tint at 5.8:1. The signature stroke
+       beside it stays --r-accent — a graphic only owes 3:1. */
+    --cw-signed-ink:#7E84FF;
     --cw-pill-bg:rgba(111,117,255,.20); --cw-pill-ink:#CFD1FF;
     --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
     --cw-veil:rgba(7,8,22,.52);
@@ -1411,7 +1450,8 @@
     --cw-card-bg:#ffffff; --cw-card-bd:rgba(10,10,24,.10);
     --cw-card-sh:0 3px 8px -3px rgba(26,22,92,.10),0 14px 24px -12px rgba(26,22,92,.14);
     --cw-proof-bg:#eceafd;
-    --cw-label:#17151f; --cw-sub:rgba(23,21,31,.55); --cw-ring:#ffffff;
+    --cw-label:#17151f; --cw-sub:rgba(23,21,31,.66); --cw-ring:#ffffff;
+    --cw-signed-ink:#5b54e8;
     --cw-pill-bg:#CFD1FF; --cw-pill-ink:#292D91;
     --cw-dash:rgba(10,10,24,.18); --cw-cta-bg:rgba(10,10,24,.025); --cw-cta-ink:#4840d4;
     --cw-veil:rgba(247,248,250,.6);
@@ -1530,7 +1570,7 @@
   .cwall-sig-mark svg path{fill:none;stroke:var(--r-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
   .cwall-sig-line{width:min(74%,132px);height:1px;margin:0 0 .5em;
     background:linear-gradient(90deg,transparent,var(--cw-sub),transparent);}
-  .cwall-signed{font-size:clamp(9px,5cqw,12px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--r-accent);line-height:1.25;}
+  .cwall-signed{font-size:clamp(9px,5cqw,12px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cw-signed-ink);line-height:1.25;}
 
   @media (max-width:640px){
     /* card size only — the cqw clamps land on their floors at this width,
@@ -1552,13 +1592,13 @@
     <div class="nav-logo">
       <img src="assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"/>
     </div>
-    <ul class="nav-links"><li onclick="smoothScrollTo('loop')">How It Works</li><li onclick="smoothScrollTo('inner-circle')">Inner Circle</li><li onclick="smoothScrollTo('climb')">The Climb</li><li><a href="/why-risers-works/" style="color:inherit;text-decoration:none;">Why It Works</a></li></ul>
+    <ul class="nav-links"><li><a href="#loop" onclick="smoothScrollTo('loop');return false;">How It Works</a></li><li><a href="#inner-circle" onclick="smoothScrollTo('inner-circle');return false;">Inner Circle</a></li><li><a href="#climb" onclick="smoothScrollTo('climb');return false;">The Climb</a></li><li><a href="/why-risers-works/">Why It Works</a></li></ul>
     <div class="nav-right">
-      <div class="toggle" id="toggle" onclick="toggleMode()">
-        <span class="t-icon" id="ticon">☀️</span>
-        <div class="t-pill"><div class="t-thumb"></div></div>
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
         <span class="t-lbl" id="tlbl">Light</span>
-      </div>
+      </button>
       <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
     </div>
   </nav>
@@ -1582,7 +1622,7 @@
       <div class="rhero-cta-center">
         <!-- waitlist form kept from existing build (wired to waitlist JS) -->
         <form class="hero-waitlist" id="heroForm" novalidate>
-          <input type="email" placeholder="your@email.com" required autocomplete="email"/>
+          <input type="email" aria-label="Your email address" placeholder="your@email.com" required autocomplete="email"/>
           <button type="submit">Join the Waitlist</button>
         </form>
         <div class="hero-waitlist-note" id="heroNote">Be first in your circle.</div>
@@ -1971,7 +2011,7 @@
       <p id="waitlistIntro">Risers is almost here. Be first in your circle — get early access when we launch on iOS and Android.</p>
       <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
       <form class="waitlist-form" id="mainForm" novalidate>
-        <input type="email" placeholder="your@email.com" required autocomplete="email"/>
+        <input type="email" aria-label="Your email address" placeholder="your@email.com" required autocomplete="email"/>
         <button type="submit">Get early access</button>
       </form>
       <div class="waitlist-note" id="waitlistNote">We'll email you the moment we launch later this year. After joining, share your link — <strong>earn 1 month of <span class="pro-tag">Risers Pro</span> for each friend who joins</strong>, up to 12 months.</div>
@@ -1984,7 +2024,7 @@
         <div class="ws-divider"></div>
         <div class="ws-sub"><strong>Your inner circle starts now.</strong><br>Share your link — we'll connect you both when Risers launches.</div>
         <div class="ws-link">
-          <input type="text" id="shareLink" readonly/>
+          <input type="text" id="shareLink" aria-label="Your referral share link" readonly/>
           <button type="button" id="shareCopy">Copy</button>
         </div>
         <div class="ws-count" id="shareCount">Loading your count…</div>
@@ -2076,12 +2116,20 @@ let light = localStorage.getItem(THEME_KEY) !== 'dark';
   document.getElementById('site').classList.toggle('light', light);
   document.getElementById('ticon').textContent = light ? '☀️' : '🌙';
   document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
+  syncToggleA11y();
 })();
+// The button is labelled "Dark mode" and pressed === dark, so screen readers
+// announce the state being toggled rather than the icon currently showing.
+function syncToggleA11y() {
+  const t = document.getElementById('toggle');
+  if (t) t.setAttribute('aria-pressed', String(!light));
+}
 function toggleMode() {
   light = !light;
   document.getElementById('site').classList.toggle('light', light);
   document.getElementById('ticon').textContent = light ? '☀️' : '🌙';
   document.getElementById('tlbl').textContent  = light ? 'Light' : 'Dark';
+  syncToggleA11y();
   localStorage.setItem(THEME_KEY, light ? 'light' : 'dark');
 }
 
@@ -2886,8 +2934,8 @@ function toggleMode() {
   // row in #6F75FF / #8A8DA8 (TimePill + ExpandableTaskCard._buildBody), and
   // the arm + bubble straight out of assets/images/ic_flex_full.svg and
   // ic_comment_full.svg — the same arm the proof wall's flex pill uses.
-  const clockPillSVG = '<svg width="13" height="13" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#6F75FF" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#6F75FF" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#6F75FF" stroke-width="1.2" stroke-linecap="round"/></svg>';
-  const repeatMetaSVG = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#8A8DA8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const clockPillSVG = '<svg width="13" height="13" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#4B51DE" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#4B51DE" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#4B51DE" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  const repeatMetaSVG = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const flexFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M10.0646 9.43626C9.9692 9.48397 7.97046 14.6426 8.20904 14.4518C8.44762 14.2609 9.7712 13.7205 10.8334 13.736C11.8418 13.7507 13.3146 14.4518 13.3146 14.4518C13.3146 14.4518 14.4486 13.5697 15.0801 13.3066C16.082 12.8891 17.1923 12.6468 18.2771 12.6863C18.9928 12.7124 19.8244 12.8732 20.5674 13.3066C21.14 13.6406 21.6143 14.1414 21.808 14.6903C22.0943 15.5015 22.1842 16.2355 21.8981 17.5002C21.6017 18.8108 21.0381 19.5229 19.9895 20.3632C18.9308 21.2114 18.1763 21.3652 16.7448 21.6992C15.3134 22.0332 13.1828 22.101 10.9235 21.8423C9.15843 21.6403 7.67884 21.2698 6.48595 20.8403C5.29306 20.4109 3.0027 18.884 3.0027 18.884C3.0027 18.884 2.19149 18.216 2.09611 17.5002C2.00073 16.7845 2.09609 16.4505 2.09611 15.7347C2.09612 15.019 2.43966 13.116 3.0027 11.5357C3.70249 9.57166 4.26192 8.47568 5.57935 6.85961C6.81434 5.34466 7.53292 4.29004 9.34889 3.56722C11.1169 2.86348 13.4524 2.85129 14.2159 3.32864C14.9794 3.806 15.2629 4.90993 15.2656 6.04844C15.2706 8.07408 12.7367 10.0088 11.9733 10.0566C11.2098 10.1043 10.1601 9.38854 10.0646 9.43626Z" fill="#6F75FF"/></svg>';
   const commentFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 2.74996C7.66738 2.74996 3.75 6.66734 3.75 11.5C3.74926 12.7892 4.03341 14.0626 4.58213 15.2292L3.76838 19.1991C3.7394 19.3408 3.74603 19.4875 3.78766 19.6261C3.82929 19.7647 3.90463 19.8907 4.00693 19.993C4.10923 20.0953 4.2353 20.1707 4.37386 20.2123C4.51242 20.2539 4.65913 20.2606 4.80088 20.2316L8.77075 19.4178C9.903 19.9516 11.1683 20.2491 12.5 20.2491C17.3326 20.2491 21.25 16.3326 21.25 11.4991C21.25 6.66733 17.3326 2.74908 12.5 2.74908" fill="#6F75FF"/></svg>';
 
