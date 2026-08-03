@@ -186,7 +186,9 @@
   /* THE STANCE — closes the app demo. The competitive noise drops & dims;
      the proof rises. Quiet by design: muted negations, one-shot reveal, ~10px
      of motion. Flat DOM so .is-calm can reflow the same spans into a 2-liner. */
-  .stance{padding:48px 24px 20px;display:flex;justify-content:center;}
+  /* Padding is tuned per breakpoint so the gap above (.proof-sec bottom pad)
+     and below (.sec top pad) come out equal — see the media queries. */
+  .stance{padding:34px 24px 34px;display:flex;justify-content:center;}
   .stance-inner{position:relative;width:100%;max-width:560px;}
   /* horizon hairline — carries the hero's rising rays into the band, sweeps once */
   .stance-rule{display:block;height:1px;width:100%;margin:0 0 28px;opacity:0;transform:scaleX(0);transform-origin:left center;
@@ -235,7 +237,6 @@
     .stance-arrow{opacity:.55;animation:none;}
   }
   @media (max-width:600px){
-    .stance{padding:34px 20px 14px;}
     .stance-rule{margin-bottom:20px;}
     .stance-rows{grid-template-columns:1fr;justify-items:center;row-gap:2px;}
     .stance-arrow{display:none;}
@@ -1028,6 +1029,7 @@
     .nav.scrolled{padding:9px 18px 9px 22px;max-width:calc(100% - 24px);top:12px;}
     .nav-links{gap:20px;}
     .sec{padding:48px 20px 0;}
+    .stance{padding:30px 24px 42px;}
     .phones{padding:16px 24px;flex-wrap:wrap;}
     .ic-sec{padding:36px 24px;gap:32px;}
     .waitlist-sec{padding:48px 24px;}
@@ -1117,6 +1119,7 @@
 
     /* PROOF section — hide orbit cards, only show phone */
     .proof-sec{padding:16px 16px 36px;}
+    .stance{padding:36px 16px 24px;}
     .proof-track{display:none;}
     .proof-stage{justify-content:center;}
     /* Phone shrinks by a uniform 0.879 so the camera frame can simply scale
