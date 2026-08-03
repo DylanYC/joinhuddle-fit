@@ -452,13 +452,45 @@
      green. Like the loop-stack cards, it stays in the app's LIGHT theme in both
      site modes — it reads as a screenshot, not as site chrome. */
   .sp-card{
-    width:100%;max-width:326px;margin:22px auto 10px;box-sizing:border-box;
+    width:100%;box-sizing:border-box;
     background:#FFFFFF;
     border:2.5px solid rgba(200,200,200,0.9);
     border-radius:16px;
     padding:14px 12px 12px;
     box-shadow:0 6px 2px -2.25px rgba(0,0,0,0.15);
   }
+  /* Two sample plans in a swipe carousel, so the section can show a solo-ish
+     pact and a whole-family one without stacking two screenshots. Native
+     overflow scrolling does the swiping (momentum + snap for free); the JS
+     only clones the end cards to close the loop and drives the pointer drag
+     for mice. Without JS this degrades to a plain two-card scroller. */
+  .sp-carousel{max-width:326px;margin:22px auto 10px;}
+  .sp-viewport{
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    /* The card's bottom shadow lives outside its box, and an x-scroller can't
+       keep overflow-y visible — so the clearance is padding, not spill. */
+    padding-bottom:10px;
+    scrollbar-width:none;-ms-overflow-style:none;
+    cursor:grab;
+  }
+  .sp-viewport::-webkit-scrollbar{display:none;}
+  /* Snap is switched off for the duration of a mouse drag so the browser
+     doesn't fight the scrollLeft we're writing frame by frame; it comes back
+     once we've landed exactly on a snap point, so re-enabling never jumps. */
+  .sp-viewport.is-dragging{cursor:grabbing;scroll-snap-type:none;}
+  .sp-viewport:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:18px;}
+  .sp-track{display:flex;align-items:stretch;}
+  .sp-slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;display:flex;}
+  .sp-dots{display:flex;justify-content:center;gap:2px;margin-top:2px;}
+  .sp-dot{display:block;width:22px;height:22px;padding:7px;border:0;background:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
+  .sp-dot span{display:block;width:8px;height:8px;border-radius:50%;background:var(--text3);opacity:.34;transition:opacity .22s ease,background-color .22s ease;}
+  .sp-dot.is-on span{background:var(--accent);opacity:1;}
+  .sp-dot:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:50%;}
+  @media (prefers-reduced-motion: reduce){ .sp-dot span{transition:none;} }
+  .sp-desc{margin-top:3px;font-size:13px;line-height:1.4;color:#5A5D72;}
   .sp-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;line-height:1;}
   .sp-chip svg{flex-shrink:0;}
   /* Chip inks diverge from the app's #6F75FF / #0E8F62 for contrast only —
@@ -466,7 +498,11 @@
   .sp-time{background:#EEEFFF;color:#4B51DE;}
   .sp-with{background:#DFF5EA;color:#0A7350;}
   /* Badge + member avatars sit on one row, 6px apart (PactBadge.build). */
-  .sp-withrow{display:flex;align-items:center;gap:6px;margin-top:4px;}
+  .sp-withrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px 6px;margin-top:4px;}
+  /* Multi-member pacts stack their avatars: the ring below is the card colour,
+     so a 6px overlap reads as one group rather than three loose circles. */
+  .sp-avs{display:flex;align-items:center;}
+  .sp-avs .sp-av + .sp-av{margin-left:-6px;}
   /* 20px, 1.5px card-coloured separator ring — invisible against the white
      card by design: absence is never rendered, so a member who hasn't shown
      up yet gets nothing at all. */
@@ -1877,20 +1913,56 @@
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
 
-      <div class="sp-card">
-        <span class="sp-chip sp-time">
-          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Anytime
-        </span>
-        <div class="sp-withrow">
-          <span class="sp-chip sp-with">
-            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Klaudia
-          </span>
-          <span class="sp-av"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span>
+      <div class="sp-carousel" id="sp-carousel">
+        <div class="sp-viewport" id="sp-viewport" tabindex="0" role="group" aria-label="Example shared plans">
+          <div class="sp-track">
+
+            <div class="sp-slide">
+              <div class="sp-card">
+                <span class="sp-chip sp-time">
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Anytime
+                </span>
+                <div class="sp-withrow">
+                  <span class="sp-chip sp-with">
+                    <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Klaudia
+                  </span>
+                  <span class="sp-avs">
+                    <span class="sp-av"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span>
+                  </span>
+                </div>
+                <div class="sp-title">🥘 Meal Prep Sunday</div>
+                <div class="sp-repeat">
+                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every 2 weeks on Sun
+                </div>
+              </div>
+            </div>
+
+            <div class="sp-slide">
+              <div class="sp-card">
+                <span class="sp-chip sp-time">
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>8:00 PM
+                </span>
+                <div class="sp-withrow">
+                  <span class="sp-chip sp-with">
+                    <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Ele, Richard, Gisela
+                  </span>
+                  <span class="sp-avs">
+                    <span class="sp-av"><img src="assets/Avatars/Family_Ele.png" alt="" loading="lazy" decoding="async"></span>
+                    <span class="sp-av"><img src="assets/Avatars/Family_Richard.png" alt="" loading="lazy" decoding="async"></span>
+                    <span class="sp-av"><img src="assets/Avatars/Family_Gisela.png" alt="" loading="lazy" decoding="async"></span>
+                  </span>
+                </div>
+                <div class="sp-title">🚶 After Dinner Walk</div>
+                <div class="sp-desc">A short walk outside to help with digestion</div>
+                <div class="sp-repeat">
+                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every weekday
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-        <div class="sp-title">🥘 Meal Prep Sunday</div>
-        <div class="sp-repeat">
-          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every 2 weeks on Sun
-        </div>
+        <div class="sp-dots" id="sp-dots"></div>
       </div>
 
       <p class="sp-note">You can even share a plan with someone in your circle. Same commitment, regardless of continents or time zones.</p>
@@ -1953,7 +2025,7 @@
         <span class="spec-badge strava">Strava</span>
         <div class="spec-role">Core focus</div>
         <div class="spec-focus">Share workout performance.</div>
-        <div class="spec-gap">Powerful for tracking performance and broadcasting it. Ideal for enthusiasts who run, cycle, or swim, and who thrive with a bit of performance pressure.</div>
+        <div class="spec-gap">Powerful for tracking performance data and broadcasting it. Ideal for enthusiasts who run, cycle, or swim, and who thrive with a bit of performance pressure.</div>
         <div class="spec-proofs">
           <div class="spec-proof is-muted chk-strava">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -4020,6 +4092,148 @@ function toggleMode() {
   document.getElementById('toggle')?.addEventListener('click', () => {
     if (!raf) requestAnimationFrame(() => paint(0));
   });
+})();
+
+/* ============================================================
+   SHARED PLANS — infinite swipe carousel
+   Two sample task cards that cycle forever in both directions. The loop is
+   the usual clone trick: a copy of the last card sits before the first and a
+   copy of the first sits after the last, so a swipe off either end lands on a
+   copy, and once the scroll settles we jump to the identical real card with
+   scrolling behaviour forced to instant. Nothing animates during the swap, so
+   it can't be seen.
+   ============================================================ */
+(() => {
+  const root = document.getElementById('sp-carousel');
+  const vp   = document.getElementById('sp-viewport');
+  const dots = document.getElementById('sp-dots');
+  if (!root || !vp || !dots) return;
+  const track = vp.querySelector('.sp-track');
+  const reals = Array.from(track.children);
+  const N = reals.length;
+  if (N < 2) return;
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // --- clone the ends -------------------------------------------------
+  const head = reals[N - 1].cloneNode(true);
+  const tail = reals[0].cloneNode(true);
+  [head, tail].forEach(c => {
+    c.setAttribute('aria-hidden', 'true');
+    // The clones are always one swipe away, so their images must not wait for
+    // a lazy-load intersection that fires mid-transition.
+    c.querySelectorAll('img').forEach(im => im.removeAttribute('loading'));
+  });
+  track.insertBefore(head, reals[0]);
+  track.appendChild(tail);
+
+  const W  = () => vp.clientWidth;
+  const slideAt = i => i * W();          // i counts clones: 0 = head clone
+  let cur = 0;                            // index into `reals`
+
+  function jump(i){                       // no animation, no snap fight
+    const prev = vp.style.scrollBehavior;
+    vp.style.scrollBehavior = 'auto';
+    vp.scrollLeft = slideAt(i);
+    vp.style.scrollBehavior = prev;
+  }
+  function glide(i){
+    vp.scrollTo({ left: slideAt(i), behavior: still.matches ? 'auto' : 'smooth' });
+  }
+
+  // --- dots -----------------------------------------------------------
+  const buttons = reals.map((slide, k) => {
+    const name = (slide.querySelector('.sp-title')?.textContent || ('Plan ' + (k + 1))).trim();
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sp-dot';
+    b.setAttribute('aria-label', 'Show ' + name);
+    b.innerHTML = '<span></span>';
+    b.addEventListener('click', () => { halt(); glide(k + 1); });
+    dots.appendChild(b);
+    return b;
+  });
+  function paintDots(){
+    buttons.forEach((b, k) => {
+      b.classList.toggle('is-on', k === cur);
+      b.setAttribute('aria-current', k === cur ? 'true' : 'false');
+    });
+  }
+
+  // --- settle: swap a clone for the real card it copies ----------------
+  function settle(){
+    vp.classList.remove('is-dragging');
+    const i = Math.round(vp.scrollLeft / W());
+    if (i <= 0)          { cur = N - 1; jump(N); }
+    else if (i >= N + 1) { cur = 0;     jump(1); }
+    else                 { cur = i - 1; }
+    paintDots();
+  }
+  let settleT = 0;
+  // Long enough that a smooth scroll's own stream of events keeps pushing it
+  // back rather than settling mid-flight.
+  function scheduleSettle(ms){ clearTimeout(settleT); settleT = setTimeout(settle, ms); }
+  vp.addEventListener('scroll', () => scheduleSettle(140), { passive: true });
+
+  // --- autoplay: a nudge so the second card is discoverable ------------
+  // It only runs while the section is on screen, and it stops for good the
+  // moment the visitor takes over — nothing worse than a card sliding out
+  // from under a finger.
+  let timer = 0, visible = false, stopped = false;
+  function arm(){
+    clearInterval(timer); timer = 0;
+    if (stopped || !visible || still.matches) return;
+    timer = setInterval(() => glide(cur + 2), 5200);
+  }
+  function halt(){ stopped = true; clearInterval(timer); timer = 0; }
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; arm(); },
+    { threshold: 0.4 }).observe(root);
+  still.addEventListener('change', arm);
+  root.addEventListener('mouseenter', () => { clearInterval(timer); timer = 0; });
+  root.addEventListener('mouseleave', arm);
+
+  // --- mouse drag (touch already has native scrolling) -----------------
+  let dragging = false, sx = 0, sl = 0;
+  vp.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch' || e.button !== 0) return;
+    dragging = true; sx = e.clientX; sl = vp.scrollLeft;
+    vp.classList.add('is-dragging');
+    vp.setPointerCapture(e.pointerId);
+    halt();
+  });
+  vp.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    vp.scrollLeft = sl - (e.clientX - sx);
+    e.preventDefault();
+  });
+  function endDrag(e){
+    if (!dragging) return;
+    dragging = false;
+    try { vp.releasePointerCapture(e.pointerId); } catch (_) {}
+    const dx = e.clientX - sx;
+    let i = Math.round(sl / W());
+    if (Math.abs(dx) > W() * 0.18) i += dx < 0 ? 1 : -1;   // flick past 18%
+    glide(i);
+    // settle() is what drops .is-dragging and turns snap back on, so it has to
+    // run even for a press-and-release that never moved — that scrolls
+    // nowhere, and a scroll that never happens fires no scroll event.
+    scheduleSettle(320);
+  }
+  vp.addEventListener('pointerup', endDrag);
+  vp.addEventListener('pointercancel', endDrag);
+  vp.addEventListener('dragstart', e => e.preventDefault());
+
+  vp.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); halt();
+    glide(cur + 1 + (e.key === 'ArrowRight' ? 1 : -1));
+  });
+  // Touch counts as taking over too.
+  vp.addEventListener('touchstart', halt, { passive: true });
+
+  window.addEventListener('resize', () => { jump(cur + 1); });
+
+  jump(1);
+  paintDots();
 })();
 </script>
 
