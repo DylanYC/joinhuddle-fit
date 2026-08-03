@@ -646,8 +646,8 @@
      Both fade out as the sky turns to dusk — this is a landing-act gag
      and has no business in the sunset payoff frame. */
   const PLANE_BANNERS = [
-    { text: "You're not a quitter!" },
-    { text: 'You just need', icon: true },
+    { text: 'Consistency awaits you!' },
+    { text: 'Call 1-800-inner-circle', icon: true },
   ];
 
   // Same asset the page preloads for the equation, so this is a cache hit.

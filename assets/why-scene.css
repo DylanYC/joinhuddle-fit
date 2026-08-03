@@ -267,7 +267,7 @@ body {
 .overlay-h1 {
   /* Sized to sit ABOVE the equation as its title, not to be the loudest
      thing on screen — the formula line below carries the visual weight. */
-  font-size: clamp(30px, 7.4vw, 52px);
+  font-size: clamp(24px, 5.6vw, 40px);
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -0.022em;
