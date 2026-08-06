@@ -116,7 +116,7 @@
 
 /* FOOTER */
 .footer{padding:36px 40px;border-top:1px solid var(--footer-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
-.fbrand{display:flex;align-items:center;gap:12px;}
+.fbrand{display:flex;align-items:center;gap:14px;}
 .fl{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--text2);text-decoration:none;}
 .fl svg{height:28px;width:auto;display:block;}
 .fl .logo-mark{fill:#6F75FF;}
@@ -133,8 +133,9 @@
 .fcopy{font-size:12px;color:var(--text3);}
 /* Flag emoji have no colour glyph on Windows — the browser falls back to the
    two regional-indicator letters (DE, CA), which still reads correctly. */
-.fbuilt{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--footer-border);border-radius:999px;font-size:11.5px;font-weight:600;letter-spacing:.01em;color:var(--text3);white-space:nowrap;}
-.fbuilt .fflag{font-size:12.5px;letter-spacing:.08em;}
+.fbuilt{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,0.74);white-space:nowrap;}
+.light .fbuilt{color:rgba(10,10,24,0.72);}
+.fbuilt .fflag{font-size:13.5px;letter-spacing:.08em;}
 
 @media (max-width:760px){
   .nav{padding:14px 20px;}
