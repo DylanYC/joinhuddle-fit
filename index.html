@@ -3397,22 +3397,25 @@ function toggleMode() {
 
   // proof: an image path, or the string "signature" for unphotographable plans
   // (signature cards teach the promise-signature feature — keep at least two).
-  // The tiny-to-large spread ("1000 steps during lunch break" next to
+  // The tiny-to-large spread ("1000 steps during lunch break" alongside
   // "15,000 Steps") is the no-judgment thesis — deliberate, do not normalise it.
   // by: who posted the proof (their avatar sits top-left on the proof card).
   // flexes: how many of the circle flexed the proof.
+  // Array order is reveal order: the wall drifts leftward, so the first entries
+  // are the first plans to flip to their proof. The everyday, instantly legible
+  // plans lead; the more specific ones (knee rehab) sit further back.
   const PLANS = [
+    { emoji:'🏃', label:'Morning jog',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
     { emoji:'🚶', label:'1000 steps during lunch break', cadence:'Today', avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
-    { emoji:'😴', label:'Bed by 11',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
     { emoji:'🥗', label:'Sunday meal prep',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
+    { emoji:'😴', label:'Bed by 11',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
+    { emoji:'🍎', label:'Healthy snacks only', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
     { emoji:'👟', label:'15,000 Steps',       cadence:'Sat · Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
-    { emoji:'🦵', label:'Knee rehab',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
     { emoji:'📵', label:'No phone after 10',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
     { emoji:'💧', label:'Full bottle of water', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
-    { emoji:'🍎', label:'Healthy snacks only', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
     { emoji:'🚴', label:'10-min spin class',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
-    { emoji:'🏃', label:'Morning jog',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
     { emoji:'💪', label:'Gym pull day',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
+    { emoji:'🦵', label:'Knee rehab',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
     { emoji:'🌿', label:'An hour in the garden', cadence:'Saturdays', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
   ];
 
