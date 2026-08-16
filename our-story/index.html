@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Story — Risers</title>
+<meta name="description" content="Risers started in 2016 as “GymBuddies”, a way to keep showing up when your gym buddy moved cities. Nearly a decade later, Dylan finally built it.">
+<link rel="canonical" href="https://risers.fit/our-story/">
+<meta property="og:title" content="Our Story — Risers">
+<meta property="og:description" content="Risers started in 2016 as “GymBuddies”, a way to keep showing up when your gym buddy moved cities. Nearly a decade later, Dylan finally built it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://risers.fit/our-story/">
+<meta property="og:image" content="https://risers.fit/assets/Our%20Story%20Images/Huddle-5K-Pitch.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="apple-touch-icon" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="stylesheet" href="/assets/page.css">
+
+<style>
+  /* Page-specific styles. Deliberately quiet: one column of prose, one photo,
+     no scroll effects. Everything else (nav, footer, theme toggle, ink ramp)
+     comes from page.css. */
+
+  /* Narrower than the 760px legal pages — long-form reading wants a shorter
+     line. */
+  .story{max-width:680px;}
+
+  /* A page title, not a hero. page.css sizes .page h1 for the legal pages
+     (clamp 36–52px); here it sits just above the body copy. */
+  .story h1{font-size:30px;letter-spacing:-.6px;margin-bottom:26px;}
+
+  .story .prose{font-size:17px;line-height:1.75;}
+  .story .prose p{margin:0 0 18px;}
+  .story .prose em{color:var(--text1);font-style:italic;}
+
+  /* Opening paragraph sits one rung brighter than body copy. */
+  .story-lede{font-size:19px;line-height:1.65;color:var(--text1);font-weight:500;}
+
+  /* The "…until…" turn in the story. A one-line beat, centred, so the break
+     lands visually as well as in the reading. */
+  .story-beat{text-align:center;color:var(--text3);font-size:17px;letter-spacing:.06em;margin:26px 0 22px;}
+
+  .story-fig{margin:34px 0 30px;}
+  .story-fig img{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:16px;border:1px solid var(--border);}
+  .story-fig figcaption{margin:14px auto 0;max-width:420px;font-size:13px;line-height:1.6;color:var(--text3);text-align:center;}
+
+  .story-quote{margin:28px 0;padding:2px 0 2px 20px;border-left:2px solid var(--accent);font-size:18px;line-height:1.65;color:var(--text1);font-weight:500;}
+
+  .story-signoff{margin-top:24px;color:var(--text1);font-weight:600;}
+
+  /* Nav width ladder. page.css tunes it for three centred links; this page
+     carries four (same set as the home page), so it inherits the home page's
+     ladder instead. Must come after page.css — equal specificity, source
+     order wins. */
+  @media (max-width:1040px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:860px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:800px){ .nav-links{display:none;} }
+
+  @media (max-width:760px){
+    .story .prose{font-size:16.5px;}
+    .story-lede{font-size:18px;}
+    .story-quote{font-size:17px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site light" id="site">
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"></a>
+    <ul class="nav-links">
+      <li><a href="/#loop">How It Works</a></li>
+      <li><a href="/#inner-circle">Inner Circle</a></li>
+      <li><a href="/#climb">The Climb</a></li>
+      <li><a href="/why-risers-works/">Why It Works</a></li>
+    </ul>
+    <div class="nav-right">
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
+        <span class="t-lbl" id="tlbl">Light</span>
+      </button>
+      <a class="nav-cta" href="/#waitlist">Join Waitlist</a>
+    </div>
+  </nav>
+
+  <main class="page story">
+    <h1>Our Story</h1>
+
+    <div class="prose">
+      <p class="story-lede">My name&rsquo;s Dylan, the builder of Risers.</p>
+
+      <p>
+        The origins of this app go back many years: to 2016, in second year of
+        university in Waterloo, Canada.
+      </p>
+
+      <p>
+        Back then, my girlfriend Klaudia (now my wife) and I were what we liked
+        to call &ldquo;gym buddies&rdquo;. We helped each other get our butts to
+        the gym when the other didn&rsquo;t feel like it. We started to build
+        amazing consistency&hellip;
+      </p>
+
+      <p class="story-beat">&hellip;until&hellip;</p>
+
+      <p>
+        &hellip;we got internships in different cities. Suddenly, I&rsquo;d lost
+        my gym buddy. The idea for an app called &ldquo;GymBuddies&rdquo; was
+        born: a simple app to post a pic once you showed up to the gym.
+      </p>
+
+      <p>
+        I got to work, and we even pitched the idea at the University of
+        Waterloo&rsquo;s 5K Velocity Pitch Competition under a new name:
+        &ldquo;Huddle&rdquo;.
+      </p>
+
+      <figure class="story-fig">
+        <img src="/assets/Our Story Images/Huddle-5K-Pitch.jpg"
+             alt="Dylan on stage with a microphone, presenting a slide that reads “Introducing Huddle — for iOS and Android”."
+             width="760" height="1327" loading="lazy" decoding="async">
+        <figcaption>Pitching &ldquo;Huddle&rdquo; at the 5K Velocity Pitch Competition, University of Waterloo.</figcaption>
+      </figure>
+
+      <p>
+        I ended up shelving the idea, but vowed to <em>one day</em> bring it to
+        life. Nearly a <em>decade</em> later, tools like Claude Code gave me the
+        chance to reignite the project.
+      </p>
+
+      <p>
+        I&rsquo;ve gotten back to work, and have spent countless nights and
+        weekends working away.
+      </p>
+
+      <p>
+        Though fitness was the initial direction, I realized the formula of
+        plans + witnesses was so much bigger. Health is just as much about the
+        mind and spirit as it is about the body.
+      </p>
+
+      <p>
+        &ldquo;Huddle&rdquo; evolved into &ldquo;Risers&rdquo;: a social health
+        app for you and your partner or inner circle. My obsessions with health
+        and fitness, with self improvement, and with human-centric technology
+        have found a home to flourish and come together.
+      </p>
+
+      <p>And I&rsquo;ve never lost sight of my north star:</p>
+
+      <blockquote class="story-quote">
+        What&rsquo;s the app that I&rsquo;d love to use with Klaudia every day
+        to build consistency together?
+      </blockquote>
+
+      <p>We hope you and your inner circle love it too.</p>
+
+      <p class="story-signoff">&mdash; Dylan</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="fbrand">
+      <a href="/" class="fl">
+        <img class="fl-dark" src="/assets/Risers-Logo-Dark-Icon+Wordmark.svg" alt="Risers" width="120" height="28">
+        <img class="fl-light" src="/assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
+      </a>
+      <span class="fbuilt">Built in <span class="fflag">🇩🇪🇨🇦</span></span>
+    </div>
+    <div class="fd">risers.fit</div>
+    <ul class="flinks">
+      <li><a href="/our-story/">Our Story</a></li>
+      <li><a href="/privacy">Privacy Policy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="fcopy">© 2026 Risers · Dylan Yip-Chuck</div>
+  </footer>
+
+</div>
+
+<script src="/assets/page.js"></script>
+</body>
+</html>
