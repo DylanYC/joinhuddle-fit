@@ -465,7 +465,10 @@
      overflow scrolling does the swiping (momentum + snap for free); the JS
      only clones the end cards to close the loop and drives the pointer drag
      for mice. Without JS this degrades to a plain two-card scroller. */
-  .sp-carousel{max-width:326px;margin:22px auto 10px;}
+  /* --sp-gut is the strip of neighbouring card that peeks past the centred
+     one on each side. It doubles as the fade distance below, so the peek
+     dissolves into the page instead of being sliced off at a hard edge. */
+  .sp-carousel{--sp-gut:18px;max-width:calc(326px + 2 * var(--sp-gut));margin:22px auto 10px;}
   .sp-viewport{
     overflow-x:auto;overflow-y:hidden;
     scroll-snap-type:x mandatory;
@@ -476,6 +479,10 @@
     padding-bottom:10px;
     scrollbar-width:none;-ms-overflow-style:none;
     cursor:grab;
+    /* Alpha mask rather than gradient overlays, so the fade works over
+       whatever the section's background happens to be in either theme. */
+    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--sp-gut),#000 calc(100% - var(--sp-gut)),transparent 100%);
+    mask-image:linear-gradient(to right,transparent 0,#000 var(--sp-gut),#000 calc(100% - var(--sp-gut)),transparent 100%);
   }
   .sp-viewport::-webkit-scrollbar{display:none;}
   /* Snap is switched off for the duration of a mouse drag so the browser
@@ -484,7 +491,11 @@
   .sp-viewport.is-dragging{cursor:grabbing;scroll-snap-type:none;}
   .sp-viewport:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:18px;}
   .sp-track{display:flex;align-items:stretch;}
-  .sp-slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;display:flex;}
+  /* Gutter spacers instead of padding on the scroller: end padding on an
+     overflowing scroll container is honoured inconsistently, a flex item is
+     honoured everywhere. They carry no snap-align, so they're never a stop. */
+  .sp-track::before,.sp-track::after{content:'';flex:0 0 var(--sp-gut);}
+  .sp-slide{flex:0 0 calc(100% - 2 * var(--sp-gut));scroll-snap-align:center;scroll-snap-stop:always;display:flex;}
   .sp-dots{display:flex;justify-content:center;gap:2px;margin-top:2px;}
   .sp-dot{display:block;width:22px;height:22px;padding:7px;border:0;background:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
   .sp-dot span{display:block;width:8px;height:8px;border-radius:50%;background:var(--text3);opacity:.34;transition:opacity .22s ease,background-color .22s ease;}
@@ -4153,7 +4164,11 @@ function toggleMode() {
   track.insertBefore(head, reals[0]);
   track.appendChild(tail);
 
-  const W  = () => vp.clientWidth;
+  // The pitch is the slide, not the viewport: the viewport is wider by the two
+  // gutter spacers that let the neighbouring card peek out and fade.
+  const W  = () => track.querySelector('.sp-slide').getBoundingClientRect().width;
+  // Slide i sits one gutter in from the scroll origin, and a centred slide
+  // leaves exactly one gutter on its left — so the two cancel out.
   const slideAt = i => i * W();          // i counts clones: 0 = head clone
   let cur = 0;                            // index into `reals`
 
