@@ -1502,7 +1502,7 @@
      second sentence) answers the question for them, which is the one thing it
      must not do. */
   .cwall-ask{position:relative;z-index:2;max-width:860px;
-    margin:clamp(64px,8vw,118px) auto clamp(44px,5vw,72px);padding:0 24px;text-align:center;
+    margin:clamp(46px,5.6vw,82px) auto clamp(32px,3.6vw,52px);padding:0 24px;text-align:center;
     opacity:0;transform:translateY(16px);}
   .cwall-ask.is-in{animation:ask-rise .9s cubic-bezier(.22,.61,.36,1) forwards;}
   /* Instrument Serif italic, not the hero's Plus Jakarta Sans. Every other
@@ -1522,7 +1522,7 @@
      padding rather than .16em, and it goes on all four sides. */
   .cwall-ask p{margin:0;padding:.22em;
     font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;
-    font-size:clamp(34px,4.5vw,59px);line-height:1.24;letter-spacing:-.01em;text-wrap:balance;
+    font-size:clamp(27px,3.6vw,47px);line-height:1.24;letter-spacing:-.01em;text-wrap:balance;
     /* The app's ONE text shimmer (lib/widgets/shimmer_sweep.dart), ported —
        not the .climb-summit-lbl sweep, which is a fast three-colour glint
        sized for an 11px overlay label and would be a strobe at this scale.
@@ -1576,7 +1576,7 @@
     .cwall-ask.is-in,.cwall-ask.is-in p{animation:none;}
     .cwall-ask p{background-image:none;color:var(--ask-base);}
   }
-  @media (max-width:640px){ .cwall-ask{margin:clamp(48px,11vw,64px) auto 40px;padding:0 20px;} }
+  @media (max-width:640px){ .cwall-ask{margin:clamp(34px,8vw,46px) auto 30px;padding:0 20px;} }
 
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
