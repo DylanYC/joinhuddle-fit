@@ -1201,6 +1201,11 @@
     --r-eyebrow-halo: rgba(7,9,25,.92);
     --r-head:#ffffff;
     --r-accent:#646aff;
+    /* the ask's shimmer. Dark takes the app's own dark-mode glint (#AEB2FF)
+       rather than --r-accent: on a navy sky a #646aff band through white
+       text DIMS as it crosses, which is the contrast dip the sweep exists to
+       avoid. The pale lavender lifts instead. */
+    --ask-base:#ffffff; --ask-glint:#AEB2FF; --ask-warm:#EFE0C2;
     --r-sub: rgba(255,255,255,.66);
     --r-sub-strong:#ffffff;
     --r-guide: rgba(100,106,255,.30);
@@ -1234,6 +1239,10 @@
     --r-eyebrow-halo: rgba(245,249,255,.95);
     --r-head:#17151f;
     --r-accent:#5b54e8;
+    /* light: the headline's own indigo through the heading ink — the band
+       brightens as it crosses, bottoming out at 4.9:1 on the sky at its peak,
+       comfortably clear of the 3:1 large text owes */
+    --ask-base:#17151f; --ask-glint:#5b54e8; --ask-warm:#8F6B2E;  /* 4.5:1 on the sky */
     --r-sub: rgba(23,21,31,.62);
     --r-sub-strong:#17151f;
     --r-guide: rgba(91,84,232,.22);
@@ -1483,6 +1492,92 @@
   .cwall-caption .ul-hand > svg path{stroke-width:3;}
   @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:-8px;} }
 
+  /* ===== THE ASK =============================================================
+     The wall shows how other people use Risers; the caption gives permission
+     ("as long as it's yours"). Neither actually turns the question on the
+     visitor — they can read both while staying a spectator. This line does,
+     and it is the last thing in the sky section on purpose: the hero's closing
+     thought, asked in the horizon fade, before the loop starts explaining.
+     One line, nothing under it. Anything else here (an eyebrow, a CTA, a
+     second sentence) answers the question for them, which is the one thing it
+     must not do. */
+  .cwall-ask{position:relative;z-index:2;max-width:860px;
+    margin:clamp(64px,8vw,118px) auto clamp(44px,5vw,72px);padding:0 24px;text-align:center;
+    opacity:0;transform:translateY(16px);}
+  .cwall-ask.is-in{animation:ask-rise .9s cubic-bezier(.22,.61,.36,1) forwards;}
+  /* Instrument Serif italic, not the hero's Plus Jakarta Sans. Every other
+     display line on this page is set in the sans and DECLARES something; this
+     one is the only line that asks, and the serif italic is the difference
+     between a statement and a question put to you. The face is already in the
+     brand — it is the phone mock's quip voice — so this reads as Risers
+     lowering its voice rather than as a new typeface arriving.
+     Weight 400 is mandatory, not a choice: Instrument Serif ships one weight,
+     and a 700 here would be a synthetic smear at 59px.
+     line-height and padding are both load-bearing, not taste. background-clip
+     text paints the glyphs THROUGH the background, and the background only
+     covers the padding box, so anything hanging outside it gets no paint and
+     renders sheared off — which is exactly what the sans did to y/g/j at
+     line-height 1.12. A serif italic needs more room than the sans did: the
+     descenders are longer AND the slant throws them sideways, so .22em of
+     padding rather than .16em, and it goes on all four sides. */
+  .cwall-ask p{margin:0;padding:.22em;
+    font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;
+    font-size:clamp(34px,4.5vw,59px);line-height:1.24;letter-spacing:-.01em;text-wrap:balance;
+    /* The app's ONE text shimmer (lib/widgets/shimmer_sweep.dart), ported —
+       not the .climb-summit-lbl sweep, which is a fast three-colour glint
+       sized for an 11px overlay label and would be a strobe at this scale.
+       Same shape as the Flutter one: [base, highlight, base] with the
+       highlight the more SATURATED colour rather than a washed-out one, so
+       the band reads as brand asserting itself through the words and contrast
+       never dips below the base's mid-sweep. The base is this section's heading ink so the ask sits
+       in the same colour as the headline it echoes, and the glint is the
+       section's accent — the exact indigo of "Rise each day" — so the band
+       reads as the brand passing through the question. Onboarding's glint is
+       brandDeepBlue (#0A0F81 light), which at 17px on white is a sheen but at
+       display size on the pale sky is a hue shift you have to hunt for; the accent
+       carries the same idea with the presence this scale needs.
+       Geometry matches too: Flutter runs the gradient from Alignment(cx-0.8)
+       to Alignment(cx+0.8), i.e. a band 0.8x the line's width — at
+       background-size 300% that is the 35%-65% ramp below — and carries cx
+       from -1.5 to 1.5 so the band fully clears the words at both ends, which
+       100%->0% of a 3x-wide image reproduces.
+       The one addition to the app's shape is --ask-warm, a nod to the Climb's
+       summit gold. It sits at 48%, BEHIND the indigo peak at 53.5%: the image
+       travels right, so a glyph meets the higher stops first and the warmth
+       arrives as the band leaves rather than announcing it.
+       Both its width and its colour are held down on purpose. 5.5% of a 3x
+       image is ~16% of the line, so the warmth is an edge on the indigo, not
+       a phase of its own — widen that gap and the gold gets a solo moment
+       after the indigo clears the right edge, which reads as two colours
+       taking turns. And it is a deep muted bronze/sand, not the Climb's
+       #E6B769: the badge gold at this size competes with the indigo instead
+       of tinting it.
+       The one deliberate departure is the period. The app's 2700ms crosses a
+       phone-width sentence; this line is ~3.5x wider, and holding that period
+       would treble the band's px/sec into exactly the loud sweep this moment
+       can't afford. 6.4s puts the travel back in the app's calm register. */
+    background-image:linear-gradient(90deg,
+      var(--ask-base) 0%, var(--ask-base) 38%,
+      var(--ask-warm) 48%,
+      var(--ask-glint) 53.5%,
+      var(--ask-base) 65%, var(--ask-base) 100%);
+    background-size:300% 100%;background-position:100% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  /* Shimmer only once the line is on screen and has finished rising — a sweep
+     that ran while the section was still scrolled past would be halfway
+     through at the moment it is first read. */
+  .cwall-ask.is-in p{animation:ask-shimmer 6.4s linear .5s infinite;}
+  @keyframes ask-rise{to{opacity:1;transform:none;}}
+  @keyframes ask-shimmer{from{background-position:100% 0;}to{background-position:0% 0;}}
+  @media (prefers-reduced-motion: reduce){
+    /* Still tinted, just not travelling — same fallback as ShimmerSweep's
+       reduced-motion branch. */
+    .cwall-ask{opacity:1;transform:none;}
+    .cwall-ask.is-in,.cwall-ask.is-in p{animation:none;}
+    .cwall-ask p{background-image:none;color:var(--ask-base);}
+  }
+  @media (max-width:640px){ .cwall-ask{margin:clamp(48px,11vw,64px) auto 40px;padding:0 20px;} }
+
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
     /* ~7 stacks visible at any desktop width: each card is 1/7 of the viewport
@@ -1710,6 +1805,11 @@
       No plan is too big or small. As long as it's <span class="ul-hand">yours<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span>.<br>
       They're for your circle, not strangers.
     </p>
+
+    <!-- ===== The ask — hands the question over before the loop explains ===== -->
+    <div class="cwall-ask" id="cwallAsk">
+      <p>What are you trying to stick to?</p>
+    </div>
   </section>
 
   <!-- 3. THE LOOP — How Risers Works (Dia-style sticky-left, scrolling-right) -->
@@ -3002,6 +3102,25 @@ function toggleMode() {
   document.addEventListener('visibilitychange', () => {
     hidden = document.hidden;
   });
+})();
+
+// =============================================================================
+// THE ASK — reveal the card wall's closing question once, on first sight.
+// Gating on view is what keeps the shimmer honest: the sweep starts when the
+// line does, so the first pass a visitor sees is a first pass.
+// =============================================================================
+(function () {
+  const el = document.getElementById('cwallAsk');
+  if (!el) return;
+  const reveal = () => el.classList.add('is-in');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { reveal(); io.disconnect(); }
+    }, { threshold: 0.6 });
+    io.observe(el);
+  } else {
+    reveal();
+  }
 })();
 
 // =============================================================================
