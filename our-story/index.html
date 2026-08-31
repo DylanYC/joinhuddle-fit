@@ -14,7 +14,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="/assets/Risers-Favicon-Simple.svg">
 <link rel="apple-touch-icon" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="preload" as="image" href="/assets/Our%20Story%20Images/Dylan-Desk.jpg" fetchpriority="high">
 <link rel="stylesheet" href="/assets/page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
   /* Page-specific styles. Deliberately quiet: one column of prose, one photo,
@@ -42,11 +46,13 @@
 
   .story-fig{margin:34px 0 30px;}
   .story-fig img{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:16px;border:1px solid var(--border);}
+  .story-fig--wide{margin:26px 0 30px;}
+  .story-fig--wide img{max-width:100%;}
   .story-fig figcaption{margin:14px auto 0;max-width:420px;font-size:13px;line-height:1.6;color:var(--text3);text-align:center;}
 
-  .story-quote{margin:28px 0;padding:2px 0 2px 20px;border-left:2px solid var(--accent);font-size:18px;line-height:1.65;color:var(--text1);font-weight:500;}
+  .story-quote{margin:28px 0;padding:2px 0 2px 20px;border-left:2px solid var(--accent);font-size:18px;line-height:1.65;color:var(--text1);font-weight:500;font-style:italic;}
 
-  .story-signoff{margin-top:24px;color:var(--text1);font-weight:600;}
+  .story-signoff{margin-top:24px;color:var(--text1);font-family:"Caveat","Segoe Script","Bradley Hand",cursive;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:.01em;}
 
   /* Nav width ladder. page.css tunes it for three centred links; this page
      carries four (same set as the home page), so it inherits the home page's
@@ -90,6 +96,12 @@
 
     <div class="prose">
       <p class="story-lede">My name&rsquo;s Dylan, the builder of Risers.</p>
+
+      <figure class="story-fig story-fig--wide">
+        <img src="/assets/Our Story Images/Dylan-Desk.jpg"
+             alt="Dylan at his desk, smiling, with the Risers logo open on a laptop and code on the monitor behind him."
+             width="1360" height="765" fetchpriority="high" decoding="async">
+      </figure>
 
       <p>
         The origins of this app go back many years: to 2016, in second year of
