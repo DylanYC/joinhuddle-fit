@@ -54,13 +54,13 @@
 
   .story-signoff{margin-top:24px;color:var(--text1);font-family:"Caveat","Segoe Script","Bradley Hand",cursive;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:.01em;}
 
-  /* Nav width ladder. page.css tunes it for three centred links; this page
-     carries four (same set as the home page), so it inherits the home page's
-     ladder instead. Must come after page.css — equal specificity, source
-     order wins. */
-  @media (max-width:1040px){ .nav-links{position:static;transform:none;gap:20px;} }
-  @media (max-width:860px){ .nav-links{gap:16px;font-size:13.5px;} }
-  @media (max-width:800px){ .nav-links{display:none;} }
+  /* Nav width ladder. page.css tunes it for the four centred links the legal
+     pages carry; this page carries five (same set as the home page), so it
+     inherits the home page's ladder instead. Must come after page.css — equal
+     specificity, source order wins. */
+  @media (max-width:1140px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:940px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:860px){ .nav-links{display:none;} }
 
   @media (max-width:760px){
     .story .prose{font-size:16.5px;}
@@ -80,6 +80,7 @@
       <li><a href="/#inner-circle">Inner Circle</a></li>
       <li><a href="/#climb">The Climb</a></li>
       <li><a href="/why-risers-works/">Why It Works</a></li>
+      <li><a href="/our-story/" aria-current="page">Our Story</a></li>
     </ul>
     <div class="nav-right">
       <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">

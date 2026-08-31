@@ -154,8 +154,10 @@ body {
   border-radius: 1px;
 }
 /* Hide nav links on narrow viewports to keep the nav clean on mobile.
-   Logo + CTA still visible. */
-@media (max-width: 700px) {
+   Logo + CTA still visible. This row is plain flex, so it compresses rather
+   than overlapping — but with "Our Story" added the links close on the logo
+   and CTA at ~705px, so the strip now drops out at 780 instead. */
+@media (max-width: 780px) {
   .why-nav-links { display: none; }
 }
 

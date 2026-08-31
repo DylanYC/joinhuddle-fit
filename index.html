@@ -1080,17 +1080,17 @@
   /* ============ RESPONSIVE: mobile ============ */
   /* NAV WIDTH LADDER — .nav-links is absolutely centred on the viewport, so it
      is out of flow and can silently overlap the toggle + CTA rather than
-     pushing them. With four items the centred strip stops clearing that cluster
-     at ~1010px, so below 1040 the links drop back INTO flow: the flex row then
+     pushing them. With five items the centred strip stops clearing that cluster
+     at ~1055px, so below 1140 the links drop back INTO flow: the flex row then
      distributes logo / links / actions and an overlap becomes impossible. They
      sit slightly left of true centre there (the actions are wider than the
-     logo) — the trade for a nav that can't collide. By 800 the channel is down
+     logo) — the trade for a nav that can't collide. By 860 the channel is down
      to single-digit gaps, so the strip hides rather than crowding the CTA.
      These come after the 900px block on purpose: equal specificity, so source
      order is what makes them win. */
-  @media (max-width:1040px){ .nav-links{position:static;transform:none;gap:20px;} }
-  @media (max-width:860px){ .nav-links{gap:16px;font-size:13.5px;} }
-  @media (max-width:800px){ .nav-links{display:none;} }
+  @media (max-width:1140px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:940px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:860px){ .nav-links{display:none;} }
 
   @media (max-width: 640px) {
     /* NAV */
@@ -1755,7 +1755,7 @@
     <div class="nav-logo">
       <img src="assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"/>
     </div>
-    <ul class="nav-links"><li><a href="#loop" onclick="smoothScrollTo('loop');return false;">How It Works</a></li><li><a href="#inner-circle" onclick="smoothScrollTo('inner-circle');return false;">Inner Circle</a></li><li><a href="#climb" onclick="smoothScrollTo('climb');return false;">The Climb</a></li><li><a href="/why-risers-works/">Why It Works</a></li></ul>
+    <ul class="nav-links"><li><a href="#loop" onclick="smoothScrollTo('loop');return false;">How It Works</a></li><li><a href="#inner-circle" onclick="smoothScrollTo('inner-circle');return false;">Inner Circle</a></li><li><a href="#climb" onclick="smoothScrollTo('climb');return false;">The Climb</a></li><li><a href="/why-risers-works/">Why It Works</a></li><li><a href="/our-story/">Our Story</a></li></ul>
     <div class="nav-right">
       <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
         <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
