@@ -1833,7 +1833,11 @@
            kern across an inline boundary — with the span ending between them,
            Safari dropped the tuck and opened a word-sized gap. Keeping the split
            at the following space puts the boundary where a lost kern can't show. -->
-      <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><br>backed by your inner circle.</h1>
+      <!-- nbsp between "inner" and "circle." so the phone break can't strand
+           "circle." on a line of its own: the only break left is after "your",
+           giving "backed by your / inner circle.". Desktop never wraps this
+           line (694px inside a 712px measure), so it is a no-op there. -->
+      <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><br>backed by your inner&nbsp;circle.</h1>
       <p class="rhero-sub">Plan the daily things you want to stick with.<br>Capture proof when you do.<br>Only your inner circle sees it.</p>
       <div class="rhero-cta-center">
         <!-- waitlist form kept from existing build (wired to waitlist JS) -->
