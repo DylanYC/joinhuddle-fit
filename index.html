@@ -1501,7 +1501,11 @@
   /* Centred hero column (replaces the two-col daybreak grid). */
   .rhero-center{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:34px 24px 0;text-align:center;}
   .rhero-center .rhero-appicon{margin:0 auto 14px;}
-  .rhero-center .rhero-h{max-width:660px;margin:0 auto;}
+  /* 700px, not 660: at the 57px clamp ceiling the display face needs 692px to
+     hold "Rise each day, backed / by your inner circle." on two lines, and 660
+     forced a third. Still inside .rhero-center's 712px content box, so the
+     column ladder above is unchanged. */
+  .rhero-center .rhero-h{max-width:700px;margin:0 auto;}
   .rhero-center .rhero-sub{margin:20px auto 0;max-width:none;}
   .rhero-cta-center{margin-top:28px;}
 
