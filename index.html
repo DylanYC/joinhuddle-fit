@@ -1323,6 +1323,34 @@
      to the line as a unit rather than being inherited into layout. */
   .rhero-h .rhero-accent{color:var(--r-accent);font-family:var(--font-display);font-synthesis:none;font-size:1.049em;letter-spacing:normal;word-spacing:-0.06em;
     display:inline-block;transform:skewX(7deg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  /* Line 2 carries the ask's shimmer — same gradient stops, same 300% image,
+     same 6.4s ask-shimmer keyframes, same --ask-* tokens. --ask-base is the
+     identical ink to --r-head in both themes, so the resting colour of the
+     line does not change; the sweep is the only difference.
+
+     display:block replaces the old <br>: background-clip:text needs a box to
+     clip to, and a block keeps one continuous gradient across both lines when
+     the phone wraps it, exactly as the ask's <p> does.
+
+     padding is what stops the descenders in "by"/"your" being sheared off —
+     the background only covers the padding box and the glyphs paint through
+     it. .16em is the sans figure the ask's own note cites (its .22em is for
+     the serif italic's longer, slanted descenders). The matching negative
+     margin cancels the padding's effect on layout, so the content box stays
+     712px and the line breaks are untouched. */
+  .rhero-h .rhero-line2{display:block;padding:.16em;margin:-.16em;
+    background-image:linear-gradient(90deg,
+      var(--ask-base) 0%, var(--ask-base) 38%,
+      var(--ask-warm) 48%,
+      var(--ask-glint) 53.5%,
+      var(--ask-base) 65%, var(--ask-base) 100%);
+    background-size:300% 100%;background-position:100% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:ask-shimmer 6.4s linear .5s infinite;}
+  /* Same fallback as the ask: still the base ink, just not travelling. */
+  @media (prefers-reduced-motion: reduce){
+    .rhero-h .rhero-line2{animation:none;background-image:none;color:var(--ask-base);}
+  }
   .rhero-sub{font-family:'Inter',sans-serif;font-size:clamp(16px,1.4vw,19px);line-height:1.5;color:var(--r-sub);max-width:560px;margin:22px 0 0;}
   .rhero-sub em{font-style:italic;}
   .rhero-ctas{margin-top:28px;}
@@ -1837,7 +1865,7 @@
            "circle." on a line of its own: the only break left is after "your",
            giving "backed by your / inner circle.". Desktop never wraps this
            line (694px inside a 712px measure), so it is a no-op there. -->
-      <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><br>backed by your inner&nbsp;circle.</h1>
+      <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><span class="rhero-line2">backed by your inner&nbsp;circle.</span></h1>
       <p class="rhero-sub">Plan the daily things you want to stick with.<br>Capture proof when you do.<br>Only your inner circle sees it.</p>
       <div class="rhero-cta-center">
         <!-- waitlist form kept from existing build (wired to waitlist JS) -->
