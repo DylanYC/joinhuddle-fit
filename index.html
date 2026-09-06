@@ -876,11 +876,13 @@
     --cam-scaffold:#F7F8FA; --cam-card:#FFFFFF; --cam-ink:#000000;
     --cam-muted:#424242; --cam-photo:#0A0F81; --cam-video:#810A0A;
     --cam-cardline:rgba(158,158,158,0.4); --cam-homebar:rgba(0,0,0,0.28);
+    --cam-badge:#E08900; --cam-chrome-ink:#6E6E6E;
   }
   #site:not(.light){
     --cam-scaffold:#0B0C16; --cam-card:#171A2C; --cam-ink:#F2F3F8;
     --cam-muted:#8E91A3; --cam-photo:#AEB2FF; --cam-video:#FF8A8A;
     --cam-cardline:rgba(142,145,163,0.28); --cam-homebar:rgba(255,255,255,0.22);
+    --cam-badge:#F5A623; --cam-chrome-ink:#8E91A3;
   }
 
   .cam{position:absolute;top:0;left:0;width:282px;height:606px;transform-origin:top left;transform:scale(var(--cam-k,1));}
@@ -952,7 +954,14 @@
 
   /* Shutter row — camera roll · shutter · sign-a-promise */
   .cam-shutter-row{position:absolute;left:0;right:0;top:475px;height:49px;}
-  .cam-chrome{position:absolute;top:9px;width:31.5px;height:31.5px;display:flex;align-items:center;justify-content:center;color:var(--cam-muted);}
+  /* The camera roll / sign-a-promise glyphs take risers.cameraChromeIcon, not
+     the mock's general muted ink: #6E6E6E in light, #8E91A3 in dark. Only the
+     light value actually differs — at --cam-muted's #424242 these two read as
+     near-black, which is exactly what the app avoids here. They flank the
+     shutter and are meant to stay quiet beside it, and now that both are solid
+     shapes (a filled squircle and a filled square) they carry far more ink
+     than the outlined pair they replaced, so the too-dark grey showed. */
+  .cam-chrome{position:absolute;top:9px;width:31.5px;height:31.5px;display:flex;align-items:center;justify-content:center;color:var(--cam-chrome-ink);}
   .cam-chrome svg{width:17px;height:17px;}
   .cam-chrome-l{left:17px;}
   .cam-chrome-r{right:17px;}
@@ -987,6 +996,10 @@
   .cam-nav-plan{transform:translateX(-61.7px);}
   .cam-nav-today{transform:translateX(61.7px);}
   .cam-nav-circle{transform:translateX(111.6px);}
+  /* Today's unread dot. Amber in both themes — the app's risers.unreadBadge —
+     and the one thing in the bar that isn't held back to the muted nav ink,
+     because in the app it is the only colour the resting bar carries. */
+  .cam-nav-badge{fill:var(--cam-badge);}
   .cam-nav-av{width:17px;height:17px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px #E7E7E7;}
   .cam-nav-av img{width:100%;height:100%;object-fit:cover;display:block;}
   /* Our Circle icon in its "nobody's shown up yet" state — the app's
@@ -2015,7 +2028,20 @@
 
               <div class="cam-shutter-row">
                 <span class="cam-chrome cam-chrome-l">
-                  <svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M4.6 4.2h14.8A2.6 2.6 0 0 1 22 6.8v10.4a2.6 2.6 0 0 1-2.6 2.6H4.6A2.6 2.6 0 0 1 2 17.2V6.8a2.6 2.6 0 0 1 2.6-2.6ZM8 7.6a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2ZM3.9 17.5 9.2 12l2.4 2.4L15.1 11l5 6.1a.85.85 0 0 1-.66 1.39H4.6a.85.85 0 0 1-.7-1Z"/></svg>
+                  <!-- Camera roll — AppIcons.photoLibraryFilled
+                       (assets/images/solar/gallery-minimalistic-bold.svg): a
+                       solid squircle with the sun and horizon knocked out of
+                       it, not the old outlined frame, so it sits level with the
+                       solid pen opposite rather than reading as a hole. -->
+                  <svg viewBox="0 0 24 24">
+                    <mask id="proofGalleryMask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                      <rect x="0" y="0" width="24" height="24" fill="black"/>
+                      <rect x="2" y="2" width="20" height="20" rx="6.5" fill="white"/>
+                      <circle cx="16.1" cy="8.7" r="1.95" fill="black"/>
+                      <path d="M5.1 16.3C6.7 13.3 8.9 13.3 10.5 15.6C12.1 17.9 14.1 17.8 18.9 12.1" stroke="black" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </mask>
+                    <rect x="0" y="0" width="24" height="24" fill="currentColor" mask="url(#proofGalleryMask)"/>
+                  </svg>
                 </span>
                 <span class="cam-shutter">
                   <span class="cam-shutter-photo">
@@ -2037,7 +2063,16 @@
                   </span>
                 </span>
                 <span class="cam-chrome cam-chrome-r">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.55 14.3 6.25l3.95 3.95L6.95 21.5H3v-3.95Z"/><path d="M15.4 5.15 17.5 3.05a1.6 1.6 0 0 1 2.26 0l1.69 1.69a1.6 1.6 0 0 1 0 2.26l-2.1 2.1-3.95-3.95Z"/></svg>
+                  <!-- Sign a promise — AppIcons.signature
+                       (assets/images/solar/pen-new-square-bold.svg): the pen in
+                       a filled square, replacing the bare pencil. The square is
+                       what pairs it with the camera-roll squircle across the
+                       shutter. -->
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21.1938 2.80624C22.2687 3.88124 22.2687 5.62415 21.1938 6.69914L20.6982 7.19469C20.5539 7.16345 20.3722 7.11589 20.1651 7.04404C19.6108 6.85172 18.8823 6.48827 18.197 5.803C17.5117 5.11774 17.1483 4.38923 16.956 3.8349C16.8841 3.62781 16.8366 3.44609 16.8053 3.30179L17.3009 2.80624C18.3759 1.73125 20.1188 1.73125 21.1938 2.80624Z"/>
+                    <path d="M14.5801 13.3128C14.1761 13.7168 13.9741 13.9188 13.7513 14.0926C13.4886 14.2975 13.2043 14.4732 12.9035 14.6166C12.6485 14.7381 12.3775 14.8284 11.8354 15.0091L8.97709 15.9619C8.71035 16.0508 8.41626 15.9814 8.21744 15.7826C8.01862 15.5837 7.9492 15.2897 8.03811 15.0229L8.99089 12.1646C9.17157 11.6225 9.26191 11.3515 9.38344 11.0965C9.52679 10.7957 9.70249 10.5114 9.90743 10.2487C10.0812 10.0259 10.2832 9.82394 10.6872 9.41993L15.6033 4.50385C15.867 5.19804 16.3293 6.05663 17.1363 6.86366C17.9434 7.67069 18.802 8.13296 19.4962 8.39674L14.5801 13.3128Z"/>
+                    <path d="M20.5355 20.5355C22 19.0711 22 16.714 22 12C22 10.4517 22 9.15774 21.9481 8.0661L15.586 14.4283C15.2347 14.7797 14.9708 15.0437 14.6738 15.2753C14.3252 15.5473 13.948 15.7804 13.5488 15.9706C13.2088 16.1327 12.8546 16.2506 12.3833 16.4076L9.45143 17.3849C8.64568 17.6535 7.75734 17.4438 7.15678 16.8432C6.55621 16.2427 6.34651 15.3543 6.61509 14.5486L7.59235 11.6167C7.74936 11.1454 7.86732 10.7912 8.02935 10.4512C8.21958 10.052 8.45272 9.6748 8.72466 9.32615C8.9563 9.02918 9.22032 8.76528 9.57173 8.41404L15.9339 2.05188C14.8423 2 13.5483 2 12 2C7.28595 2 4.92893 2 3.46447 3.46447C2 4.92893 2 7.28595 2 12C2 16.714 2 19.0711 3.46447 20.5355C4.92893 22 7.28595 22 12 22C16.714 22 19.0711 22 20.5355 20.5355Z"/>
+                  </svg>
                 </span>
               </div>
 
@@ -2048,12 +2083,48 @@
                 </span>
                 <span class="cam-nav-item cam-nav-plan">
                   <span class="cam-nav-glyph">
-                    <svg viewBox="0 0 24 24" fill="none"><rect x="2.96" y="2.96" width="18.31" height="18.31" rx="4.22" stroke="currentColor" stroke-width="2.36"/><path d="M1.78 8.85h19.58" stroke="currentColor" stroke-width="2.36"/><circle cx="8.31" cy="12.66" r="1.09" fill="currentColor"/><circle cx="8.31" cy="17.01" r="1.09" fill="currentColor"/><circle cx="12.2" cy="12.66" r="1.09" fill="currentColor"/><circle cx="12.2" cy="17.01" r="1.09" fill="currentColor"/><circle cx="16.2" cy="17.01" r="1.09" fill="currentColor"/><circle cx="16.29" cy="12.66" r="1.09" fill="currentColor"/></svg>
+                    <!-- My Plan at rest — AppIcons.planDateLinear
+                         (assets/images/solar/calendar-linear.svg). The tab's
+                         unselected artwork, so it carries the ring binders and
+                         the 1.9 hairline the app draws; selection swaps it for
+                         the filled calendar, which never happens here (the mock
+                         is always parked on the camera tab). -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M7 2.5V4.5"/><path d="M17 2.5V4.5"/>
+                      <rect x="2.5" y="4.5" width="19" height="17" rx="5"/>
+                      <path d="M2.75 9.75H21.25"/>
+                      <g fill="currentColor" stroke="none">
+                        <circle cx="7" cy="13.5" r="1"/><circle cx="12" cy="13.5" r="1"/><circle cx="17" cy="13.5" r="1"/>
+                        <circle cx="7" cy="17.5" r="1"/><circle cx="12" cy="17.5" r="1"/><circle cx="17" cy="17.5" r="1"/>
+                      </g>
+                    </svg>
                   </span>
                 </span>
                 <span class="cam-nav-item cam-nav-today">
                   <span class="cam-nav-glyph">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.67" r="3.67"/><circle cx="12" cy="19.33" r="3.67"/><circle cx="4.67" cy="12" r="3.67"/><circle cx="19.33" cy="12" r="3.67"/></svg>
+                    <!-- Today — a port of TodayDateTile
+                         (lib/widgets/today_date_tile.dart), which replaced the
+                         four-dot Risers mark that used to sit here. The mark
+                         named the company rather than the destination and read
+                         as a second status ring beside Circle. Geometry is the
+                         painter's own 24-unit grid: 20x20 tile inset at 2,
+                         r=6, 1.9 stroke (deflated by half a stroke in the
+                         unselected state the mock shows), digits centred on
+                         cap height, and the unread dot at (18.9, 5.3) r=2.7
+                         notched clear of the tile by a 4.3 hole.
+                         The day number is written by JS at load. -->
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <mask id="proofTodayNotch" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                        <rect x="0" y="0" width="24" height="24" fill="white"/>
+                        <circle cx="18.9" cy="5.3" r="4.3" fill="black"/>
+                      </mask>
+                      <g mask="url(#proofTodayNotch)">
+                        <rect x="2.95" y="2.95" width="18.1" height="18.1" rx="6" stroke="currentColor" stroke-width="1.9"/>
+                        <text id="proof-cam-today" x="12" y="15.96" text-anchor="middle" fill="currentColor"
+                              font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="-0.6">6</text>
+                      </g>
+                      <circle class="cam-nav-badge" cx="18.9" cy="5.3" r="2.7"/>
+                    </svg>
                   </span>
                 </span>
                 <span class="cam-nav-item cam-nav-circle">
@@ -2901,6 +2972,14 @@ function toggleMode() {
     'Of course.', 'On cue.', 'As usual.', 'Routine.', 'Relentless.', 'Never in doubt.',
     'Expected.', 'Like clockwork.', 'Proof acquired.'
   ];
+  // Today tab shows the live local date, exactly as TodayDateTile does in the
+  // app. No midnight re-arm here — the app needs one because it stays open
+  // overnight; a landing page reloads long before that matters.
+  (function(){
+    const todayEl = document.getElementById('proof-cam-today');
+    if (todayEl) todayEl.textContent = String(new Date().getDate());
+  })();
+
   const vibeEl = document.getElementById('proof-cam-vibe');
   let vibeDeck = [], vibeDeckPos = 0, vibeGen = 0, vibeTimer = null, vibeActive = false;
 
