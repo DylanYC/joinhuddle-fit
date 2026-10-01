@@ -1364,6 +1364,35 @@
   @media (prefers-reduced-motion: reduce){
     .rhero-h .rhero-line2{animation:none;background-image:none;color:var(--ask-base);}
   }
+  /* ALTERNATE HEADLINE — "Keep each other going." (trial, 2026-10).
+     Opt-in via .rhero-h--keep on the h1; everything above is the saved
+     "Rise each day, / backed by your inner circle." version and is untouched,
+     so swapping back is a markup change only (the old h1 + sub are kept in a
+     comment beside the live ones).
+
+     One line, one face: all Jakarta, so the weight goes up to 800 and the
+     size does the work the display face used to. The line measures 10.83x the
+     font-size, so 65px is the most .rhero-center's 712px content box holds on
+     one line. Below that the size is derived from the box itself — viewport
+     minus the column's 2x24px padding, over 10.95 for a hair of slack — so it
+     stays on one line at every width instead of wrapping "going." alone. */
+  .rhero-h.rhero-h--keep{font-weight:800;font-size:clamp(24px,calc((100vw - 48px) / 10.95),65px);line-height:1.08;letter-spacing:-0.025em;}
+  /* "each other" takes line 2's shimmer as-is — same stops, same --ask-*
+     tokens, same ask-shimmer keyframes. inline-block gives background-clip a
+     single box to clip to; the padding/negative-margin pair is the same
+     glyph-overhang allowance line 2 uses and leaves the spacing untouched. */
+  .rhero-h--keep .rhero-shine{display:inline-block;padding:.16em;margin:-.16em;
+    background-image:linear-gradient(90deg,
+      var(--ask-base) 0%, var(--ask-base) 38%,
+      var(--ask-warm) 48%,
+      var(--ask-glint) 53.5%,
+      var(--ask-base) 65%, var(--ask-base) 100%);
+    background-size:300% 100%;background-position:100% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:ask-shimmer 6.4s linear .5s infinite;}
+  @media (prefers-reduced-motion: reduce){
+    .rhero-h--keep .rhero-shine{animation:none;background-image:none;color:var(--ask-base);}
+  }
   .rhero-sub{font-family:'Inter',sans-serif;font-size:clamp(16px,1.4vw,19px);line-height:1.5;color:var(--r-sub);max-width:560px;margin:22px 0 0;}
   .rhero-sub em{font-style:italic;}
   .rhero-ctas{margin-top:28px;}
@@ -1565,6 +1594,9 @@
      column ladder above is unchanged. */
   .rhero-center .rhero-h{max-width:712px;margin:0 auto;}
   .rhero-center .rhero-sub{margin:20px auto 0;max-width:none;}
+  /* the alternate headline's sub is one sentence, not three broken lines —
+     balance it into two even lines instead of a long line and a stub */
+  .rhero-center .rhero-sub--keep{max-width:600px;text-wrap:balance;}
   .rhero-cta-center{margin-top:28px;}
 
   /* Caption beneath the card wall — matches the hero sub copy so it reads as
@@ -1878,8 +1910,13 @@
            "circle." on a line of its own: the only break left is after "your",
            giving "backed by your / inner circle.". Desktop never wraps this
            line (694px inside a 712px measure), so it is a no-op there. -->
+      <!-- SAVED VERSION — to switch back, restore these two lines and delete the
+           "Keep each other going." pair below. All of its CSS is still in place.
       <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><span class="rhero-line2">backed by your inner&nbsp;circle.</span></h1>
       <p class="rhero-sub">Plan the daily things you want to stick with.<br>Capture proof when you do.<br>Only your inner circle sees it.</p>
+      -->
+      <h1 class="rhero-h rhero-h--keep">Keep <span class="rhero-shine">each other</span> going.</h1>
+      <p class="rhero-sub rhero-sub--keep">Risers is a private app where you and your inner circle plan the small daily things that keep you healthy, then share real photo proof.</p>
       <div class="rhero-cta-center">
         <!-- waitlist form kept from existing build (wired to waitlist JS) -->
         <form class="hero-waitlist" id="heroForm" novalidate>
