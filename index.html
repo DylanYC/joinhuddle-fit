@@ -1704,13 +1704,10 @@
 
   /* Card wall — sizing tokens live here; motion constants live in the JS. */
   .cwall{
-    /* ~6.4 stacks visible at any desktop width: each card is 1/6.4 of the
-       viewport minus its gap, clamped so narrow windows don't shrink cards to
-       slivers and ultrawides don't blow them up. Height comes from
-       aspect-ratio. The gap is deliberately loose (was 18px at 7-up): with the
-       per-stack tilt below, cards read as laid out by hand rather than as a
-       tight grid, and the tilt needs the air or neighbouring corners crowd. */
-    --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;
+    /* ~7 stacks visible at any desktop width: each card is 1/7 of the viewport
+       minus its gap, clamped so narrow windows don't shrink cards to slivers
+       and ultrawides don't blow them up. Height comes from aspect-ratio. */
+    --cw-w:clamp(150px, calc(100vw / 7 - 18px), 240px); --cw-gap:18px;
     /* dark (default) — navy-leaning surfaces to match the night sky */
     --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
     /* Two-layer soft shadow that casts DOWNWARD only (offset ≥ blur + |spread|):
@@ -1726,15 +1723,13 @@
     --cw-pill-bg:rgba(111,117,255,.20); --cw-pill-ink:#CFD1FF;
     --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
     --cw-veil:rgba(7,8,22,.52);
-    position:relative;z-index:2;margin-top:38px;overflow:hidden;
+    position:relative;z-index:2;margin-top:44px;overflow:hidden;
     /* grab-to-scrub: horizontal drag is ours, vertical stays native page scroll */
     cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;
-    /* 28px headroom for the peeking proof card — 17px of peek plus the ~5px a
-       tilted stack's high corner lifts, with a little spare (the 6px added
-       here came off margin-top, so the wall hasn't moved); 36px foot-room so
-       the cards' downward shadow fades out fully instead of being clipped to
-       a hard line by this container's overflow:hidden */
-    padding:28px 0 36px;
+    /* 22px headroom for the peeking proof card; 36px foot-room so the cards'
+       downward shadow fades out fully instead of being clipped to a hard line
+       by this container's overflow:hidden */
+    padding:22px 0 36px;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
     mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
   }
@@ -1762,12 +1757,7 @@
      width, clamped), so bigger desktop cards keep the 188px design's density
      instead of growing whitespace — and the clamp floors keep small cards
      exactly as they are on phones / narrow windows. */
-  /* --cw-tilt is set per stack by the wall script: a couple of degrees either
-     way, so the row looks placed rather than ruled. It lives on the stack, not
-     the cards, so plan and proof tilt together and the flip transforms on the
-     cards are untouched. */
-  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:inherit;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);
-    transform:rotate(var(--cw-tilt,0deg));}
+  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:inherit;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);}
   .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
     transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
   .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:var(--cw-pad);text-align:left;}
@@ -1872,7 +1862,7 @@
   @media (max-width:640px){
     /* card size only — the cqw clamps land on their floors at this width,
        which reproduces the previous mobile sizing (label 13px, meta 10-11px) */
-    .cwall{--cw-w:142px;--cw-gap:22px;margin-top:28px;}
+    .cwall{--cw-w:142px;--cw-gap:14px;margin-top:34px;}
   }
   @media (prefers-reduced-motion: reduce){
     /* static resting state: no drift, no scrub, no flip transition */
@@ -3771,15 +3761,9 @@ function toggleMode() {
   if (!wall || !track) return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  // Resting tilt per stack, in degrees. Keyed on the plan's index, so both
-  // segments tilt identically and the loop seam stays invisible. Alternating
-  // sign with uneven sizes: a strict +/- of one angle reads as a zigzag.
-  const TILTS = [-2, 1.4, -0.8, 2.2, -1.6, 1, -2.3, 1.8];
-
   function buildStack(plan, i){
     const stack = document.createElement('div');
     stack.className = 'cwall-stack';
-    stack.style.setProperty('--cw-tilt', TILTS[i % TILTS.length] + 'deg');
 
     // proof layer (behind at rest)
     const proof = document.createElement('div');
