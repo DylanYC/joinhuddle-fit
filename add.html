@@ -1,111 +1,58 @@
 <!DOCTYPE html>
 <!--
-  Fallback landing page for https://risers.fit/add?code=XXXXX
+  https://risers.fit/add?code=XXXXX
 
-  Reached only when the visitor does NOT have Risers installed. With the app
-  installed, iOS/Android open it directly via Universal/App Links and never
-  load this page. Shows the invite code + routes to the app stores so the new
-  user can install, then type the code during onboarding.
+  The address the Risers QR code and older invite links point at. With the
+  app installed, iOS and Android open it directly and this page never loads.
 
-  Phase 1 (manual) fallback. Automatic "install -> code applied" would need an
-  attribution SDK (e.g. Branch).
+  Without the app, this page used to be the invite page itself. That job has
+  moved to https://join.risers.fit, which shows the store buttons for the
+  phone in hand and hands the code on. So this page now only FORWARDS there,
+  carrying the code along as `?c=`. Keeping it (rather than deleting it)
+  rescues every old link and printed QR code already out in the world.
 
-  TODO before launch: set the real App Store URL (APP_STORE_ID below) once the
-  iOS listing is live. The Play Store URL is already the real package id.
+  The path must stay `/add`: the app's link association
+  (.well-known/apple-app-site-association) claims it.
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Join Risers</title>
+  <title>Join me on Risers</title>
   <meta name="robots" content="noindex" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- What an old link unfurls into in Messages and WhatsApp. Message apps
+       read these from this page and do not follow the forward below. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Risers" />
+  <meta property="og:title" content="Join me on Risers" />
+  <meta property="og:description" content="A private space for a partner or your closest few." />
+  <meta property="og:image" content="https://join.risers.fit/og/risers.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script>
+    // First thing on the page, so nothing is drawn before the forward.
+    (function () {
+      var code = new URLSearchParams(location.search).get('code') || '';
+      code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+      location.replace('https://join.risers.fit/' + (code ? '?c=' + code : ''));
+    })();
+  </script>
   <style>
-    :root {
-      --primary: #6F75FF;
-      /* White on --primary is only 3.7:1, so the filled button uses this
-         darkened tint (6.0:1) while --primary keeps the app's exact brand
-         value for fills and borders, which only owe 3:1. */
-      --primary-btn: #4B51DE;
-      --primary-dark: #292D91;
-      --primary-light: #CFD1FF;
-      --scaffold: #F7F8FA;
-      --surface: #FFFFFF;
-      --ink: #1C1C1C;
-      --muted: #6B6B6B; /* was #787878 — 4.2:1 on --scaffold */
-    }
-    * { box-sizing: border-box; }
     body {
       margin: 0; min-height: 100vh; display: flex; align-items: center;
-      justify-content: center; padding: 24px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--scaffold); color: var(--ink);
+      justify-content: center; padding: 24px; text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0B0C1A; color: #FFFFFF;
     }
-    .card {
-      max-width: 400px; width: 100%; text-align: center; background: var(--surface);
-      border-radius: 28px; padding: 40px 28px;
-      box-shadow: 0 24px 60px rgba(41, 45, 145, 0.12);
-    }
-    /* The icon PNG already carries its own shape + drop shadow. The stacked
-       drop-shadows trace a hairline light-grey outline along the icon's
-       rounded-square silhouette so the white mark reads against the white card. */
-    .badge {
-      width: 88px; height: 88px; margin: 0 auto 20px; display: block;
-      filter:
-        drop-shadow(1px 0 0 #DDDDDD)
-        drop-shadow(-1px 0 0 #DDDDDD)
-        drop-shadow(0 1px 0 #DDDDDD)
-        drop-shadow(0 -1px 0 #DDDDDD);
-    }
-    h1 {
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
-      font-size: 24px; margin: 0 0 10px; letter-spacing: -0.02em;
-    }
-    p.sub { color: var(--muted); margin: 0 0 24px; line-height: 1.5; font-size: 15px; }
-    .code {
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 38px; font-weight: 800;
-      letter-spacing: 10px; text-indent: 10px; color: var(--primary-dark);
-      background: #EEF0FF; border: 1px solid var(--primary-light);
-      border-radius: 18px; padding: 18px 0; margin: 0 0 26px;
-    }
-    a.btn {
-      display: block; text-decoration: none; font-weight: 700; font-size: 15px;
-      padding: 15px 0; border-radius: 14px; margin: 10px 0;
-      background: var(--primary-btn); color: #fff;
-      transition: transform .08s ease, background .15s ease;
-    }
-    a.btn:active { transform: scale(0.98); }
-    a.btn.secondary { background: #EEF0FF; color: var(--primary-dark); }
-    .hint { font-size: 13px; color: var(--muted); margin: 20px 0 0; line-height: 1.5; }
+    a { color: #AEB2FF; font-weight: 600; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <img class="badge" src="assets/Risers-Icon1-Shadows-Outline.png"
-         alt="Risers" width="88" height="88" />
-    <h1>You're invited to Risers</h1>
-    <p class="sub">Install the app, then enter this invite code to join your friend's circle.</p>
-    <div class="code" id="code">-----</div>
-    <a class="btn" id="ios" href="#">Download on the App Store</a>
-    <a class="btn secondary" id="android" href="#">Get it on Google Play</a>
-    <p class="hint">Already have Risers? Reopen this link on your phone and it
-      will jump straight into the app.</p>
-  </div>
-
-  <script>
-    // Surface the invite code from the query string (normalised to 5 chars).
-    var code = new URLSearchParams(location.search).get('code') || '';
-    code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
-    if (code) document.getElementById('code').textContent = code;
-
-    // Store links. Play Store uses the real package id; App Store needs the
-    // numeric id once the listing is live (replace APP_STORE_ID).
-    document.getElementById('ios').href =
-      'https://apps.apple.com/app/idAPP_STORE_ID';
-    document.getElementById('android').href =
-      'https://play.google.com/store/apps/details?id=com.dylchuck.huddle';
-  </script>
+  <!-- Only ever seen with scripts switched off. -->
+  <noscript>
+    <p>You're invited to Risers.
+      <a href="https://join.risers.fit/">Continue to your invite</a></p>
+  </noscript>
 </body>
 </html>
