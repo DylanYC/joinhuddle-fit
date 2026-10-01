@@ -1595,8 +1595,11 @@
   .rhero-center .rhero-h{max-width:712px;margin:0 auto;}
   .rhero-center .rhero-sub{margin:20px auto 0;max-width:none;}
   /* the alternate headline's sub is one sentence, not three broken lines —
-     balance it into two even lines instead of a long line and a stub */
-  .rhero-center .rhero-sub--keep{max-width:600px;text-wrap:balance;}
+     balance it into two even lines instead of a long line and a stub.
+     The measure is in em, not px: the sub's own size runs 16-19px with the
+     viewport, and a fixed 600px that held two lines at 16px was ~5px short
+     of holding them at 19px, which tipped wide screens into three. */
+  .rhero-center .rhero-sub--keep{max-width:40em;text-wrap:balance;}
   .rhero-cta-center{margin-top:28px;}
 
   /* Caption beneath the card wall — matches the hero sub copy so it reads as
