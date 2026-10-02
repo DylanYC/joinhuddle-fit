@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.dylchuck.huddle",
+      "package_name": "com.dylchuck.risers",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_YOUR_APP_SIGNING_SHA256_FINGERPRINT"
+        "6D:F9:5F:95:32:97:87:2C:0F:FB:1A:B8:6A:CC:6A:43:C5:97:EF:9A:42:06:10:CC:D5:2E:21:00:8F:3C:3A:B4"
       ]
     }
   }
