@@ -30,7 +30,7 @@
   <main class="page">
     <div class="eyebrow">Legal</div>
     <h1>Privacy Policy</h1>
-    <p class="meta">Last updated: July 25, 2026</p>
+    <p class="meta">Last updated: October 4, 2026</p>
 
     <div class="prose">
       <p>This Privacy Policy explains how <strong>Dylan Yip-Chuck</strong> ("Risers", "we", "us") collects, uses, shares, and protects your information when you visit <strong>risers.fit</strong> or use the <strong>Risers</strong> mobile app (together, the "Service").</p>
@@ -47,7 +47,7 @@
 
       <h3>Information you give us</h3>
       <ul>
-        <li><strong>Account information.</strong> When you create an account, we collect your email address, a display name, and (optionally) a short bio and profile photo. If you sign in with Google, we receive your name, email, and profile image from Google. You can also use the app as an anonymous guest, in which case we create an account identifier without an email until you choose to register.</li>
+        <li><strong>Account information.</strong> When you create an account, we collect your email address, a display name, and (optionally) a short bio and profile photo. If you sign in with Google, we receive your name, email, and profile image from Google. If you sign in with Apple, we receive the name and email address Apple shares with us, which may be a private relay address if you chose to hide your email. You can also use the app as an anonymous guest, in which case we create an account identifier without an email until you choose to register.</li>
         <li><strong>Your plans and check-ins.</strong> The daily commitments you create, whether you completed them, and any short notes you add.</li>
         <li><strong>Proof content.</strong> The photos and videos you capture or upload as proof, along with any captions.</li>
         <li><strong>Social content.</strong> Comments and reactions you post, and the connections that make up your inner circle (who you've invited or accepted).</li>
@@ -58,12 +58,15 @@
       <h3>Information we collect automatically</h3>
       <ul>
         <li><strong>Device and technical data.</strong> To operate the app we process basic technical information such as your device's push-notification token (so we can send you notifications), your time zone (so plans display at the right local time), and standard connection information.</li>
+        <li><strong>App usage.</strong> We record a small set of actions in the app so we can see what is working and where people get stuck: for example, that an onboarding screen was reached, that a plan was created, that a post was started or finished, or that an invite was sent. Each record carries the time, the app version, basic device information (model, operating system, language and time zone), and a random account identifier. It never includes your name, your email address, your photos or videos, the names of your plans, the text of your comments, or who is in your circle.</li>
+        <li><strong>Crash reports.</strong> If the app crashes or hits an error, we receive a technical report: what went wrong and where in the code, the app version, and the device model and operating system. Crash reports are not linked to your account.</li>
+        <li><strong>Sign-up screens.</strong> While you go through the sign-up screens for the first time, the app captures what those screens look like so we can find where the flow is confusing. All text and all personal pictures are blanked out before anything leaves your phone, including your name, your plan and your profile photo. Where you touch the screen and what you type are not captured, and neither is the screen where you enter your email and password. It stops when sign-up ends. Nothing in the rest of the app is ever captured: not your feed, not your posts, not your circle.</li>
         <li><strong>Website usage.</strong> Our website uses minimal, aggregate analytics to understand general traffic. We do <strong>not</strong> use advertising cookies or cross-site tracking.</li>
         <li><strong>Contact form abuse prevention.</strong> When you submit the contact form, we store a one-way hash of your IP address, never the address itself. It is used only to limit how many messages a single sender can submit in an hour.</li>
       </ul>
 
       <h3>What we deliberately do <em>not</em> collect</h3>
-      <p>Risers does not use advertising identifiers (such as IDFA or GAID), does not use third-party analytics or tracking SDKs, does not access your phone contacts, and does not collect your location. <strong>We do not track you across other apps or websites.</strong></p>
+      <p>Risers does not use advertising identifiers (such as IDFA or GAID), does not show ads, does not access your phone contacts, and does not collect your location. <strong>We do not track you across other apps or websites</strong>, and we do not sell your data or share it for advertising. The usage information described above is used only by us, to improve Risers.</p>
 
       <h2>Sensitive information</h2>
       <p>Risers is a wellness and accountability app, so the notes and proof you choose to share may touch on health, fitness, or personal goals. We do not ask you to provide this information and we do not treat it as structured health data — it is simply the content you decide to share with your circle. Please share only what you're comfortable with. Where this content constitutes special-category data under the GDPR, we process it on the basis of your explicit choice to share it through the Service.</p>
@@ -76,10 +79,11 @@
         <li>send push notifications and, where relevant, service emails;</li>
         <li>notify you about launch and product updates if you joined the waitlist (you can opt out at any time);</li>
         <li>operate our referral rewards program;</li>
+        <li>understand how the app is used and fix what is broken, using the app usage records, crash reports and sign-up captures described above;</li>
         <li>keep the Service secure, prevent abuse, and enforce our Terms; and</li>
         <li>comply with our legal obligations.</li>
       </ul>
-      <p><strong>Legal bases (GDPR).</strong> We rely on: performance of our contract with you (to provide the Service); your consent (for waitlist and marketing emails, which you can withdraw at any time); our legitimate interests (to keep the Service secure and to improve it); and compliance with legal obligations.</p>
+      <p><strong>Legal bases (GDPR).</strong> We rely on: performance of our contract with you (to provide the Service); your consent (for waitlist and marketing emails, which you can withdraw at any time); our legitimate interests (to keep the Service secure, to fix faults, and to understand how the app is used so we can improve it; you can object to this at any time, as described under "Your rights and choices"); and compliance with legal obligations.</p>
 
       <h2>Who can see your content</h2>
       <p>This is the heart of Risers, so we want to be exact:</p>
@@ -95,24 +99,30 @@
       <ul>
         <li><strong>Google Firebase / Google Cloud</strong> — our core infrastructure for authentication, database, file storage, cloud functions, and push notifications.</li>
         <li><strong>Google Sign-In</strong> — if you choose to sign in with Google.</li>
+        <li><strong>Sign in with Apple</strong> — if you choose to sign in with Apple.</li>
+        <li><strong>PostHog</strong> — stores the app usage records and sign-up captures described above. Hosted in the European Union (Frankfurt, Germany).</li>
+        <li><strong>Google Firebase Crashlytics</strong> — receives crash reports. Part of the Google Firebase services we already use.</li>
         <li><strong>Our email delivery provider</strong> — to send waitlist and service emails.</li>
       </ul>
       <p>We may also disclose information if required by law, to protect the rights and safety of our users or others, or in connection with a business transfer.</p>
       <p><em>When Risers introduces paid subscriptions, our payments/subscription provider (Adapty) and the Apple App Store or Google Play will process your subscription and purchase data. This section will be updated before any paid plan goes live.</em></p>
 
       <h2>Where your data is stored and international transfers</h2>
-      <p>Your data is hosted on Google Cloud infrastructure, primarily in the <strong>United States</strong>. If you are located in the European Economic Area, the United Kingdom, Switzerland, or Canada, this means your data is transferred internationally. These transfers are covered by appropriate safeguards, including the Standard Contractual Clauses and Google's certification under the EU–U.S. Data Privacy Framework.</p>
+      <p>Your data is hosted on Google Cloud infrastructure, primarily in the <strong>United States</strong>. If you are located in the European Economic Area, the United Kingdom, Switzerland, or Canada, this means your data is transferred internationally. These transfers are covered by appropriate safeguards, including the Standard Contractual Clauses and Google's certification under the EU–U.S. Data Privacy Framework. App usage records and sign-up captures are stored separately, with PostHog, in the European Union.</p>
 
       <h2>How long we keep your data</h2>
       <ul>
         <li><strong>Account data</strong> is kept for as long as your account is active. When you delete your account (see below), your data enters a 14-day recovery window, after which it is permanently deleted from our systems, and your proof photos and videos are removed from storage.</li>
         <li><strong>Waitlist emails</strong> are kept until we launch and you've been notified, or until you unsubscribe, whichever comes first.</li>
         <li><strong>Contact form messages</strong> are kept for as long as we need them to answer you and handle any follow-up. You can ask us to delete yours at any time.</li>
+        <li><strong>App usage records</strong> are kept for up to one year.</li>
+        <li><strong>Sign-up captures</strong> are kept for 30 days.</li>
+        <li><strong>Crash reports</strong> are kept for 90 days.</li>
         <li>We may retain limited information longer where necessary to comply with legal obligations, resolve disputes, or enforce our agreements.</li>
       </ul>
 
       <h2>Deleting your account</h2>
-      <p>You can delete your account at any time from <strong>Settings → Delete account</strong> inside the app. Deletion is a two-step confirmation. For 14 days your account is deactivated and recoverable — sign back in and cancel to restore it. After 14 days, deletion is permanent: your profile, plans, proof, reactions, and connections are erased, comments you authored are anonymized, and your login is removed.</p>
+      <p>You can delete your account at any time from <strong>Settings → Delete account</strong> inside the app. Deletion is a two-step confirmation. For 14 days your account is deactivated and recoverable — sign back in and cancel to restore it. After 14 days, deletion is permanent: your profile, plans, proof, reactions, and connections are erased, comments you authored are anonymized, and your login is removed. Your app usage records and any sign-up capture are deleted at the same time.</p>
       <p>If you no longer have the app installed, you can still ask us to delete your account. See <a href="/delete-account">how to delete your account</a>.</p>
       <p>Deleting your account does not automatically cancel any app-store subscription — manage that in your Apple or Google account settings.</p>
 
