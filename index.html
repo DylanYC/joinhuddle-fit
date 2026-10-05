@@ -1702,15 +1702,109 @@
   }
   @media (max-width:640px){ .cwall-ask{margin:clamp(34px,8vw,46px) auto 30px;padding:0 20px;} }
 
-  /* Card wall — sizing tokens live here; motion constants live in the JS. */
+  /* Rising domains — the app's six onboarding domains, in the app's own
+     two-state colour language. The app never shows six domains at full
+     strength together ("six tinted pills at rest read as a rainbow",
+     schedule_empty_state.dart); full colour is what SELECTING a domain earns.
+     So at rest each card wears the app's inactive domain tint (the plan-idea
+     chip recipe: 10% fill, 35% border at 1px, neutral label), and a desktop
+     hover lifts one card into OnboardingOptionCard's selected state: the same
+     flat tint with a solid 2px domain border and the ink label, with the
+     app's 280ms spring pop (OnboardingMotion.select / easeOutBack). Flat on
+     purpose, as in the app: no gradient wash and no coloured glow.
+     Fill / ink pairs are RiserDomainPalette's, dark by default and light
+     under .light. Not controls yet, so no pointer cursor or focus stop. */
+  .domains{position:relative;padding:6px 24px 52px;text-align:center;
+    --dm-movement:#FD9567; --dm-movement-ink:#FFC5AD;
+    --dm-nutrition:#8EC768; --dm-nutrition-ink:#BCE2A5;
+    --dm-mind:#CC93EE; --dm-mind-ink:#E8C4FF;
+    --dm-rest:#5DB5FE; --dm-rest-ink:#B0DAFF;
+    --dm-spirit:#FB89A0; --dm-spirit-ink:#FEC2CB;
+    --dm-nature:#08D2CA; --dm-nature-ink:#8AE8E1;}
+  .light .domains{
+    --dm-movement:#EE7236; --dm-movement-ink:#9B3C00;
+    --dm-nutrition:#5EA120; --dm-nutrition-ink:#3A6D00;
+    --dm-mind:#A862CF; --dm-mind-ink:#793E99;
+    --dm-rest:#0389DA; --dm-rest-ink:#00629E;
+    --dm-spirit:#DE5778; --dm-spirit-ink:#9F2D4D;
+    --dm-nature:#069E98; --dm-nature-ink:#046C68;}
+  .domains-lead{font-size:clamp(16px,1.4vw,19px);line-height:1.5;color:var(--text2);margin:0 auto 26px;max-width:30em;text-wrap:balance;}
+  .domains-grid{list-style:none;margin:0 auto;padding:0;max-width:780px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:14px;text-align:left;}
+  .domain-card{position:relative;border-radius:18px;padding:16px 16px 17px;
+    border:1px solid color-mix(in srgb,var(--dm) 35%,transparent);
+    background:color-mix(in srgb,var(--dm) 10%,transparent);
+    transition:border-color .28s ease-out,box-shadow .28s ease-out,transform .28s cubic-bezier(.34,1.56,.64,1);}
+  .domain-glyph{position:relative;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;line-height:1;
+    background:color-mix(in srgb,var(--dm) 12%,transparent);border:1px solid color-mix(in srgb,var(--dm) 30%,transparent);
+    transition:background-color .28s ease-out,border-color .28s ease-out;}
+  .domain-name{position:relative;margin-top:12px;font-size:17px;font-weight:600;line-height:1.25;color:var(--text1);transition:color .28s ease-out;}
+  @media (hover:hover) and (pointer:fine){
+    /* the inset ring takes the border from 1px to the app's 2px without moving the layout */
+    .domain-card:hover{border-color:var(--dm);transform:scale(1.018);box-shadow:inset 0 0 0 1px var(--dm);}
+    .domain-card:hover .domain-glyph{background:color-mix(in srgb,var(--dm) 22%,transparent);border-color:color-mix(in srgb,var(--dm) 55%,transparent);}
+    .domain-card:hover .domain-name{color:var(--dm-ink);font-weight:700;}
+  }
+  @media (prefers-reduced-motion: reduce){ .domain-card,.domain-card:hover{transform:none;} }
+  @media (max-width:640px){
+    .domains{padding:0 18px 36px;}
+    .domains-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:420px;}
+    .domain-card{padding:14px;}
+  }
+
+  /* Domain haze — each plan card spills a faint glow of its domain colour
+     (the app's RiserDomainPalette fills: movement / nutrition / mind / rest)
+     onto the sky behind and beneath it, so the colour arrives with the plan
+     that owns it rather than as decoration. The haze track mirrors the wall's
+     segments cell-for-cell and the wall script moves the two together.
+     Peak alphas run about double the onboarding reflection beat's (.16 dark /
+     .09 light): there the glow has a bare screen to itself, here opaque cards
+     cover its core and only the falloff shows. */
+  .cwall-zone{position:relative;z-index:2;
+    --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;
+    --dz-movement:#FD9567; --dz-nutrition:#8EC768; --dz-mind:#CC93EE; --dz-rest:#5DB5FE;
+    --dz-peak:.30; --dz-rest-level:.22;}
+  .light .cwall-zone{
+    --dz-movement:#EE7236; --dz-nutrition:#5EA120; --dz-mind:#A862CF; --dz-rest:#0389DA;
+    --dz-peak:.28;}
+  /* reaches above and (further) below the wall so no glow meets a clipped
+     edge; padding-top = that 100px reach + the wall's own 28px headroom, which
+     lands each haze cell exactly behind its stack */
+  .chaze{position:absolute;left:0;right:0;top:-100px;bottom:-260px;padding-top:128px;pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+    animation:dzBreathe 14s ease-in-out infinite;}
+  .chaze-track{display:flex;width:max-content;will-change:transform;}
+  .chaze-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
+  .chaze-cell{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;}
+  /* centred on the card's foot so the light pools beneath it, toward the
+     caption; glow radius ≈ one card pitch, so neighbours meet at their faint
+     edges — a run of one domain reads as an even field and two domains never
+     overlap enough to grey out */
+  .chaze-cell i{position:absolute;left:50%;top:96%;width:250%;height:200%;transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(closest-side,var(--dz) 0%,color-mix(in srgb,var(--dz) 62%,transparent) 28%,color-mix(in srgb,var(--dz) 24%,transparent) 60%,transparent 100%);
+    opacity:calc(var(--dz-peak) * var(--dz-rest-level));
+    transition:opacity .7s cubic-bezier(.33,1,.68,1);}
+  /* A plan at rest only hints at its colour; the glow comes up to full when
+     the plan turns into proof (centre flip, tap, or desktop hover) — same
+     timing as the card flip. So at most a couple of colours are ever at full
+     strength, and the colour reads as the reward for following through. */
+  .chaze-cell.is-lit i{opacity:var(--dz-peak);}
+  @media (hover:hover) and (pointer:fine){
+    .cwall-zone:not(:has(.cwall.is-dragging)) .chaze-cell.is-hover i{opacity:var(--dz-peak);}
+  }
+  @keyframes dzBreathe{ 0%,100%{opacity:.82;} 50%{opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .chaze{animation:none;} }
+
+  /* Card wall — motion constants live in the JS. */
   .cwall{
     /* ~6.4 stacks visible at any desktop width: each card is 1/6.4 of the
        viewport minus its gap, clamped so narrow windows don't shrink cards to
        slivers and ultrawides don't blow them up. Height comes from
        aspect-ratio. The gap is deliberately loose (was 18px at 7-up): with the
        per-stack tilt below, cards read as laid out by hand rather than as a
-       tight grid, and the tilt needs the air or neighbouring corners crowd. */
-    --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;
+       tight grid, and the tilt needs the air or neighbouring corners crowd.
+       (--cw-w / --cw-gap are declared on .cwall-zone so the domain haze
+       behind the wall lays out on the same pitch.) */
     /* dark (default) — navy-leaning surfaces to match the night sky */
     --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
     /* Two-layer soft shadow that casts DOWNWARD only (offset ≥ blur + |spread|):
@@ -1872,7 +1966,8 @@
   @media (max-width:640px){
     /* card size only — the cqw clamps land on their floors at this width,
        which reproduces the previous mobile sizing (label 13px, meta 10-11px) */
-    .cwall{--cw-w:142px;--cw-gap:22px;margin-top:28px;}
+    .cwall-zone{--cw-w:142px;--cw-gap:22px;}
+    .cwall{margin-top:28px;}
   }
   @media (prefers-reduced-motion: reduce){
     /* static resting state: no drift, no scrub, no flip transition */
@@ -1944,8 +2039,11 @@
     </div>
 
     <!-- ===== CARD WALL — drifting wall of plan→proof stacks (JS-rendered from PLANS) ===== -->
-    <div class="cwall" id="cwall" role="group" aria-label="Example daily plans and the proof that backed them">
-      <div class="cwall-track" id="cwallTrack"></div>
+    <div class="cwall-zone" id="cwallZone">
+      <div class="chaze" aria-hidden="true"><div class="chaze-track" id="chazeTrack"></div></div>
+      <div class="cwall" id="cwall" role="group" aria-label="Example daily plans and the proof that backed them">
+        <div class="cwall-track" id="cwallTrack"></div>
+      </div>
     </div>
 
     <!-- ===== Card-wall caption ===== -->
@@ -1958,6 +2056,19 @@
     <div class="cwall-ask" id="cwallAsk">
       <p>What are you trying to stick with?</p>
     </div>
+  </section>
+
+  <!-- RISING DOMAINS — the six areas plans live in (mirrors the app's onboarding grid) -->
+  <section class="domains" id="domains" aria-labelledby="domainsLead">
+    <p class="domains-lead" id="domainsLead">Risers build daily healthy living plans across:</p>
+    <ul class="domains-grid">
+        <li class="domain-card" style="--dm:var(--dm-movement);--dm-ink:var(--dm-movement-ink)"><span class="domain-glyph" aria-hidden="true">💪</span><div class="domain-name">Movement</div></li>
+        <li class="domain-card" style="--dm:var(--dm-nutrition);--dm-ink:var(--dm-nutrition-ink)"><span class="domain-glyph" aria-hidden="true">🥗</span><div class="domain-name">Nutrition</div></li>
+        <li class="domain-card" style="--dm:var(--dm-mind);--dm-ink:var(--dm-mind-ink)"><span class="domain-glyph" aria-hidden="true">🧠</span><div class="domain-name">Mind</div></li>
+        <li class="domain-card" style="--dm:var(--dm-rest);--dm-ink:var(--dm-rest-ink)"><span class="domain-glyph" aria-hidden="true">😴</span><div class="domain-name">Rest</div></li>
+        <li class="domain-card" style="--dm:var(--dm-spirit);--dm-ink:var(--dm-spirit-ink)"><span class="domain-glyph" aria-hidden="true">🌱</span><div class="domain-name">Spirit</div></li>
+        <li class="domain-card" style="--dm:var(--dm-nature);--dm-ink:var(--dm-nature-ink)"><span class="domain-glyph" aria-hidden="true">🌲</span><div class="domain-name">Nature</div></li>
+    </ul>
   </section>
 
   <!-- 3. THE LOOP — How Risers Works (Dia-style sticky-left, scrolling-right) -->
@@ -3748,18 +3859,21 @@ function toggleMode() {
   // Array order is reveal order: the wall drifts leftward, so the first entries
   // are the first plans to flip to their proof. The everyday, instantly legible
   // plans lead; the more specific ones (knee rehab) sit further back.
+  // domain: the app's rising domain for the plan — tints the haze behind its
+  // stack. Only the four headline domains glow; a plan outside them (the
+  // garden = nature) simply casts none.
   const PLANS = [
-    { emoji:'🏃', label:'Morning jog',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
-    { emoji:'🚶', label:'1000 steps during lunch break', cadence:'Today', avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
-    { emoji:'🥗', label:'Sunday meal prep',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
-    { emoji:'😴', label:'Bed by 11',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
-    { emoji:'🍎', label:'Healthy snacks only', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
-    { emoji:'👟', label:'15,000 Steps',       cadence:'Sat · Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
-    { emoji:'📵', label:'No phone after 10',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
-    { emoji:'💧', label:'Full bottle of water', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
-    { emoji:'🚴', label:'10-min spin class',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
-    { emoji:'💪', label:'Gym pull day',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
-    { emoji:'🦵', label:'Knee rehab',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'🏃', label:'Morning jog', domain:'movement',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
+    { emoji:'🚶', label:'1000 steps during lunch break', domain:'movement', cadence:'Today', avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
+    { emoji:'🥗', label:'Sunday meal prep', domain:'nutrition',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
+    { emoji:'😴', label:'Bed by 11', domain:'rest',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
+    { emoji:'🍎', label:'Healthy snacks only', domain:'nutrition', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
+    { emoji:'👟', label:'15,000 Steps', domain:'movement',       cadence:'Sat · Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
+    { emoji:'📵', label:'No phone after 10', domain:'mind',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'💧', label:'Full bottle of water', domain:'nutrition', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'🚴', label:'10-min spin class', domain:'movement',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'💪', label:'Gym pull day', domain:'movement',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
+    { emoji:'🦵', label:'Knee rehab', domain:'movement',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
     { emoji:'🌿', label:'An hour in the garden', cadence:'Saturdays', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
   ];
 
@@ -3886,6 +4000,37 @@ function toggleMode() {
     track.appendChild(seg);
   }
 
+  // Domain haze: one cell per stack, same two-segment layout, so sharing the
+  // wall's transform keeps every glow under the card that casts it.
+  const hazeTrack = document.getElementById('chazeTrack');
+  const hazeCells = new WeakMap();
+  if (hazeTrack) {
+    for (let copy = 0; copy < 2; copy++) {
+      const seg = document.createElement('div');
+      seg.className = 'chaze-seg';
+      PLANS.forEach(p => {
+        const cell = document.createElement('div');
+        cell.className = 'chaze-cell';
+        if (p.domain) {
+          const glow = document.createElement('i');
+          glow.style.setProperty('--dz', 'var(--dz-' + p.domain + ')');
+          cell.appendChild(glow);
+        }
+        seg.appendChild(cell);
+      });
+      hazeTrack.appendChild(seg);
+    }
+    // pair each stack with its haze cell (same DOM order) so the glow can
+    // follow the stack's plan → proof state
+    const cells = hazeTrack.querySelectorAll('.chaze-cell');
+    track.querySelectorAll('.cwall-stack').forEach((stack, n) => {
+      const cell = cells[n];
+      hazeCells.set(stack, cell);
+      stack.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') cell.classList.add('is-hover'); });
+      stack.addEventListener('pointerleave', () => cell.classList.remove('is-hover'));
+    });
+  }
+
   // ---- Measure: the track is two identical segments; wrapping the offset at
   // one segment's width keeps the marquee seamless in both directions and under
   // any drag distance. ----
@@ -3904,15 +4049,21 @@ function toggleMode() {
   const HANDOVER_LINGER_MS = 1200;
   const flipTimers = new WeakMap();
   let lastCentre = null;
+  // the haze cell behind a stack lights with its proof
+  function setFlipped(stack, on){
+    stack.classList.toggle('is-flipped', on);
+    const cell = hazeCells.get(stack);
+    if (cell) cell.classList.toggle('is-lit', on);
+  }
   function flipStack(stack, hold){
-    stack.classList.add('is-flipped');
+    setFlipped(stack, true);
     clearTimeout(flipTimers.get(stack));
-    flipTimers.set(stack, setTimeout(() => stack.classList.remove('is-flipped'), hold || FLIP_HOLD_MS));
+    flipTimers.set(stack, setTimeout(() => setFlipped(stack, false), hold || FLIP_HOLD_MS));
   }
   function clearAllFlips(){
     track.querySelectorAll('.cwall-stack.is-flipped').forEach(s => {
       clearTimeout(flipTimers.get(s));
-      s.classList.remove('is-flipped');
+      setFlipped(s, false);
     });
     lastCentre = null;
   }
@@ -3939,6 +4090,7 @@ function toggleMode() {
   function applyTransform(){
     if (segWidth > 0) offset = ((offset % segWidth) + segWidth) % segWidth;
     track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
+    if (hazeTrack) hazeTrack.style.transform = track.style.transform;
   }
 
   let lastFrame = null;
