@@ -1228,6 +1228,13 @@
     from{ opacity:0; transform:translateY(16px) scale(.9); filter:blur(4px); }
     to  { opacity:1; transform:translateY(0)    scale(1);  filter:blur(0);   }
   }
+  /* Idle float once the rise has landed. Uses the individual translate/rotate
+     properties so it composes with rIconRise's transform instead of fighting it.
+     Starts and ends at rest, so the hand-off from the rise has no jump. */
+  @keyframes rIconFloat{
+    0%,100%{ translate:0 0;      rotate:0deg; }
+    50%    { translate:0 -4px;   rotate:.6deg; }
+  }
 
   /* ---- section shell + theme tokens ---- */
   .rhero{
@@ -1316,7 +1323,9 @@
   .rhero-appicon{width:74px;height:auto;display:block;margin:0 0 14px;
     /* the PNG is preloaded (see <head>), so it's decoded by first paint and the
        rise plays on real pixels rather than on an empty box */
-    animation:rIconRise .95s cubic-bezier(.22,.61,.36,1) .12s both;will-change:transform,opacity,filter;}
+    animation:rIconRise .95s cubic-bezier(.22,.61,.36,1) .12s both,
+              rIconFloat 6.5s cubic-bezier(.45,0,.55,1) 1.07s infinite;
+    will-change:transform,translate,opacity,filter;}
   /* Mixed headline. Line 1 is the display face as a brand mark; line 2 drops
      back to Plus Jakarta Sans, which carries the actual message and reads far
      more easily at this size. The break is explicit (a <br>), not balanced —
