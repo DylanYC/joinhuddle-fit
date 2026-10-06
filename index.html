@@ -1607,17 +1607,18 @@
 
   /* Caption beneath the card wall — matches the hero sub copy so it reads as
      part of the wall, not a separate band. */
-  /* Negative top margin pulls the caption up into the card wall's 36px shadow
-     foot-room so it pairs tightly with the cards — WITHOUT reducing that
+  /* A small top margin keeps the caption close under the card wall's 36px
+     shadow foot-room so it still pairs with the cards — WITHOUT reducing that
      padding (the cards' downward shadow needs it to render un-clipped). The
-     shadow fades by ~26px below the cards; -8px leaves the caption at ~28px. */
-  .cwall-caption{position:relative;z-index:2;max-width:640px;margin:-8px auto 0;padding:0 24px;
+     shadow fades by ~26px below the cards; 4px leaves the caption at ~40px —
+     clear of the shadow with room to breathe, still reading as the wall's caption. */
+  .cwall-caption{position:relative;z-index:2;max-width:640px;margin:4px auto 0;padding:0 24px;
     text-align:center;font-family:'Inter',sans-serif;font-size:clamp(15px,1.5vw,18px);
     line-height:1.6;color:var(--r-sub);}
   /* hand-drawn underline (shared .ul-hand) — thinner stroke than the big spec
      title since the caption text is much smaller */
   .cwall-caption .ul-hand > svg path{stroke-width:3;}
-  @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:-8px;} }
+  @media (max-width:640px){ .cwall-caption{font-size:15px;margin-top:2px;} }
 
   /* ===== THE ASK =============================================================
      The wall shows how other people use Risers; the caption gives permission
