@@ -475,8 +475,8 @@ When selecting imagery for the website:
 - **Platforms:** iOS (primary) and Android
 - **Core feature:** Inner circles of up to 12 people
 - **Key actions:** Commit → Prove (photo) → Celebrate
-- **Premium tier (Huddle Pro):** ~$2.99/month — full proof history, grid archive, widgets, video proofs
-- **Early adopters:** Users before the Pro launch date get **lifetime free Pro**
+- **Premium tier (Risers Pro):** "Remember the whole journey" — full proof history, all-time grid, every Climb, multi-photo posts, widgets, app icons. Regular price TBD. Never a paywall in onboarding; circles are always free.
+- **Founding Risers:** Everyone who joins before Pro goes on sale (Jan 2027) gets a permanent Founding Riser badge, Pro free until March 31, 2027, then a founders-only $4.99 price locked for life. Waitlist referral months extend Founding Pro past March 31. Keep this quiet on the site until the Nov 9, 2026 launch.
 
 ---
 
