@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding Consistency: Work Today to Work Tomorrow — Risers</title>
+<meta name="description" content="Motivation fades. What if, instead of the finish line or today's to-do list, we set our gaze on tomorrow?">
+<link rel="canonical" href="https://risers.fit/blog/work-today-to-work-tomorrow/">
+<meta property="og:title" content="Finding Consistency: Work Today to Work Tomorrow">
+<meta property="og:description" content="Motivation fades. What if, instead of the finish line or today's to-do list, we set our gaze on tomorrow?">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://risers.fit/blog/work-today-to-work-tomorrow/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="apple-touch-icon" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="stylesheet" href="/assets/page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* Blog post. Same quiet long-form column as Our Story: plain type, no
+     scroll effects, no accent colour in the body. */
+
+  .post{max-width:680px;padding-top:56px;}
+
+  /* Header */
+  .post-kicker{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);text-decoration:none;margin-bottom:20px;transition:color .2s;}
+  .post-kicker:hover{color:var(--text1);}
+  .post h1{font-size:clamp(34px,5.4vw,48px);line-height:1.08;letter-spacing:-1.4px;margin-bottom:28px;text-wrap:balance;}
+  .post h1 .h1-sub{display:block;color:var(--text3);}
+
+  .byline{display:flex;align-items:center;gap:12px;padding-bottom:32px;margin-bottom:36px;border-bottom:1px solid var(--prose-rule);}
+  .byline img{width:40px;height:40px;border-radius:50%;box-shadow:0 0 0 2px #5B52E8;display:block;}
+  .byline .who{font-size:14px;font-weight:600;color:var(--text1);line-height:1.3;}
+  .byline .when{font-size:13px;color:var(--text3);line-height:1.3;margin-top:2px;}
+
+  /* Body */
+  .post .prose{font-size:18px;line-height:1.75;}
+  .post .prose p{margin:0 0 22px;}
+  .post .prose strong{font-weight:600;}
+  .post-lede{font-size:20px !important;line-height:1.65 !important;color:var(--text1);}
+
+  /* The writer's stage-direction asides: (*arms in the air…*) */
+  .aside{font-style:italic;color:var(--text3);}
+
+  /* Numbered pairs, numbered the way Our Story's ethos is ("1/"). */
+  .pair{list-style:none;margin:6px 0 28px !important;padding:0;display:grid;gap:14px;}
+  .pair li{display:grid;grid-template-columns:34px 1fr;margin:0 !important;}
+  .pair li::before{content:attr(data-n) "/";font-weight:700;color:var(--text1);}
+  .pair li strong{display:block;}
+
+  /* The one quote the essay is built around. */
+  .pull{margin:30px 0;padding:2px 0 2px 20px;border-left:2px solid var(--text1);font-size:20px;line-height:1.55;color:var(--text1);font-weight:500;}
+
+  /* A short beat on its own line ("…then what?") */
+  .beat{color:var(--text1);font-weight:600;}
+
+  /* Inner critic: the voices are set apart and dimmed; the rebuttal that
+     follows is the first full-strength line after them. */
+  .critic{margin:8px 0 26px;padding:0;list-style:none;display:grid;gap:8px;}
+  .critic li{font-size:20px;line-height:1.4;font-style:italic;color:var(--text3);margin:0 !important;}
+  .rebut{color:var(--text1);font-weight:600;}
+
+  /* The essay's own section break, "~Shift in Perspective~", kept as a
+     small centred line the way Our Story marks its turn. */
+  .shift-break{text-align:center;color:var(--text3);font-size:15px;letter-spacing:.06em;margin:44px 0 30px !important;}
+
+  /* Procrastinator vs. us */
+  .versus{display:grid;grid-template-columns:1fr 1fr;margin:30px 0 34px;border-top:1px solid var(--prose-rule);border-bottom:1px solid var(--prose-rule);}
+  .versus > div{padding:22px 0;}
+  .versus > div + div{padding-left:28px;border-left:1px solid var(--prose-rule);}
+  .versus > div:first-child{padding-right:28px;}
+  .vs-who{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+  .vs-say{font-size:19px;line-height:1.5;margin:0 !important;}
+  .vs-them .vs-say{color:var(--text3);font-style:italic;}
+  .vs-us .vs-say{color:var(--text1);font-weight:500;}
+  .vs-us .vs-say strong{font-weight:700;}
+
+  /* Closing note */
+  .closing{margin-top:56px;padding-top:36px;border-top:1px solid var(--prose-rule);}
+  .closing-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+  .closing p{color:var(--text1);}
+  .signoff{margin:6px 0 30px !important;color:var(--text1);font-family:"Caveat","Segoe Script","Bradley Hand",cursive;font-weight:600;font-size:30px;line-height:1.2;}
+  .closing-cta{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text1) !important;border:1px solid var(--border2) !important;border-radius:12px;padding:12px 18px;text-decoration:none;transition:border-color .2s, background .2s;}
+  .closing-cta:hover{border-color:var(--text3) !important;background:var(--surface);}
+
+  /* Nav width ladder — same five links as Our Story. */
+  @media (max-width:1140px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:940px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:860px){ .nav-links{display:none;} }
+
+  @media (max-width:760px){
+    .post{padding-top:36px;}
+    .post .prose{font-size:17px;}
+    .post-lede{font-size:18.5px !important;}
+    .pull,.critic li{font-size:18.5px;}
+    .versus{grid-template-columns:1fr;}
+    .versus > div:first-child{padding-right:0;}
+    .versus > div + div{padding-left:0;border-left:0;border-top:1px solid var(--prose-rule);}
+  }
+</style>
+</head>
+<body>
+
+<div class="site light" id="site">
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"></a>
+    <ul class="nav-links">
+      <li><a href="/#loop">How It Works</a></li>
+      <li><a href="/#inner-circle">Inner Circle</a></li>
+      <li><a href="/#climb">The Climb</a></li>
+      <li><a href="/why-risers-works/">Why It Works</a></li>
+      <li><a href="/our-story/">Our Story</a></li>
+    </ul>
+    <div class="nav-right">
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
+        <span class="t-lbl" id="tlbl">Light</span>
+      </button>
+      <a class="nav-cta" href="/#waitlist">Join Waitlist</a>
+    </div>
+  </nav>
+
+  <main class="page post">
+    <article>
+      <a class="post-kicker" href="/blog/">Consistency &amp; Potential</a>
+      <h1>Finding Consistency: <span class="h1-sub">Work Today to Work Tomorrow</span></h1>
+
+      <div class="byline">
+        <img src="/assets/Avatars/MainUser_Dylan.png" alt="" width="40" height="40">
+        <div>
+          <div class="who">Dylan Yip-Chuck</div>
+          <div class="when"><time datetime="2026-10-15">October 15, 2026</time> · 4 min read</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="post-lede">
+          When most of us set out on a new mission in life, be it a health goal
+          to run a marathon, a professional goal to get promoted, a hobby goal to
+          learn a new language&mdash;anything&mdash;we tend to get super fixated on
+          two things:
+        </p>
+
+        <ol class="pair">
+          <li data-n="1"><span><strong>The finish line</strong>one day reaching the glorious pedestal of finishing the thing</span></li>
+          <li data-n="2"><span><strong>The work right in front of us</strong>what&rsquo;s at our fingertips today</span></li>
+        </ol>
+
+        <p>
+          Thinking about crossing that marathon finish line
+          <span class="aside">(arms in the air, family cheering, music pumping)</span>,
+          imagining getting that new job title
+          <span class="aside">(the accolades, the money)</span>, dreaming about
+          being bilingual&hellip; <span class="aside">(foreign friendships and
+          adventures)</span>, these thoughts create energy&hellip; powerful energy.
+          And with that energy bubbling inside of us we think to ourselves:
+        </p>
+
+        <blockquote class="pull">&ldquo;I could use this energy to get a lot done today.&rdquo;</blockquote>
+
+        <p>
+          It&rsquo;s intoxicating, actually. Motivation enables you to work at the
+          peak of your potential. Is there anything more intoxicating and
+          miraculous than feeling what it&rsquo;s like to be at your potential?
+        </p>
+
+        <p>
+          But, that motivation <strong>fades</strong>. The fire from the initial
+          excitement burns out.
+        </p>
+
+        <p class="beat">&hellip;then what?</p>
+
+        <p>
+          Once the fire goes cold, it doesn&rsquo;t just leave us back at zero. It
+          leaves a crater. And that crater has its own sort of gravity, pulling us
+          down. Even worse is what that force does to how we see ourselves. That
+          amazing, potential version of you vanishes, and reality clobbers you
+          over the head with thoughts like:
+        </p>
+
+        <ul class="critic">
+          <li>&ldquo;That was never really you.&rdquo;</li>
+          <li>&ldquo;You&rsquo;re a quitter.&rdquo;</li>
+          <li>&ldquo;You&rsquo;re lazy.&rdquo;</li>
+        </ul>
+
+        <p>
+          <span class="rebut">Those thoughts aren&rsquo;t actually the truth.</span>
+          They show up because we stretched so far from reality that life snapped
+          us back in the opposite direction.
+        </p>
+
+        <p class="shift-break">~ Shift in Perspective ~</p>
+
+        <p>
+          What if instead of focusing on the finish line and instead of lasering
+          in on the work at our fingertips we shifted where we set our gaze to
+          somewhere else&hellip; somewhere in the middle?
+        </p>
+
+        <p class="beat">Tomorrow.</p>
+
+        <p>
+          What would happen if we simply worked today to ensure we can keep
+          working tomorrow? What if we took this smaller task seriously and
+          allowed ourselves to feel proud of accomplishing it?
+        </p>
+
+        <p>
+          To be clear, this has nothing to do with procrastination. This method is
+          actually the antithesis of procrastination!
+        </p>
+
+        <div class="versus">
+          <div class="vs-them">
+            <div class="vs-who">A procrastinator says</div>
+            <p class="vs-say">&ldquo;Ah&hellip; I&rsquo;ll start tomorrow.&rdquo;</p>
+          </div>
+          <div class="vs-us">
+            <div class="vs-who">We say</div>
+            <p class="vs-say">&ldquo;I am going to work <strong>today</strong>, so that I can keep on working tomorrow.&rdquo;</p>
+          </div>
+        </div>
+
+        <p>When you honestly focus on tomorrow, two things happen:</p>
+
+        <ol class="pair">
+          <li data-n="1"><span>The daily work becomes <strong style="display:inline">lighter and more sustainable</strong> (you avoid burnout and injury)</span></li>
+          <li data-n="2"><span>The small accomplishment becomes a <strong style="display:inline">daily mini-boost of motivation</strong> that helps kickstart the next day</span></li>
+        </ol>
+
+        <p>Does this mean you never really push yourself or work hard at anything?</p>
+
+        <p class="beat">Not at all!</p>
+
+        <p>
+          Part of the message nested inside of &ldquo;work today to work
+          tomorrow&rdquo; is the fact that you need to work hard now in order to
+          progress. If you&rsquo;re not progressing, you&rsquo;re regressing. And
+          when you regress long enough, you actually fail the mission to be able
+          to work tomorrow.
+        </p>
+
+        <p>
+          The key difference is that now you notice when you&rsquo;re pushing too
+          hard, and stop before injury and before burnout with absolutely no self
+          judgement or envy of people who may be going faster today. You
+          prioritize rest, and see rest as an essential kind of &ldquo;work&rdquo;
+          in itself. But also recognize when &ldquo;rest&rdquo; turns into
+          laziness (which isn&rsquo;t going to help you work tomorrow!).
+        </p>
+
+        <p>
+          This might not look or feel quite as epic as the earlier story where we
+          went all-in riding the tidal wave of motivation and felt like we were
+          peaking on day 1. But it&rsquo;s the quietly consistent people who
+          ultimately are the ones who have the most epic <em>lives</em>.
+        </p>
+
+        <blockquote class="pull">Wouldn&rsquo;t you rather have an epic life rather than just an epic day?</blockquote>
+
+        <p>
+          Quietly consistent people are the ones who get sh*t done and accomplish
+          astonishing things&hellip; they&rsquo;re the ones who keep consistent
+          when things get hard&hellip; and after they accomplish the marathon,
+          turn their sights on to ultra-marathons&hellip; once they get promoted,
+          leave the 9&ndash;5 to start their own business&hellip; once they learn a
+          language, take on another new hobby to further enrich their life.
+        </p>
+
+        <p>
+          It&rsquo;s the quiet and balanced life that wins over the long journey,
+          and being able to work tomorrow is the key.
+        </p>
+
+        <aside class="closing">
+          <div class="closing-label">Why Risers works this way</div>
+          <p>
+            Risers is designed with this philosophy in mind. Small, daily plans
+            that are witnessed today help create momentum into tomorrow. Tomorrow,
+            your plan is waiting for you, with your partner or inner circle having
+            your back.
+          </p>
+          <p>
+            The objective is not anything miraculous today. It&rsquo;s to show up
+            today, and tomorrow too.
+          </p>
+          <p class="signoff">&mdash; Dylan</p>
+          <a class="closing-cta" href="/#waitlist">Join the waitlist <span aria-hidden="true">&rarr;</span></a>
+        </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="fbrand">
+      <a href="/" class="fl">
+        <img class="fl-dark" src="/assets/Risers-Logo-Dark-Icon+Wordmark.svg" alt="Risers" width="120" height="28">
+        <img class="fl-light" src="/assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
+      </a>
+      <span class="fbuilt">Built in <span class="fflag">🇩🇪🇨🇦</span></span>
+    </div>
+    <div class="fd">risers.fit</div>
+    <ul class="flinks">
+      <li><a href="/our-story/">Our Story</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/privacy">Privacy Policy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="fcopy">© 2026 Risers™ · Dylan Yip-Chuck</div>
+  </footer>
+
+</div>
+
+<script src="/assets/page.js"></script>
+</body>
+</html>
