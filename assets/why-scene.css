@@ -31,6 +31,18 @@
    - Hinge position:      --hinge-pct
    ========================================================================= */
 
+/* Risers Display: the brand face, used for headings. It ships one upright
+   weight, so headings that use it set weight normal and turn off synthesis. */
+@font-face{
+  font-family:'Risers Display';
+  src:url('risers-display.woff2') format('woff2'),
+      url('risers-display.woff') format('woff');
+  font-style:normal;
+  font-weight:normal;
+  font-display:swap;
+}
+
+
 :root {
   /* Brand palette (from BRAND.md) */
   --brand-primary:      #6F75FF;
@@ -79,7 +91,7 @@
 html, body {
   background: var(--sky-top-day);
   color: var(--ink-day);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -269,10 +281,11 @@ body {
 .overlay-h1 {
   /* Sized to sit ABOVE the equation as its title, not to be the loudest
      thing on screen — the formula line below carries the visual weight. */
+  font-family: 'Risers Display', system-ui, sans-serif;
+  font-weight: normal;
+  font-synthesis: none;
   font-size: clamp(24px, 5.6vw, 40px);
-  font-weight: 800;
   line-height: 1.04;
-  letter-spacing: -0.022em;
   /* Near-black for the top line — matches the home page's
      `--text1: #0a0a18` token used on `.stitle` headers. */
   color: #0a0a18;
@@ -399,10 +412,11 @@ body {
   text-align: center;
 }
 .overlay-h2 {
+  font-family: 'Risers Display', system-ui, sans-serif;
+  font-weight: normal;
+  font-synthesis: none;
   font-size: clamp(22px, 5.8vw, 40px);
-  font-weight: 800;
   line-height: 1.15;
-  letter-spacing: -0.015em;
   color: var(--ink-night);
   max-width: var(--col-max);
 }

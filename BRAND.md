@@ -162,16 +162,16 @@ Used on progress rings, highlight elements, and hero accents.
 
 ## 4. Typography
 
-**Typeface:** [Inter](https://fonts.google.com/specimen/Inter) — used exclusively throughout the app.
+**Typeface:** [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) — used exclusively throughout the app.
 
 ```html
 <!-- Google Fonts import -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" rel="stylesheet">
 ```
 
 ```css
-font-family: 'Inter', sans-serif;
+font-family: 'Bricolage Grotesque', sans-serif;
 ```
 
 ### Type Scale (sourced from `FontSizes` class in `theme.dart`)
@@ -201,7 +201,7 @@ font-family: 'Inter', sans-serif;
 ### CSS Typography Tokens
 ```css
 :root {
-  --font-family: 'Inter', sans-serif;
+  --font-family: 'Bricolage Grotesque', sans-serif;
 
   --text-display-lg: 57px;
   --text-display-md: 45px;
@@ -494,7 +494,7 @@ When selecting imagery for the website:
 
 | Property | Value |
 |----------|-------|
-| Font | Inter |
+| Font | Bricolage Grotesque |
 | Primary color | `#6F75FF` |
 | Primary dark | `#292D91` |
 | Primary deep | `#0A0F81` |

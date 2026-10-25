@@ -807,7 +807,7 @@
 
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.font = `700 ${fontSize}px Inter, system-ui, sans-serif`;
+    ctx.font = `700 ${fontSize}px "Bricolage Grotesque", system-ui, sans-serif`;
     ctx.textBaseline = 'middle';
 
     const textW = ctx.measureText(banner.text).width;
@@ -1209,7 +1209,7 @@
 
     ctx.save();
     const fontSize = Math.max(12, Math.min(w * 0.011, 17));
-    ctx.font = `italic 500 ${fontSize}px Inter, system-ui, sans-serif`;
+    ctx.font = `italic 500 ${fontSize}px "Bricolage Grotesque", system-ui, sans-serif`;
     ctx.textBaseline = 'middle';
 
     // Measure full text. If wider than the path, skip (viewport too narrow).
