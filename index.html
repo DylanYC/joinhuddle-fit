@@ -206,8 +206,11 @@
   /* SECTIONS */
   .sec{text-align:center;padding:60px 24px 0;}
   .slbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px;}
-  .stitle{font-family:var(--font-display);font-weight:normal;font-synthesis:none;letter-spacing:normal;transform:skewX(7deg);font-size:clamp(28px,4vw,48px);line-height:1.05;color:var(--text1);max-width:560px;margin:0 auto;}
+  .stitle{font-family:var(--font-display);font-weight:normal;font-synthesis:none;letter-spacing:normal;word-spacing:-0.18em;text-wrap:balance;transform:skewX(7deg);font-size:clamp(28px,4vw,48px);line-height:1.05;color:var(--text1);max-width:900px;margin:0 auto;}
   .stitle em{font-style:normal;color:var(--accent2);}
+  /* The slanted f's foot sits well left of its top, so the space after "of"
+     reads wider than the others. Pull it in a touch. */
+  .kf{margin-right:-0.09em;}
   .ssub{margin-top:12px;font-size:16px;color:var(--text2);max-width:400px;margin-left:auto;margin-right:auto;line-height:1.65;}
 
   /* THE STANCE — closes the app demo. The competitive noise drops & dims;
@@ -564,7 +567,7 @@
   .spec-fpill.strava{background:rgba(252,76,2,0.13);color:var(--strava-ink);}
   .spec-fpill.risers{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(91,82,232,0.4);}
   .spec-fop{font-size:16px;font-weight:600;color:var(--text3);}
-  .spec-title{font-family:var(--font-display);font-weight:normal;font-synthesis:none;letter-spacing:normal;transform:skewX(7deg);font-size:clamp(26px,3.6vw,42px);line-height:1.14;color:var(--text1);max-width:640px;margin:0 auto;}
+  .spec-title{font-family:var(--font-display);font-weight:normal;font-synthesis:none;letter-spacing:normal;word-spacing:-0.18em;text-wrap:balance;transform:skewX(7deg);font-size:clamp(26px,3.6vw,42px);line-height:1.14;color:var(--text1);max-width:900px;margin:0 auto;}
   .spec-title em{font-style:normal;color:var(--accent2);}
   /* Hand-drawn underline: SVG stretched under a phrase, stroke stays crisp. */
   .ul-hand{position:relative;display:inline-block;white-space:nowrap;}
@@ -1167,7 +1170,11 @@
 
     /* SECTIONS */
     .sec{padding:48px 16px 0;}
-    .stitle{font-size:30px;}
+    /* Risers Display is wide: the longest title line ("Not a feed of
+       strangers.") runs ~12.9x the font-size and the BeReal line ~14.7x.
+       Size from the screen width so each authored line stays whole. */
+    .stitle{font-size:clamp(20px,calc((100vw - 32px) / 13.2),30px);}
+    .spec-title{font-size:clamp(18px,calc((100vw - 40px) / 15.1),26px);}
 
     /* PHONES — horizontal scroll */
     .phones-sec{padding:36px 0;}
@@ -2146,7 +2153,7 @@
   <!-- 4. THE APP — moment of proof -->
   <div class="sec">
     <div class="slbl">The App</div>
-    <h2 class="stitle">Built for the<br/><em>moment of proof.</em></h2>
+    <h2 class="stitle">Built for the<br/><em>moment <span class="kf">of</span> proof.</em></h2>
     <p class="ssub">No filters, no edits — just real, authentic moments. Capture your daily wins, big and small.</p>
   </div>
 
@@ -2350,7 +2357,7 @@
   <!-- 5. INNER CIRCLE -->
   <div class="sec" id="inner-circle">
     <div class="slbl">The Inner Circle</div>
-    <h2 class="stitle">Not a feed of strangers.<br/><em>A circle of trust.</em></h2>
+    <h2 class="stitle">Not a feed <span class="kf">of</span> strangers.<br/><em>A circle <span class="kf">of</span> trust.</em></h2>
     <p class="ssub">Risers isn't for followers and likes. It's for the people you actually feel comfortable being honest with — the wins, the setbacks, and everything in between.</p>
   </div>
 
@@ -2443,7 +2450,7 @@
       <span class="spec-fop">&#8596;</span>
       <span class="spec-fpill strava">Strava</span>
     </div>
-    <h2 class="spec-title">The <span class="ul-hand">raw honesty<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span> of BeReal.<br/>The <span class="ul-hand">energy<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 8 C 42 13, 84 3, 128 9 C 170 14, 212 4, 256 9 C 275 11, 289 7, 298 9"/></svg></span> of Strava.</h2>
+    <h2 class="spec-title">The <span class="ul-hand">raw honesty<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10 C 45 3, 85 13, 130 8 C 172 3, 214 13, 258 8 C 276 5, 290 10, 298 7"/></svg></span> <span class="kf">of</span> BeReal.<br/>The <span class="ul-hand">energy<svg viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 8 C 42 13, 84 3, 128 9 C 170 14, 212 4, 256 9 C 275 11, 289 7, 298 9"/></svg></span> <span class="kf">of</span> Strava.</h2>
     <p class="spec-sub">Risers lives right at the sweet spot of these amazing apps.</p>
 
     <div class="spec-grid">
