@@ -1781,10 +1781,10 @@
      cover its core and only the falloff shows. */
   .cwall-zone{position:relative;z-index:2;
     --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;
-    --dz-movement:#FD9567; --dz-nutrition:#8EC768; --dz-mind:#CC93EE; --dz-rest:#5DB5FE;
+    --dz-movement:#FD9567; --dz-nutrition:#8EC768; --dz-mind:#CC93EE; --dz-rest:#5DB5FE; --dz-hobbies:#FB89A0;
     --dz-peak:.30; --dz-rest-level:.22;}
   .light .cwall-zone{
-    --dz-movement:#EE7236; --dz-nutrition:#5EA120; --dz-mind:#A862CF; --dz-rest:#0389DA;
+    --dz-movement:#EE7236; --dz-nutrition:#5EA120; --dz-mind:#A862CF; --dz-rest:#0389DA; --dz-hobbies:#DE5778;
     --dz-peak:.28;}
   /* reaches above and (further) below the wall so no glow meets a clipped
      edge; padding-top = that 100px reach + the wall's own 28px headroom, which
@@ -3883,7 +3883,7 @@ function toggleMode() {
   // are the first plans to flip to their proof. The everyday, instantly legible
   // plans lead; the more specific ones (knee rehab) sit further back.
   // domain: the app's rising domain for the plan — tints the haze behind its
-  // stack. Only the four headline domains glow; a plan outside them (the
+  // stack. Domains with a --dz-* colour glow; a plan outside them (the
   // garden = nature) simply casts none.
   const PLANS = [
     { emoji:'🏃', label:'Morning jog', domain:'movement',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
@@ -3891,10 +3891,12 @@ function toggleMode() {
     { emoji:'🥗', label:'Sunday meal prep', domain:'nutrition',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
     { emoji:'😴', label:'Bed by 11', domain:'rest',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
     { emoji:'🍎', label:'Healthy snacks only', domain:'nutrition', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
+    { emoji:'🎸', label:'Guitar 15min per day', domain:'hobbies', cadence:'Every day', avatars:2, proof:PC+'Pick Up the Guitar_Manny.jpg', by:'Crew_Manny.png', flexes:3 },
     { emoji:'👟', label:'15,000 Steps', domain:'movement',       cadence:'Sat · Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
     { emoji:'📵', label:'No phone after 10', domain:'mind',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
     { emoji:'💧', label:'Full bottle of water', domain:'nutrition', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
     { emoji:'🚴', label:'10-min spin class', domain:'movement',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'💻', label:'Code before bed', domain:'mind',   cadence:'Every day',   avatars:2, proof:PC+'Code Before Bed_Manny.jpg', by:'Crew_Manny.png', flexes:4 },
     { emoji:'💪', label:'Gym pull day', domain:'movement',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
     { emoji:'🦵', label:'Knee rehab', domain:'movement',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
     { emoji:'🌿', label:'An hour in the garden', cadence:'Saturdays', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
