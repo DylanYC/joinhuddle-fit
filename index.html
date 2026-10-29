@@ -1246,17 +1246,12 @@
   /* ---- section shell + theme tokens ---- */
   .rhero{
     position:relative; overflow:hidden; isolation:isolate;
-    /* The sky is the app's own (onboarding_sky.dart, 2026-10-29): dark is
-       the night climb, a deep violet into near black, with one warm dimmed
-       orb top right and nothing else; light is golden hour, lavender through
-       rose and peach into paper, with the sun in the same place. The old
-       blooms, dawn band, rays and drifting clouds went with it: the site
-       uses colour only on purpose, and this one gradient is the app's first
-       screen, not decoration. --r-body / --r-body-glow are the app's
-       moon/moonGlow and sun/sunGlow with the sky's glow geometry
-       (18pt spread, 44pt blur on a 50pt body), scaled by --r-body-size. */
-    --r-sky: linear-gradient(180deg,#2C2862 0%,#1B1C40 34%,#14152A 100%);
-    --r-body:#E6D5B0; --r-body-glow:rgba(246,194,122,.20);
+    /* DARK / night (default theme) — brand indigo (#0A0F81 deep, #646AFF accent) */
+    --r-sky: linear-gradient(180deg,#06070f 0%,#080a1d 30%,#090b2b 54%,#0a0c39 74%,#070920 100%);
+    --r-bloom: radial-gradient(closest-side, rgba(100,106,255,.10), rgba(100,106,255,.03) 46%, transparent 74%);
+    --r-dawn: radial-gradient(closest-side, rgba(255,168,128,.04), rgba(100,106,255,.07) 46%, transparent 80%);
+    --r-ray: rgba(150,156,255,.40);
+    --r-cloud: rgba(100,106,255,.15);
     --r-eyebrow-halo: rgba(7,9,25,.92);
     --r-head:#ffffff;
     --r-accent:#646aff;
@@ -1290,8 +1285,11 @@
   .rhero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:160px;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,transparent,var(--bg));}
   .light .rhero{
-    --r-sky: linear-gradient(180deg,#D6D9F5 0%,#EAD9E4 22%,#F6E2CF 40%,#F7F2EA 56%,#F7F2EA 100%);
-    --r-body:#F6C27A; --r-body-glow:rgba(246,194,122,.45);
+    --r-sky: linear-gradient(180deg,#cfe5f6 0%,#dbe9f7 26%,#ecedf8 50%,#f8eef0 72%,#efe9fb 100%);
+    --r-bloom: radial-gradient(closest-side, rgba(255,255,255,.92), rgba(255,255,255,.45) 44%, transparent 74%);
+    --r-dawn: radial-gradient(closest-side, rgba(255,196,170,.5), rgba(180,225,200,.3) 40%, rgba(180,200,245,.3) 62%, transparent 80%);
+    --r-ray: rgba(255,255,255,.5);
+    --r-cloud: rgba(255,255,255,.6);
     --r-eyebrow-halo: rgba(245,249,255,.95);
     --r-head:#17151f;
     --r-accent:#5b54e8;
@@ -1310,16 +1308,17 @@
     --p-line:#ececf4; --p-wash:#ece9ff;
   }
 
-  /* ---- sky layers: the one body ---- */
+  /* ---- sky layers ---- */
   .rhero-sky{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-  /* The sun by day, the orb by night, where the app draws it: top right,
-     a little under the chrome. The glow is the app's box-shadow recipe
-     (spread 18, blur 44 on a 50pt disc), scaled with the disc. */
-  .rhero-body{position:absolute;--r-body-size:64px;
-    right:max(28px,calc((100vw - 1240px) / 2 + 40px));top:140px;
-    width:var(--r-body-size);height:var(--r-body-size);border-radius:50%;background:var(--r-body);
-    box-shadow:0 0 calc(var(--r-body-size) * .88) calc(var(--r-body-size) * .36) var(--r-body-glow);}
-  @media (max-width:760px){ .rhero-body{--r-body-size:50px;right:26px;top:118px;} }
+  .rhero-bloom{position:absolute;left:50%;top:78%;transform:translate(-50%,-50%);width:1600px;height:600px;border-radius:50%;background:var(--r-bloom);filter:blur(6px);}
+  .rhero-dawn{position:absolute;left:50%;top:86%;transform:translate(-50%,-50%);width:1800px;height:340px;border-radius:50%;background:var(--r-dawn);filter:blur(28px);opacity:.72;}
+  /* sun rays only suit the bright daytime (light) sky — hidden in the navy night theme */
+  .rhero-rays{position:absolute;left:50%;top:80%;width:0;height:0;display:none;}
+  .light .rhero-rays{display:block;}
+  .rhero-rays i{position:absolute;left:0;top:0;width:2.5px;height:760px;transform-origin:top center;background:linear-gradient(180deg,transparent,var(--r-ray) 30%,transparent);filter:blur(2px);opacity:.55;}
+  .rhero-cloud{position:absolute;border-radius:50%;background:var(--r-cloud);filter:blur(36px);}
+  .rhero-cloud-1{top:60px;left:8%;width:360px;height:86px;animation:rDrift 9s ease-in-out infinite;}
+  .rhero-cloud-2{top:96px;right:10%;width:420px;height:78px;animation:rDrift 11s ease-in-out infinite;}
 
   /* ---- two-column grid ---- */
   .rhero-grid{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:30px 40px 0;
@@ -1592,7 +1591,7 @@
     .rhero-iccard{left:6px;top:104px;width:184px;}
   }
   @media (prefers-reduced-motion: reduce){
-    .rhero-orbit-spin,.rhero-orb-spin,.rhero-phone-float,.rhero-soc .dot{animation:none !important;}
+    .rhero-orbit-spin,.rhero-orb-spin,.rhero-phone-float,.rhero-cloud,.rhero-soc .dot{animation:none !important;}
     /* icon appears already settled — no rise, no blur */
     .rhero-appicon{animation:none !important;opacity:1;transform:none;filter:none;}
   }
@@ -1991,7 +1990,11 @@
   <section class="rhero" id="rhero">
     <!-- sky / light layers -->
     <div class="rhero-sky" aria-hidden="true">
-      <div class="rhero-body"></div>
+      <div class="rhero-bloom"></div>
+      <div class="rhero-dawn"></div>
+      <div class="rhero-rays" id="rRays"></div>
+      <div class="rhero-cloud rhero-cloud-1"></div>
+      <div class="rhero-cloud rhero-cloud-2"></div>
     </div>
 
     <!-- ===== Centred copy ===== -->
@@ -3814,6 +3817,17 @@ function toggleMode() {
       setStep(idx);
     }
   });
+})();
+
+/* ===== Hero sky — light rays (11, fanning from low-center; shown in light mode) ===== */
+(function(){
+  const rays = document.getElementById('rRays');
+  if (!rays || rays.childElementCount) return;
+  for (let i = 0; i < 11; i++) {
+    const d = document.createElement('i');
+    d.style.transform = 'rotate(' + ((i - 5) * 13) + 'deg)';
+    rays.appendChild(d);
+  }
 })();
 
 /* ===== HERO CARD WALL — drifting wall of plan→proof stacks ===== */
