@@ -1781,49 +1781,11 @@
     .domains-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:420px;}
   }
 
-  /* Domain haze — each plan card spills a faint glow of its domain colour
-     (the app's RiserDomainPalette fills: movement / nutrition / mind / rest)
-     onto the sky behind and beneath it, so the colour arrives with the plan
-     that owns it rather than as decoration. The haze track mirrors the wall's
-     segments cell-for-cell and the wall script moves the two together.
-     Peak alphas run about double the onboarding reflection beat's (.16 dark /
-     .09 light): there the glow has a bare screen to itself, here opaque cards
-     cover its core and only the falloff shows. */
+  /* Card wall zone. No haze behind the wall any more: the per-card domain
+     glow read as decoration, and colour on the site is only ever purposeful
+     (Dylan, 2026-10-29). --cw-w / --cw-gap stay here for the wall. */
   .cwall-zone{position:relative;z-index:2;
-    --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;
-    --dz-movement:#FD9567; --dz-nutrition:#8EC768; --dz-mind:#CC93EE; --dz-rest:#5DB5FE; --dz-hobbies:#FB89A0;
-    --dz-peak:.30; --dz-rest-level:.22;}
-  .light .cwall-zone{
-    --dz-movement:#EE7236; --dz-nutrition:#5EA120; --dz-mind:#A862CF; --dz-rest:#0389DA; --dz-hobbies:#DE5778;
-    --dz-peak:.28;}
-  /* reaches above and (further) below the wall so no glow meets a clipped
-     edge; padding-top = that 100px reach + the wall's own 28px headroom, which
-     lands each haze cell exactly behind its stack */
-  .chaze{position:absolute;left:0;right:0;top:-100px;bottom:-260px;padding-top:128px;pointer-events:none;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
-    animation:dzBreathe 14s ease-in-out infinite;}
-  .chaze-track{display:flex;width:max-content;will-change:transform;}
-  .chaze-seg{display:flex;gap:var(--cw-gap);padding-right:var(--cw-gap);}
-  .chaze-cell{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;}
-  /* centred on the card's foot so the light pools beneath it, toward the
-     caption; glow radius ≈ one card pitch, so neighbours meet at their faint
-     edges — a run of one domain reads as an even field and two domains never
-     overlap enough to grey out */
-  .chaze-cell i{position:absolute;left:50%;top:96%;width:250%;height:200%;transform:translate(-50%,-50%);border-radius:50%;
-    background:radial-gradient(closest-side,var(--dz) 0%,color-mix(in srgb,var(--dz) 62%,transparent) 28%,color-mix(in srgb,var(--dz) 24%,transparent) 60%,transparent 100%);
-    opacity:calc(var(--dz-peak) * var(--dz-rest-level));
-    transition:opacity .7s cubic-bezier(.33,1,.68,1);}
-  /* A plan at rest only hints at its colour; the glow comes up to full when
-     the plan turns into proof (centre flip, tap, or desktop hover) — same
-     timing as the card flip. So at most a couple of colours are ever at full
-     strength, and the colour reads as the reward for following through. */
-  .chaze-cell.is-lit i{opacity:var(--dz-peak);}
-  @media (hover:hover) and (pointer:fine){
-    .cwall-zone:not(:has(.cwall.is-dragging)) .chaze-cell.is-hover i{opacity:var(--dz-peak);}
-  }
-  @keyframes dzBreathe{ 0%,100%{opacity:.82;} 50%{opacity:1;} }
-  @media (prefers-reduced-motion: reduce){ .chaze{animation:none;} }
+    --cw-w:clamp(150px, calc(100vw / 6.4 - 32px), 240px); --cw-gap:32px;}
 
   /* Card wall — motion constants live in the JS. */
   .cwall{
@@ -1833,8 +1795,7 @@
        aspect-ratio. The gap is deliberately loose (was 18px at 7-up): with the
        per-stack tilt below, cards read as laid out by hand rather than as a
        tight grid, and the tilt needs the air or neighbouring corners crowd.
-       (--cw-w / --cw-gap are declared on .cwall-zone so the domain haze
-       behind the wall lays out on the same pitch.) */
+       (--cw-w / --cw-gap are declared on .cwall-zone.) */
     /* dark (default) — navy-leaning surfaces to match the night sky */
     --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
     /* Two-layer soft shadow that casts DOWNWARD only (offset ≥ blur + |spread|):
@@ -2073,7 +2034,6 @@
 
     <!-- ===== CARD WALL — drifting wall of plan→proof stacks (JS-rendered from PLANS) ===== -->
     <div class="cwall-zone" id="cwallZone">
-      <div class="chaze" aria-hidden="true"><div class="chaze-track" id="chazeTrack"></div></div>
       <div class="cwall" id="cwall" role="group" aria-label="Example daily plans and the proof that backed them">
         <div class="cwall-track" id="cwallTrack"></div>
       </div>
@@ -3892,9 +3852,8 @@ function toggleMode() {
   // Array order is reveal order: the wall drifts leftward, so the first entries
   // are the first plans to flip to their proof. The everyday, instantly legible
   // plans lead; the more specific ones (knee rehab) sit further back.
-  // domain: the app's rising domain for the plan — tints the haze behind its
-  // stack. Domains with a --dz-* colour glow; a plan outside them (the
-  // garden = nature) simply casts none.
+  // domain: the app's rising domain for the plan. Not drawn any more (the
+  // haze behind the wall went); kept as data.
   const PLANS = [
     { emoji:'🏃', label:'Morning jog', domain:'movement',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
     { emoji:'🚶', label:'1000 steps during lunch break', domain:'movement', cadence:'Today', avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
@@ -4035,36 +3994,6 @@ function toggleMode() {
     track.appendChild(seg);
   }
 
-  // Domain haze: one cell per stack, same two-segment layout, so sharing the
-  // wall's transform keeps every glow under the card that casts it.
-  const hazeTrack = document.getElementById('chazeTrack');
-  const hazeCells = new WeakMap();
-  if (hazeTrack) {
-    for (let copy = 0; copy < 2; copy++) {
-      const seg = document.createElement('div');
-      seg.className = 'chaze-seg';
-      PLANS.forEach(p => {
-        const cell = document.createElement('div');
-        cell.className = 'chaze-cell';
-        if (p.domain) {
-          const glow = document.createElement('i');
-          glow.style.setProperty('--dz', 'var(--dz-' + p.domain + ')');
-          cell.appendChild(glow);
-        }
-        seg.appendChild(cell);
-      });
-      hazeTrack.appendChild(seg);
-    }
-    // pair each stack with its haze cell (same DOM order) so the glow can
-    // follow the stack's plan → proof state
-    const cells = hazeTrack.querySelectorAll('.chaze-cell');
-    track.querySelectorAll('.cwall-stack').forEach((stack, n) => {
-      const cell = cells[n];
-      hazeCells.set(stack, cell);
-      stack.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') cell.classList.add('is-hover'); });
-      stack.addEventListener('pointerleave', () => cell.classList.remove('is-hover'));
-    });
-  }
 
   // ---- Measure: the track is two identical segments; wrapping the offset at
   // one segment's width keeps the marquee seamless in both directions and under
@@ -4084,11 +4013,8 @@ function toggleMode() {
   const HANDOVER_LINGER_MS = 1200;
   const flipTimers = new WeakMap();
   let lastCentre = null;
-  // the haze cell behind a stack lights with its proof
   function setFlipped(stack, on){
     stack.classList.toggle('is-flipped', on);
-    const cell = hazeCells.get(stack);
-    if (cell) cell.classList.toggle('is-lit', on);
   }
   function flipStack(stack, hold){
     setFlipped(stack, true);
@@ -4125,7 +4051,6 @@ function toggleMode() {
   function applyTransform(){
     if (segWidth > 0) offset = ((offset % segWidth) + segWidth) % segWidth;
     track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
-    if (hazeTrack) hazeTrack.style.transform = track.style.transform;
   }
 
   let lastFrame = null;
