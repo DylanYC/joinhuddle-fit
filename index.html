@@ -1722,53 +1722,63 @@
   }
   @media (max-width:640px){ .cwall-ask{margin:clamp(34px,8vw,46px) auto 30px;padding:0 20px;} }
 
-  /* Rising domains — the app's six onboarding domains, in the app's own
-     two-state colour language. The app never shows six domains at full
-     strength together ("six tinted pills at rest read as a rainbow",
-     schedule_empty_state.dart); full colour is what SELECTING a domain earns.
-     So at rest each card wears the app's inactive domain tint (the plan-idea
-     chip recipe: 10% fill, 35% border at 1px, neutral label), and a desktop
-     hover lifts one card into OnboardingOptionCard's selected state: the same
-     flat tint with a solid 2px domain border and the ink label, with the
-     app's 280ms spring pop (OnboardingMotion.select / easeOutBack). Flat on
-     purpose, as in the app: no gradient wash and no coloured glow.
-     Fill / ink pairs are RiserDomainPalette's, dark by default and light
-     under .light. Not controls yet, so no pointer cursor or focus stop. */
+  /* Rising domains — the app's six onboarding domains, as the app draws
+     them (domain_beat.dart `_DomainCard`, 2026-10-29): a quiet card on the
+     app's card surface with a hairline border, a 42px disc tinted with the
+     domain, the domain's line icon in its ink, and a neutral label. The
+     six are one sky, sunrise to night, read left to right then down:
+     Movement gold, Nutrition peach, Nature rose, Hobbies mauve, Mind
+     periwinkle, Rest night blue (RiserDomainPalette). A desktop hover is the
+     app's SELECTED state: the card washes with the domain, the border goes
+     to 2px in the domain colour, the disc fills solid with the icon turning
+     to the on-fill ink, the label takes the domain ink at 700, with the
+     app's 280ms spring pop (OnboardingMotion.select). Flat on purpose: no
+     gradient wash, no coloured glow. Fill / ink pairs are the app's, dark
+     by default and light under .light; in dark ink = fill. Not controls
+     yet, so no pointer cursor or focus stop. */
   .domains{position:relative;padding:6px 24px 52px;text-align:center;
-    --dm-movement:#FD9567; --dm-movement-ink:#FFC5AD;
-    --dm-nutrition:#8EC768; --dm-nutrition-ink:#BCE2A5;
-    --dm-mind:#CC93EE; --dm-mind-ink:#E8C4FF;
-    --dm-rest:#5DB5FE; --dm-rest-ink:#B0DAFF;
-    --dm-hobbies:#FB89A0; --dm-hobbies-ink:#FEC2CB;
-    --dm-nature:#08D2CA; --dm-nature-ink:#8AE8E1;}
+    --dcard:#1C1E39; --dcard-border:rgba(255,255,255,0.08); --dlabel:#D3D5E8;
+    --dwash:10%; --ddisc:10%;
+    --dm-movement:#F6C665; --dm-movement-ink:#F6C665; --dm-movement-on:#14152A;
+    --dm-nutrition:#F4AE88; --dm-nutrition-ink:#F4AE88; --dm-nutrition-on:#14152A;
+    --dm-nature:#E893A5; --dm-nature-ink:#E893A5; --dm-nature-on:#14152A;
+    --dm-hobbies:#C796C7; --dm-hobbies-ink:#C796C7; --dm-hobbies-on:#14152A;
+    --dm-mind:#9A9DFF; --dm-mind-ink:#9A9DFF; --dm-mind-on:#14152A;
+    --dm-rest:#B9BCEB; --dm-rest-ink:#B9BCEB; --dm-rest-on:#14152A; --dm-rest-disc:10%;}
   .light .domains{
-    --dm-movement:#EE7236; --dm-movement-ink:#9B3C00;
-    --dm-nutrition:#5EA120; --dm-nutrition-ink:#3A6D00;
-    --dm-mind:#A862CF; --dm-mind-ink:#793E99;
-    --dm-rest:#0389DA; --dm-rest-ink:#00629E;
-    --dm-hobbies:#DE5778; --dm-hobbies-ink:#9F2D4D;
-    --dm-nature:#069E98; --dm-nature-ink:#046C68;}
+    --dcard:#FFFCF7; --dcard-border:#EDE5D9; --dlabel:#3A3850;
+    --dwash:22%; --ddisc:12%;
+    --dm-movement:#F2B84B; --dm-movement-ink:#825400; --dm-movement-on:#14152A;
+    --dm-nutrition:#EE9A6E; --dm-nutrition-ink:#9A4418; --dm-nutrition-on:#14152A;
+    --dm-nature:#D97A8E; --dm-nature-ink:#8E2F45; --dm-nature-on:#14152A;
+    /* the night end of the light palette is deep enough for white on top */
+    --dm-hobbies:#A86FA8; --dm-hobbies-ink:#6B356B; --dm-hobbies-on:#FFFFFF;
+    --dm-mind:#6E72FF; --dm-mind-ink:#3438B8; --dm-mind-on:#FFFFFF;
+    --dm-rest:#2E2F7A; --dm-rest-ink:#2E2F7A; --dm-rest-on:#FFFFFF; --dm-rest-disc:8%;}
   .domains-lead{font-size:clamp(16px,1.4vw,19px);line-height:1.5;color:var(--text2);margin:0 auto 26px;max-width:30em;text-wrap:balance;}
   .domains-grid{list-style:none;margin:0 auto;padding:0;max-width:780px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:14px;text-align:left;}
-  .domain-card{position:relative;border-radius:18px;padding:16px 16px 17px;
-    border:1px solid color-mix(in srgb,var(--dm) 35%,transparent);
-    background:color-mix(in srgb,var(--dm) 10%,transparent);
-    transition:border-color .28s ease-out,box-shadow .28s ease-out,transform .28s cubic-bezier(.34,1.56,.64,1);}
-  .domain-glyph{position:relative;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;line-height:1;
-    background:color-mix(in srgb,var(--dm) 12%,transparent);border:1px solid color-mix(in srgb,var(--dm) 30%,transparent);
-    transition:background-color .28s ease-out,border-color .28s ease-out;}
-  .domain-name{position:relative;margin-top:12px;font-size:17px;font-weight:600;line-height:1.25;color:var(--text1);transition:color .28s ease-out;}
+  .domain-card{position:relative;box-sizing:border-box;min-height:116px;border-radius:18px;padding:14px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    border:1px solid var(--dcard-border);
+    background:var(--dcard);
+    transition:border-color .28s ease-out,background-color .28s ease-out,box-shadow .28s ease-out,transform .28s cubic-bezier(.34,1.56,.64,1);}
+  .domain-glyph{position:relative;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:color-mix(in srgb,var(--dm) var(--dm-disc,var(--ddisc)),var(--dcard));
+    color:var(--dm-ink);
+    transition:background-color .28s ease-out,color .28s ease-out;}
+  .domain-glyph svg{width:24px;height:24px;display:block;}
+  .domain-name{position:relative;margin-top:12px;font-size:17px;font-weight:600;line-height:1.25;color:var(--dlabel);transition:color .28s ease-out;}
   @media (hover:hover) and (pointer:fine){
     /* the inset ring takes the border from 1px to the app's 2px without moving the layout */
-    .domain-card:hover{border-color:var(--dm);transform:scale(1.018);box-shadow:inset 0 0 0 1px var(--dm);}
-    .domain-card:hover .domain-glyph{background:color-mix(in srgb,var(--dm) 22%,transparent);border-color:color-mix(in srgb,var(--dm) 55%,transparent);}
+    .domain-card:hover{border-color:var(--dm);box-shadow:inset 0 0 0 1px var(--dm);transform:scale(1.018);
+      background:color-mix(in srgb,var(--dm) var(--dwash),var(--dcard));}
+    .domain-card:hover .domain-glyph{background:var(--dm);color:var(--dm-on);}
     .domain-card:hover .domain-name{color:var(--dm-ink);font-weight:700;}
   }
   @media (prefers-reduced-motion: reduce){ .domain-card,.domain-card:hover{transform:none;} }
   @media (max-width:640px){
     .domains{padding:0 18px 36px;}
     .domains-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:420px;}
-    .domain-card{padding:14px;}
   }
 
   /* Domain haze — each plan card spills a faint glow of its domain colour
@@ -2085,12 +2095,12 @@
   <section class="domains" id="domains" aria-labelledby="domainsLead">
     <p class="domains-lead" id="domainsLead">Risers build daily healthy living plans across:</p>
     <ul class="domains-grid">
-        <li class="domain-card" style="--dm:var(--dm-movement);--dm-ink:var(--dm-movement-ink)"><span class="domain-glyph" aria-hidden="true">💪</span><div class="domain-name">Movement</div></li>
-        <li class="domain-card" style="--dm:var(--dm-nutrition);--dm-ink:var(--dm-nutrition-ink)"><span class="domain-glyph" aria-hidden="true">🥗</span><div class="domain-name">Nutrition</div></li>
-        <li class="domain-card" style="--dm:var(--dm-mind);--dm-ink:var(--dm-mind-ink)"><span class="domain-glyph" aria-hidden="true">🧠</span><div class="domain-name">Mind</div></li>
-        <li class="domain-card" style="--dm:var(--dm-rest);--dm-ink:var(--dm-rest-ink)"><span class="domain-glyph" aria-hidden="true">😴</span><div class="domain-name">Rest</div></li>
-        <li class="domain-card" style="--dm:var(--dm-hobbies);--dm-ink:var(--dm-hobbies-ink)"><span class="domain-glyph" aria-hidden="true">🎹</span><div class="domain-name">Hobbies</div></li>
-        <li class="domain-card" style="--dm:var(--dm-nature);--dm-ink:var(--dm-nature-ink)"><span class="domain-glyph" aria-hidden="true">🌲</span><div class="domain-name">Nature</div></li>
+        <li class="domain-card" style="--dm:var(--dm-movement);--dm-ink:var(--dm-movement-ink);--dm-on:var(--dm-movement-on)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><polyline points="3,18 8,12.5 11.5,15 17,8.5"/><circle cx="19.5" cy="6" r="2.2" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Movement</div></li>
+        <li class="domain-card" style="--dm:var(--dm-nutrition);--dm-ink:var(--dm-nutrition-ink);--dm-on:var(--dm-nutrition-on)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><path d="M4 12.5 H20 A8 7 0 0 1 4 12.5 Z"/><circle cx="9" cy="8.6" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="6.2" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="3.8" r="1.4" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Nutrition</div></li>
+        <li class="domain-card" style="--dm:var(--dm-nature);--dm-ink:var(--dm-nature-ink);--dm-on:var(--dm-nature-on)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><path d="M4 20 C4 11 10 6 18 6 C18 14 12 20 4 20 Z"/><path d="M4 20 L12.5 11.5"/><circle cx="20.5" cy="3.5" r="1.8" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Nature</div></li>
+        <li class="domain-card" style="--dm:var(--dm-hobbies);--dm-ink:var(--dm-hobbies-ink);--dm-on:var(--dm-hobbies-on)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><path d="M10.6 1.6 H13.4 L13 4 H11 Z"/><path d="M12 4 V10"/><path d="M12 10 C9.3 10 7.8 11.6 8 13.4 C8.1 14.4 8.7 14.8 8.4 15.6 C6.6 16.4 6.2 18 6.4 19.4 C6.8 21.6 9 22.6 12 22.6 C15 22.6 17.2 21.6 17.6 19.4 C17.8 18 17.4 16.4 15.6 15.6 C15.3 14.8 15.9 14.4 16 13.4 C16.2 11.6 14.7 10 12 10 Z"/><circle cx="12" cy="17.6" r="2.1" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Hobbies</div></li>
+        <li class="domain-card" style="--dm:var(--dm-mind);--dm-ink:var(--dm-mind-ink);--dm-on:var(--dm-mind-on)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><ellipse cx="12" cy="19" rx="7.5" ry="2.6"/><ellipse cx="12.6" cy="13.4" rx="5" ry="2.2"/><circle cx="12" cy="8" r="2.4" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Mind</div></li>
+        <li class="domain-card" style="--dm:var(--dm-rest);--dm-ink:var(--dm-rest-ink);--dm-on:var(--dm-rest-on);--dm-disc:var(--dm-rest-disc)"><span class="domain-glyph"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="matrix(1 0 -0.1405408 1 1.7 0)"><path d="M9.81 5.09 A8 8 0 1 0 18.91 14.19 A6.5 6.5 0 0 1 9.81 5.09 Z"/><circle cx="15" cy="9" r="2.2" fill="currentColor" stroke="none"/></g></svg></span><div class="domain-name">Rest</div></li>
     </ul>
   </section>
 
