@@ -1247,15 +1247,16 @@
   .rhero{
     position:relative; overflow:hidden; isolation:isolate;
     /* The sky is the app's own (onboarding_sky.dart, 2026-10-29): dark is
-       the night climb, a deep violet into near black; light is golden hour,
-       lavender through rose and peach into paper. The old blooms, dawn
-       band, rays and drifting clouds went with it: the site uses colour
-       only on purpose, and this one gradient is the app's first screen, not
-       decoration. The app's sun / orb is NOT here: in the app it is part of
-       a story (it rises once the mountain is drawn and lands on My Plan's
-       plus); beside a headline it was a second round mark next to the app
-       icon and read as a logo or a weather cue (Dylan, 2026-10-29). */
+       the night climb, a deep violet into near black, with one warm dimmed
+       orb top right and nothing else; light is golden hour, lavender through
+       rose and peach into paper, with the sun in the same place. The old
+       blooms, dawn band, rays and drifting clouds went with it: the site
+       uses colour only on purpose, and this one gradient is the app's first
+       screen, not decoration. --r-body / --r-body-glow are the app's
+       moon/moonGlow and sun/sunGlow with the sky's glow geometry
+       (18pt spread, 44pt blur on a 50pt body), scaled by --r-body-size. */
     --r-sky: linear-gradient(180deg,#2C2862 0%,#1B1C40 34%,#14152A 100%);
+    --r-body:#E6D5B0; --r-body-glow:rgba(246,194,122,.20);
     --r-eyebrow-halo: rgba(7,9,25,.92);
     --r-head:#ffffff;
     --r-accent:#646aff;
@@ -1290,6 +1291,7 @@
     background:linear-gradient(180deg,transparent,var(--bg));}
   .light .rhero{
     --r-sky: linear-gradient(180deg,#D6D9F5 0%,#EAD9E4 22%,#F6E2CF 40%,#F7F2EA 56%,#F7F2EA 100%);
+    --r-body:#F6C27A; --r-body-glow:rgba(246,194,122,.45);
     --r-eyebrow-halo: rgba(245,249,255,.95);
     --r-head:#17151f;
     --r-accent:#5b54e8;
@@ -1308,6 +1310,16 @@
     --p-line:#ececf4; --p-wash:#ece9ff;
   }
 
+  /* ---- sky layers: the one body ---- */
+  .rhero-sky{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  /* The sun by day, the orb by night, where the app draws it: top right,
+     a little under the chrome. The glow is the app's box-shadow recipe
+     (spread 18, blur 44 on a 50pt disc), scaled with the disc. */
+  .rhero-body{position:absolute;--r-body-size:64px;
+    right:max(28px,calc((100vw - 1240px) / 2 + 40px));top:140px;
+    width:var(--r-body-size);height:var(--r-body-size);border-radius:50%;background:var(--r-body);
+    box-shadow:0 0 calc(var(--r-body-size) * .88) calc(var(--r-body-size) * .36) var(--r-body-glow);}
+  @media (max-width:760px){ .rhero-body{--r-body-size:50px;right:26px;top:118px;} }
 
   /* ---- two-column grid ---- */
   .rhero-grid{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:30px 40px 0;
@@ -1977,6 +1989,10 @@
 
   <!-- 1. HERO — Risers "Daybreak" -->
   <section class="rhero" id="rhero">
+    <!-- sky / light layers -->
+    <div class="rhero-sky" aria-hidden="true">
+      <div class="rhero-body"></div>
+    </div>
 
     <!-- ===== Centred copy ===== -->
     <div class="rhero-center">
