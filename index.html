@@ -351,7 +351,7 @@
      so this box has to stay light with them instead of flipping on its own. */
   .loop-cap-task{align-self:stretch;height:44px;background:#FFFFFF;border:1px solid rgba(158,158,158,0.4);border-radius:9px;display:flex;align-items:center;padding:0 10px;box-shadow:0 6px 20px rgba(0,0,0,0.06);}
   .loop-cap-task-name{flex:1;text-align:center;font-size:13px;font-weight:700;color:#000000;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .loop-cap-task-x{width:18px;height:18px;flex-shrink:0;color:#424242;opacity:.7;}
+  .loop-cap-task-x{width:15.5px;height:15.5px;flex-shrink:0;color:#000;opacity:.54;}
   .loop-cap-task-x svg{width:100%;height:100%;display:block;}
   /* 3:4 viewfinder with the app's light stroke drawn around it */
   .loop-cap-vf{margin-top:5px;align-self:stretch;aspect-ratio:3/4;position:relative;overflow:hidden;background:#000;border:4px solid #DEDEDE;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,0.18);}
@@ -384,10 +384,11 @@
   /* Completed cards wear a soft halo instead of a shadow (TaskCardShell.useHalo). */
   .loop-feed-halo{background:#E6E7FF;border-radius:20px;padding:4px;}
   .loop-feed-card{background:#FFFFFF;border:2px solid #6F75FF;border-radius:16px;padding:14px 12px 12px;}
-  .ftask-pill{display:inline-flex;align-items:center;gap:4px;background:#EEEFFF;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;color:#4B51DE;line-height:1;}
-  .ftask-pill svg{display:block;flex-shrink:0;}
+  /* The when — the app's TimePill as a slanted display word, no chip */
+  .ftask-when{display:inline-block;font-family:var(--font-display);font-weight:normal;font-synthesis:none;
+    transform:skewX(7deg);font-size:12px;letter-spacing:-.2px;line-height:1.2;color:#75757B;white-space:nowrap;padding-right:2px;}
   .ftask-title{margin-top:6px;font-size:16px;font-weight:700;color:#1C1C1C;line-height:1.3;}
-  .ftask-repeat{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#6B6E85;}
+  .ftask-repeat{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#6C6C72;}
   .ftask-repeat svg{display:block;flex-shrink:0;}
   .ftask-media{margin-top:8px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#EDEDF5;}
   .ftask-media img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -844,15 +845,24 @@
     .proof-card.is-capturing{animation:none;}
   }
 
-  .proof-card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
-  .proof-time-pill{display:inline-flex;align-items:center;gap:5px;background:#CFD1FF;border-radius:6px;padding:4px 9px 4px 7px;font-size:11.5px;font-weight:500;color:#292D91;}
-  .proof-kdots{width:28px;height:28px;border-radius:50%;border:none;background:#F2F2F8;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5px;flex-shrink:0;padding:0;}
-  .proof-kdots span{width:3px;height:3px;border-radius:50%;background:#9090B0;display:block;}
+  .proof-card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  /* The "when" — the app's TimePill: not a chip any more but a word in the
+     brand's display face, slanted like the screen titles, in plain meta ink.
+     Words ("Anytime", "All Day") run a touch bigger and looser than clock
+     times, as in the app, so the two read the same size by eye. */
+  .proof-when{display:inline-block;font-family:var(--font-display);font-weight:normal;font-synthesis:none;
+    transform:skewX(7deg);font-size:10px;letter-spacing:-.15px;line-height:1.2;color:#75757B;white-space:nowrap;padding-right:2px;}
+  .proof-when.is-word{font-size:10.8px;letter-spacing:.5px;}
+  /* ⋯ — the glyph alone, centred on the time; the grey disc it sat in is gone */
+  .proof-kdots{width:18px;height:12px;border:none;background:none;cursor:pointer;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2.5px;flex-shrink:0;padding:0;}
+  .proof-kdots span{width:3px;height:3px;border-radius:50%;background:#9A9AA2;display:block;}
   .proof-card-taskname{font-size:13px;font-weight:700;color:#1C1C1C;line-height:1.35;margin-bottom:12px;}
   /* Repeat interval — sits under the task name on recurring commitments.
      Tighter top gap than the seen-by row below it so it reads as a
      qualifier on the task, not a separate section. */
-  .proof-card-repeat{display:inline-flex;align-items:center;gap:5px;margin:-6px 0 11px;padding:3px 8px;border-radius:6px;background:rgba(111,117,255,0.12);font-size:10.5px;font-weight:500;color:#292D91;white-space:nowrap;}
+  /* "Repeats …" — a plain meta line tucked under the title, no pill */
+  .proof-card-repeat{display:flex;align-items:center;gap:5px;margin:-9px 0 12px;font-size:10.5px;font-weight:400;color:#6C6C72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .proof-card-repeat svg{flex-shrink:0;}
   .proof-card-seenby{display:flex;align-items:center;gap:6px;}
   .proof-seen-icon{width:18px;height:18px;border-radius:50%;background:rgba(111,117,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .proof-seen-icon::after{content:'';width:8px;height:8px;border-radius:50%;background:#6F75FF;}
@@ -900,13 +910,13 @@
     --cam-scaffold:#F7F8FA; --cam-card:#FFFFFF; --cam-ink:#000000;
     --cam-muted:#424242; --cam-photo:#0A0F81; --cam-video:#810A0A;
     --cam-cardline:rgba(158,158,158,0.4); --cam-homebar:rgba(0,0,0,0.28);
-    --cam-badge:#E08900; --cam-chrome-ink:#6E6E6E;
+    --cam-badge:#E5362F; --cam-chrome-ink:#6E6E6E;
   }
   #site:not(.light){
     --cam-scaffold:#0B0C16; --cam-card:#171A2C; --cam-ink:#F2F3F8;
     --cam-muted:#8E91A3; --cam-photo:#AEB2FF; --cam-video:#FF8A8A;
     --cam-cardline:rgba(142,145,163,0.28); --cam-homebar:rgba(255,255,255,0.22);
-    --cam-badge:#F5A623; --cam-chrome-ink:#8E91A3;
+    --cam-badge:#FF453A; --cam-chrome-ink:#8E91A3;
   }
 
   .cam{position:absolute;top:0;left:0;width:282px;height:606px;transform-origin:top left;transform:scale(var(--cam-k,1));}
@@ -923,7 +933,7 @@
     display:flex;align-items:center;padding:0 7px;
   }
   .cam-task-name{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--cam-ink);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .cam-task-x{width:17px;height:17px;flex-shrink:0;color:var(--cam-muted);opacity:.7;}
+  .cam-task-x{width:14.4px;height:14.4px;flex-shrink:0;color:var(--cam-ink);opacity:.54;}
   .cam-task-x svg{width:100%;height:100%;}
 
   /* Viewfinder — 3:4 window with the app's 5pt light stroke drawn outside it */
@@ -1020,7 +1030,7 @@
   .cam-nav-plan{transform:translateX(-61.7px);}
   .cam-nav-today{transform:translateX(61.7px);}
   .cam-nav-circle{transform:translateX(111.6px);}
-  /* Today's unread dot. Amber in both themes — the app's risers.unreadBadge —
+  /* Today's unread dot. Red — the app's risers.unreadBadge (#E5362F light, #FF453A dark) —
      and the one thing in the bar that isn't held back to the muted nav ink,
      because in the app it is the only colour the resting bar carries. */
   .cam-nav-badge{fill:var(--cam-badge);}
@@ -1826,8 +1836,8 @@
        proof-card bg); it gets a lifted tint at 5.8:1. The signature stroke
        beside it stays --r-accent — a graphic only owes 3:1. */
     --cw-signed-ink:#7E84FF;
-    --cw-pill-bg:rgba(111,117,255,.20); --cw-pill-ink:#CFD1FF;
-    --cw-dash:rgba(255,255,255,.22); --cw-cta-bg:rgba(255,255,255,.04); --cw-cta-ink:#A9ADFF;
+    --cw-when:#B9BCCC; --cw-meta:#8E93B8; --cw-dot:#8C90FF;
+    --cw-dash:rgba(255,255,255,.22);
     --cw-veil:rgba(7,8,22,.52);
     position:relative;z-index:2;margin-top:38px;overflow:hidden;
     /* grab-to-scrub: horizontal drag is ours, vertical stays native page scroll */
@@ -1847,8 +1857,8 @@
     --cw-proof-bg:#eceafd;
     --cw-label:#17151f; --cw-sub:rgba(23,21,31,.66); --cw-ring:#ffffff;
     --cw-signed-ink:#5b54e8;
-    --cw-pill-bg:#CFD1FF; --cw-pill-ink:#292D91;
-    --cw-dash:rgba(10,10,24,.18); --cw-cta-bg:rgba(10,10,24,.025); --cw-cta-ink:#4840d4;
+    --cw-when:#75757B; --cw-meta:#6C6C72; --cw-dot:#6F75FF;
+    --cw-dash:rgba(10,10,24,.18);
     --cw-veil:rgba(247,248,250,.6);
   }
   /* JS drives the transform every frame (drift + drag inertia) — see the wall
@@ -1903,22 +1913,32 @@
   }
 
   /* plan card content — mirrors the app's task-card anatomy:
-     cadence pill (clock icon), emoji title, "Backed by" + avatar row.
+     the "when" as a slanted display word, emoji title, a plain "Repeats …"
+     line, then the dashed CTA and the dotted "Backed by" + avatar row.
      Font/element sizes are cqw-scaled, anchored to the 188px-wide card. */
-  .cwall-pill{display:inline-flex;align-items:center;gap:.4em;background:var(--cw-pill-bg);color:var(--cw-pill-ink);border-radius:999px;padding:.32em .85em .32em .75em;font-size:clamp(10px,5.3cqw,13px);font-weight:600;line-height:1.3;white-space:nowrap;}
-  .cwall-pill svg{display:block;flex-shrink:0;width:1em;height:1em;}
-  .cwall-label{margin-top:.6em;font-size:clamp(13px,8cqw,20px);font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
+  .cwall-when{display:inline-block;font-family:var(--font-display);font-weight:normal;font-synthesis:none;transform:skewX(7deg);
+    font-size:clamp(9px,5.2cqw,12.5px);letter-spacing:-.02em;line-height:1.2;color:var(--cw-when);white-space:nowrap;padding-right:2px;}
+  .cwall-when.is-word{font-size:clamp(9.5px,5.6cqw,13.5px);letter-spacing:.05em;}
+  .cwall-repeat{display:flex;align-items:flex-start;gap:.4em;margin-top:.25em;font-size:clamp(9.5px,5.3cqw,13px);line-height:1.3;color:var(--cw-meta);}
+  .cwall-repeat svg{display:block;flex-shrink:0;width:1.1em;height:1.1em;margin-top:.1em;}
+  /* phone-sized cards: the description line goes, so the when, title and
+     repeat line never crowd the CTA */
+  @container (max-width:175px){ .cwall-desc{display:none;} }
+  .cwall-label{margin-top:.45em;font-size:clamp(13px,8cqw,20px);font-weight:700;letter-spacing:-.2px;color:var(--cw-label);line-height:1.3;}
   .cwall-desc{margin-top:.35em;font-size:clamp(11px,5.9cqw,14px);font-weight:500;color:var(--cw-sub);line-height:1.4;}
   /* bottom-anchored flow: CTA above the backed-by row, no per-size offsets */
   .cwall-plan-foot{position:absolute;left:var(--cw-pad);right:var(--cw-pad);bottom:var(--cw-pad);display:flex;flex-direction:column;gap:.55em;font-size:clamp(10px,5.3cqw,13px);}
   /* compact take on the app's dashed capture CTA (capture_proof_cta.dart) —
      tapping it (or anywhere on the stack) reveals the proof behind */
   .cwall-cta{display:flex;align-items:center;justify-content:center;gap:.55em;
-    height:clamp(26px,16cqw,38px);border:1.5px dashed var(--cw-dash);border-radius:10px;background:var(--cw-cta-bg);
-    font-size:clamp(10px,5.9cqw,14px);font-weight:600;color:var(--cw-cta-ink);white-space:nowrap;}
+    height:clamp(26px,16cqw,38px);border:1.5px dashed var(--cw-dash);border-radius:10px;background:none;
+    font-size:clamp(10px,5.9cqw,14px);font-weight:600;color:var(--cw-label);white-space:nowrap;}
   .cwall-cta-ic{width:1.5em;height:1.5em;border-radius:50%;background:linear-gradient(135deg,#7C82FF,#3B3FA8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .cwall-cta-ic svg{display:block;width:56%;height:56%;}
-  .cwall-backed{display:flex;align-items:center;gap:.5em;font-weight:500;color:var(--cw-sub);white-space:nowrap;overflow:hidden;}
+  .cwall-backed{display:flex;align-items:center;gap:.5em;font-weight:500;color:var(--cw-meta);white-space:nowrap;overflow:hidden;}
+  /* the app's SeenByPulseDot, at rest: a solid dot in a faint disc of itself */
+  .cwall-dot{width:clamp(12px,7cqw,17px);aspect-ratio:1;border-radius:50%;flex-shrink:0;margin-right:-.15em;
+    background:radial-gradient(circle,var(--cw-dot) 0 45%,color-mix(in srgb,var(--cw-dot) 16%,transparent) 47%);}
   .cwall-avs{display:flex;flex-shrink:0;}
   .cwall-av{width:clamp(18px,10.6cqw,26px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.5px solid var(--cw-ring);background:#CFD1FF;flex-shrink:0;}
   .cwall-av+.cwall-av{margin-left:-.32em;}
@@ -2161,7 +2181,7 @@
               <div class="cam-task">
                 <span class="cam-task-name" id="proof-cam-task">💪 Gym: Pull Day</span>
                 <span class="cam-task-x">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                  <svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM8.96963 8.96965C9.26252 8.67676 9.73739 8.67676 10.0303 8.96965L12 10.9393L13.9696 8.96967C14.2625 8.67678 14.7374 8.67678 15.0303 8.96967C15.3232 9.26256 15.3232 9.73744 15.0303 10.0303L13.0606 12L15.0303 13.9696C15.3232 14.2625 15.3232 14.7374 15.0303 15.0303C14.7374 15.3232 14.2625 15.3232 13.9696 15.0303L12 13.0607L10.0303 15.0303C9.73742 15.3232 9.26254 15.3232 8.96965 15.0303C8.67676 14.7374 8.67676 14.2625 8.96965 13.9697L10.9393 12L8.96963 10.0303C8.67673 9.73742 8.67673 9.26254 8.96963 8.96965Z"/></svg>
                 </span>
               </div>
 
@@ -2173,16 +2193,16 @@
 
                   <div class="cam-rail-l">
                     <span class="cam-fbtn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M9.5 2.5h5M12 9.5V13l2.4 1.6M3.5 3.5l17 17"/></svg>
+                      <svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 7.25C11.5858 7.25 11.25 7.58579 11.25 8V12C11.25 12.1989 11.3291 12.3896 11.4697 12.5303L13.9697 15.0303C14.2626 15.3232 14.7374 15.3232 15.0303 15.0303C15.3232 14.7374 15.3232 14.2626 15.0303 13.9697L12.75 11.6895V8C12.75 7.58579 12.4142 7.25 12 7.25Z"/></svg>
                     </span>
                     <span class="cam-fbtn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M13.5 2.5L6 13h5l-.7 8.5L18 11h-5z"/><path d="M3.5 3.5l17 17"/></svg>
+                      <svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11.2274 8.56904L9.21236 10.1737C8.36695 10.8469 7.94424 11.1836 8.02675 11.5594L8.03114 11.578C8.12514 11.9515 8.66096 12.0951 9.73259 12.3823C10.3281 12.5418 10.6259 12.6216 10.7656 12.8473L10.7727 12.8592C10.9075 13.0876 10.8308 13.3737 10.6775 13.9459L10.6374 14.0954C10.2123 15.6818 9.99979 16.4749 10.4091 16.7311C10.8184 16.9872 11.4697 16.4686 12.7723 15.4314L14.7873 13.8267C15.6327 13.1535 16.0554 12.8169 15.9729 12.441L15.9686 12.4224C15.8745 12.0489 15.3387 11.9053 14.2671 11.6182C13.6716 11.4586 13.3738 11.3788 13.2341 11.1531L13.227 11.1412C13.0922 10.9128 13.1689 10.6267 13.3222 10.0546L13.3623 9.905C13.7873 8.31864 13.9999 7.52547 13.5905 7.26931C13.1812 7.01316 12.5299 7.53179 11.2274 8.56904Z"/></svg>
                     </span>
                   </div>
 
                   <div class="cam-rail-r">
                     <span class="cam-fbtn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7l1.4-2.4h3.2L15 7"/><path d="M9.6 13.8a2.7 2.7 0 0 1 4.6-1.9M14.4 15.6a2.7 2.7 0 0 1-4.6 1.9"/><path d="M9.2 11.9v1.9h1.9M14.8 17.5v-1.9h-1.9"/></svg>
+                      <svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M3.46447 3.46447C2 4.92893 2 7.28595 2 12C2 16.714 2 19.0711 3.46447 20.5355C4.92893 22 7.28595 22 12 22C16.714 22 19.0711 22 20.5355 20.5355C22 19.0711 22 16.714 22 12C22 7.28595 22 4.92893 20.5355 3.46447C19.0711 2 16.714 2 12 2C7.28595 2 4.92893 2 3.46447 3.46447ZM5.46058 11.0833C5.83333 7.79988 8.62406 5.25 12.0096 5.25C13.9916 5.25 15.7702 6.12471 16.9775 7.50653C17.25 7.81846 17.2181 8.29226 16.9061 8.56479C16.5942 8.83733 16.1204 8.80539 15.8479 8.49347C14.9136 7.42409 13.541 6.75 12.0096 6.75C9.45215 6.75 7.33642 8.63219 6.97332 11.0833H7.33654C7.63998 11.0833 7.91353 11.2662 8.02955 11.5466C8.14558 11.8269 8.08122 12.1496 7.86651 12.364L6.69825 13.5307C6.40544 13.8231 5.93113 13.8231 5.63832 13.5307L4.47005 12.364C4.25534 12.1496 4.19099 11.8269 4.30701 11.5466C4.42304 11.2662 4.69658 11.0833 5.00002 11.0833H5.46058ZM17.3018 10.4693C17.5947 10.1769 18.069 10.1769 18.3618 10.4693L19.53 11.636C19.7448 11.8504 19.8091 12.1731 19.6931 12.4534C19.5771 12.7338 19.3035 12.9167 19.0001 12.9167H18.5395C18.1668 16.2001 15.376 18.75 11.9905 18.75C10.0085 18.75 8.22995 17.8753 7.02263 16.4935C6.7501 16.1815 6.78203 15.7077 7.09396 15.4352C7.40589 15.1627 7.87968 15.1946 8.15222 15.5065C9.08654 16.5759 10.4591 17.25 11.9905 17.25C14.548 17.25 16.6637 15.3678 17.0268 12.9167H16.6636C16.3601 12.9167 16.0866 12.7338 15.9705 12.4534C15.8545 12.1731 15.9189 11.8504 16.1336 11.636L17.3018 10.4693Z"/></svg>
                     </span>
                   </div>
 
@@ -2721,35 +2741,35 @@ function toggleMode() {
   // advance, which is the cheapest way to show the viewfinder does both.
   const proofTasks = [
     {
-      emoji:'💪', name:'Gym: Pull Day', time:'6:30pm',
+      emoji:'💪', name:'Gym: Pull Day', time:'6:30 PM',
       viewers:[ AV+'Family_Kyle.png', AV+'Crew_Sabi.png', AV+'Partner_Klaudia.png' ],
       caption:'recording · gym: pull day', vibe:"Look'n good.", owner: AV+'MainUser_Dylan.png',
       glowColor:'#6f7cff', bgClass:'proof-bg-0',
       mediaSrc: 'assets/The App Section Images/Gym Pull Day_Dylan.MP4', mediaType: 'video'
     },
     {
-      emoji:'👟', name:'Get 10,000 Steps Everyday', time:'All day',
+      emoji:'👟', name:'Get 10,000 Steps Everyday', time:'All Day',
       viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Gisela.png', AV+'Family_Rachael.png' ],
       caption:'lining up the shot · 10,000 steps', vibe:'Like clockwork.', owner: AV+'Family_Mike.png',
       glowColor:'#22c55e', bgClass:'proof-bg-1',
       mediaSrc: 'assets/The App Section Images/Get 10000 Steps Everyday_Mike.jpg', mediaType: 'image'
     },
     {
-      emoji:'🦵', name:'Home Knee Exercises', time:'10:00pm',
+      emoji:'🦵', name:'Home Knee Exercises', time:'10:00 PM',
       viewers:[ AV+'Partner_Klaudia.png', AV+'Family_Gisela.png', AV+'Family_Kyle.png' ],
       caption:'recording · knee exercises', vibe:'Undeniable.', owner: AV+'MainUser_Dylan.png',
       glowColor:'#a855f7', bgClass:'proof-bg-2',
       mediaSrc: 'assets/The App Section Images/Home Knee Exercises_Dylan_2.MP4', mediaType: 'video'
     },
     {
-      emoji:'💧', name:'Drink Full Bottle of Water', time:'All day',
+      emoji:'💧', name:'Drink Full Bottle of Water', time:'All Day',
       viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Rachael.png', AV+'Family_Ele.png' ],
       caption:'lining up the shot · full bottle of water', vibe:'Money.', owner: AV+'Partner_Klaudia.png',
       glowColor:'#0ea5e9', bgClass:'proof-bg-4',
       mediaSrc: 'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', mediaType: 'image'
     },
     {
-      emoji:'💪', name:'Shoulder Rehab', time:'5:00pm',
+      emoji:'💪', name:'Shoulder Rehab', time:'5:00 PM',
       viewers:[ AV+'MainUser_Dylan.png', AV+'Family_Rachael.png', AV+'Family_Mike.png' ],
       caption:'recording · shoulder rehab', vibe:'Hello again.', owner: AV+'Family_Kyle.png',
       glowColor:'#0ea5e9', bgClass:'proof-bg-3',
@@ -2757,7 +2777,6 @@ function toggleMode() {
     },
   ];
 
-  const clockSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#292D91" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/></svg>';
 
   let pActive = 0;
   let pTimer = null;
@@ -2823,7 +2842,7 @@ function toggleMode() {
     ).join('');
     return (
       '<div class="proof-card-row1">' +
-        '<div class="proof-time-pill">' + clockSVG + t.time + '</div>' +
+        '<div class="proof-when' + (/\d/.test(t.time) ? '' : ' is-word') + '">' + t.time + '</div>' +
         '<button class="proof-kdots" aria-label="More"><span></span><span></span><span></span></button>' +
       '</div>' +
       '<div class="proof-card-taskname">' + t.emoji + ' ' + t.name + '</div>' +
@@ -3510,16 +3529,16 @@ function toggleMode() {
   if (!outer) return;
 
   const AV = 'assets/Avatars/';
-  const clockSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#292D91" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round"/></svg>';
-  const repeatSVG = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#292D91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // AppIcons.repeat (solar refresh-bold), in the line's meta ink
+  const repeatSVG = '<svg width="11" height="11" viewBox="-0.9 -0.9 25.8 25.8" fill="currentColor"><path d="M12.0789 2.25C7.2854 2.25 3.34478 5.913 2.96055 10.5833H2.00002C1.69614 10.5833 1.42229 10.7667 1.30655 11.0477C1.19081 11.3287 1.25606 11.6517 1.47178 11.8657L3.15159 13.5324C3.444 13.8225 3.91567 13.8225 4.20808 13.5324L5.88789 11.8657C6.10361 11.6517 6.16886 11.3287 6.05312 11.0477C5.93738 10.7667 5.66353 10.5833 5.35965 10.5833H4.4668C4.84652 6.75167 8.10479 3.75 12.0789 3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0002 7.42199 20.1104 6.96007 19.8934 6.60721C18.2871 3.99427 15.3873 2.25 12.0789 2.25Z"/><path d="M20.8411 10.4666C20.549 10.1778 20.0789 10.1778 19.7867 10.4666L18.1005 12.1333C17.8841 12.3471 17.8184 12.6703 17.9339 12.9517C18.0495 13.233 18.3235 13.4167 18.6277 13.4167H19.5268C19.1455 17.2462 15.8759 20.25 11.8828 20.25C9.10026 20.25 6.66586 18.7903 5.31796 16.6061C5.10042 16.2536 4.63833 16.1442 4.28583 16.3618C3.93334 16.5793 3.82393 17.0414 4.04146 17.3939C5.65407 20.007 8.56406 21.75 11.8828 21.75C16.6906 21.75 20.6475 18.0892 21.0331 13.4167H22.0002C22.3043 13.4167 22.5783 13.233 22.6939 12.9517C22.8095 12.6703 22.7437 12.3471 22.5274 12.1333L20.8411 10.4666Z"/></svg>';
 
   // Scene 3 borrows the app's own icon set so the celebration card reads as a
   // screenshot rather than a lookalike: the time pill's clock and the repeat
   // row in #6F75FF / #8A8DA8 (TimePill + ExpandableTaskCard._buildBody), and
   // the arm + bubble straight out of assets/images/ic_flex_full.svg and
   // ic_comment_full.svg — the same arm the proof wall's flex pill uses.
-  const clockPillSVG = '<svg width="13" height="13" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.8" stroke="#4B51DE" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="#4B51DE" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="#4B51DE" stroke-width="1.2" stroke-linecap="round"/></svg>';
-  const repeatMetaSVG = '<svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="#6B6E85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // AppIcons.repeat (solar refresh-bold), in the line's meta ink
+  const repeatMetaSVG = '<svg width="14" height="14" viewBox="-0.9 -0.9 25.8 25.8" fill="currentColor"><path d="M12.0789 2.25C7.2854 2.25 3.34478 5.913 2.96055 10.5833H2.00002C1.69614 10.5833 1.42229 10.7667 1.30655 11.0477C1.19081 11.3287 1.25606 11.6517 1.47178 11.8657L3.15159 13.5324C3.444 13.8225 3.91567 13.8225 4.20808 13.5324L5.88789 11.8657C6.10361 11.6517 6.16886 11.3287 6.05312 11.0477C5.93738 10.7667 5.66353 10.5833 5.35965 10.5833H4.4668C4.84652 6.75167 8.10479 3.75 12.0789 3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0002 7.42199 20.1104 6.96007 19.8934 6.60721C18.2871 3.99427 15.3873 2.25 12.0789 2.25Z"/><path d="M20.8411 10.4666C20.549 10.1778 20.0789 10.1778 19.7867 10.4666L18.1005 12.1333C17.8841 12.3471 17.8184 12.6703 17.9339 12.9517C18.0495 13.233 18.3235 13.4167 18.6277 13.4167H19.5268C19.1455 17.2462 15.8759 20.25 11.8828 20.25C9.10026 20.25 6.66586 18.7903 5.31796 16.6061C5.10042 16.2536 4.63833 16.1442 4.28583 16.3618C3.93334 16.5793 3.82393 17.0414 4.04146 17.3939C5.65407 20.007 8.56406 21.75 11.8828 21.75C16.6906 21.75 20.6475 18.0892 21.0331 13.4167H22.0002C22.3043 13.4167 22.5783 13.233 22.6939 12.9517C22.8095 12.6703 22.7437 12.3471 22.5274 12.1333L20.8411 10.4666Z"/></svg>';
   const flexFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M10.0646 9.43626C9.9692 9.48397 7.97046 14.6426 8.20904 14.4518C8.44762 14.2609 9.7712 13.7205 10.8334 13.736C11.8418 13.7507 13.3146 14.4518 13.3146 14.4518C13.3146 14.4518 14.4486 13.5697 15.0801 13.3066C16.082 12.8891 17.1923 12.6468 18.2771 12.6863C18.9928 12.7124 19.8244 12.8732 20.5674 13.3066C21.14 13.6406 21.6143 14.1414 21.808 14.6903C22.0943 15.5015 22.1842 16.2355 21.8981 17.5002C21.6017 18.8108 21.0381 19.5229 19.9895 20.3632C18.9308 21.2114 18.1763 21.3652 16.7448 21.6992C15.3134 22.0332 13.1828 22.101 10.9235 21.8423C9.15843 21.6403 7.67884 21.2698 6.48595 20.8403C5.29306 20.4109 3.0027 18.884 3.0027 18.884C3.0027 18.884 2.19149 18.216 2.09611 17.5002C2.00073 16.7845 2.09609 16.4505 2.09611 15.7347C2.09612 15.019 2.43966 13.116 3.0027 11.5357C3.70249 9.57166 4.26192 8.47568 5.57935 6.85961C6.81434 5.34466 7.53292 4.29004 9.34889 3.56722C11.1169 2.86348 13.4524 2.85129 14.2159 3.32864C14.9794 3.806 15.2629 4.90993 15.2656 6.04844C15.2706 8.07408 12.7367 10.0088 11.9733 10.0566C11.2098 10.1043 10.1601 9.38854 10.0646 9.43626Z" fill="#6F75FF"/></svg>';
   const commentFullSVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 2.74996C7.66738 2.74996 3.75 6.66734 3.75 11.5C3.74926 12.7892 4.03341 14.0626 4.58213 15.2292L3.76838 19.1991C3.7394 19.3408 3.74603 19.4875 3.78766 19.6261C3.82929 19.7647 3.90463 19.8907 4.00693 19.993C4.10923 20.0953 4.2353 20.1707 4.37386 20.2123C4.51242 20.2539 4.65913 20.2606 4.80088 20.2316L8.77075 19.4178C9.903 19.9516 11.1683 20.2491 12.5 20.2491C17.3326 20.2491 21.25 16.3326 21.25 11.4991C21.25 6.66733 17.3326 2.74908 12.5 2.74908" fill="#6F75FF"/></svg>';
 
@@ -3550,18 +3569,18 @@ function toggleMode() {
   const stackBackers = [AV+'Partner_Klaudia.png', AV+'Family_Kyle.png', AV+'Crew_Leila.png'];
   const stackCards = [
     {
-      emoji:'👟', name:'Walk 10,000 Steps', time:'7:00am',
-      repeat:'Everyday until Dec 31 2026',
+      emoji:'👟', name:'Walk 10,000 Steps', time:'7:00 AM',
+      repeat:'Repeats Daily, until Dec 31, 2026',
       viewers:stackBackers,
       cls:'loop-card-front'
     },
     {
-      emoji:'🥗', name:'Sunday meal prep', time:'5:00pm',
+      emoji:'🥗', name:'Sunday meal prep', time:'5:00 PM',
       viewers:stackBackers,
       cls:'loop-card-mid'
     },
     {
-      emoji:'💪', name:'Close activity rings', time:'All day',
+      emoji:'💪', name:'Close activity rings', time:'All Day',
       viewers:stackBackers,
       cls:'loop-card-back'
     }
@@ -3576,7 +3595,7 @@ function toggleMode() {
     return (
       '<div class="proof-card ' + c.cls + '">' +
         '<div class="proof-card-row1">' +
-          '<div class="proof-time-pill">' + clockSVG + c.time + '</div>' +
+          '<div class="proof-when' + (/\d/.test(c.time) ? '' : ' is-word') + '">' + c.time + '</div>' +
           '<button class="proof-kdots" aria-label="More" tabindex="-1"><span></span><span></span><span></span></button>' +
         '</div>' +
         '<div class="proof-card-taskname">' + c.emoji + ' ' + c.name + '</div>' +
@@ -3604,7 +3623,7 @@ function toggleMode() {
     '<div class="loop-cap-task">' +
       '<span class="loop-cap-task-name">👟 Walk 10,000 Steps</span>' +
       '<span class="loop-cap-task-x">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+        '<svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM8.96963 8.96965C9.26252 8.67676 9.73739 8.67676 10.0303 8.96965L12 10.9393L13.9696 8.96967C14.2625 8.67678 14.7374 8.67678 15.0303 8.96967C15.3232 9.26256 15.3232 9.73744 15.0303 10.0303L13.0606 12L15.0303 13.9696C15.3232 14.2625 15.3232 14.7374 15.0303 15.0303C14.7374 15.3232 14.2625 15.3232 13.9696 15.0303L12 13.0607L10.0303 15.0303C9.73742 15.3232 9.26254 15.3232 8.96965 15.0303C8.67676 14.7374 8.67676 14.2625 8.96965 13.9697L10.9393 12L8.96963 10.0303C8.67673 9.73742 8.67673 9.26254 8.96963 8.96965Z"/></svg>' +
       '</span>' +
     '</div>' +
     '<div class="loop-cap-vf">' +
@@ -3643,10 +3662,10 @@ function toggleMode() {
         '<div class="ftask-who">' +
           '<div class="loop-feed-av"><img src="' + AV + 'Family_Kyle.png" alt="" loading="lazy" decoding="async"></div>' +
           '<div class="loop-feed-name">Kyle</div>' +
-          '<div class="ftask-pill">' + clockPillSVG + '10:10 PM</div>' +
+          '<div class="ftask-when">10:10 PM</div>' +
         '</div>' +
         '<div class="ftask-title">👟 Walk 10,000 Steps</div>' +
-        '<div class="ftask-repeat">' + repeatMetaSVG + 'Everyday until Dec 31 2026</div>' +
+        '<div class="ftask-repeat">' + repeatMetaSVG + 'Repeats Daily, until Dec 31, 2026</div>' +
         '<div class="ftask-media">' +
           '<img src="assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG" alt="Kyle\'s proof for Walk 10,000 Steps" loading="lazy" decoding="async">' +
         '</div>' +
@@ -3895,20 +3914,20 @@ function toggleMode() {
   // domain: the app's rising domain for the plan. Not drawn any more (the
   // haze behind the wall went); kept as data.
   const PLANS = [
-    { emoji:'🏃', label:'Morning jog', domain:'movement',        cadence:'Mon–Fri',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
-    { emoji:'🚶', label:'1000 steps during lunch break', domain:'movement', cadence:'Today', avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
-    { emoji:'🥗', label:'Sunday meal prep', domain:'nutrition',   cadence:'Sundays',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
-    { emoji:'😴', label:'Bed by 11', domain:'rest',          cadence:'Every night', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
-    { emoji:'🍎', label:'Healthy snacks only', domain:'nutrition', cadence:'Weekdays',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
-    { emoji:'🎸', label:'Guitar 15min per day', domain:'hobbies', cadence:'Every day', avatars:2, proof:PC+'Pick Up the Guitar_Manny.jpg', by:'Crew_Manny.png', flexes:3 },
-    { emoji:'👟', label:'15,000 Steps', domain:'movement',       cadence:'Sat · Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
-    { emoji:'📵', label:'No phone after 10', domain:'mind',  cadence:'Every night', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
-    { emoji:'💧', label:'Full bottle of water', domain:'nutrition', cadence:'All day',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
-    { emoji:'🚴', label:'10-min spin class', domain:'movement',  cadence:'Today',       avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
-    { emoji:'💻', label:'Code before bed', domain:'mind',   cadence:'Every day',   avatars:2, proof:PC+'Code Before Bed_Manny.jpg', by:'Crew_Manny.png', flexes:4 },
-    { emoji:'💪', label:'Gym pull day', domain:'movement',       cadence:'Mon · Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
-    { emoji:'🦵', label:'Knee rehab', domain:'movement',         cadence:'Every day',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
-    { emoji:'🌿', label:'An hour in the garden', cadence:'Saturdays', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
+    { emoji:'🏃', label:'Morning jog', domain:'movement',        when:'7:00 AM', repeat:'Weekly on Tue, Thu',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
+    { emoji:'🚶', label:'1000 steps during lunch break', domain:'movement', when:'12:30 PM',  avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
+    { emoji:'🥗', label:'Sunday meal prep', domain:'nutrition',   when:'Anytime', repeat:'Weekly on Sun',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
+    { emoji:'😴', label:'Bed by 11', domain:'rest',          when:'11:00 PM', repeat:'Daily', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
+    { emoji:'🍎', label:'Healthy snacks only', domain:'nutrition', when:'All Day', repeat:'Daily',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
+    { emoji:'🎸', label:'Guitar 15min per day', domain:'hobbies', when:'Anytime', repeat:'Daily', avatars:2, proof:PC+'Pick Up the Guitar_Manny.jpg', by:'Crew_Manny.png', flexes:3 },
+    { emoji:'👟', label:'15,000 Steps', domain:'movement',       when:'All Day', repeat:'Weekly on Sat, Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
+    { emoji:'📵', label:'No phone after 10', domain:'mind',  when:'10:00 PM', repeat:'Daily', avatars:2, proof:'signature', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'💧', label:'Full bottle of water', domain:'nutrition', when:'All Day', repeat:'Daily',   avatars:2, proof:'assets/The App Section Images/Drink Full Bottle of Water_Dylan.JPG', by:'MainUser_Dylan.png', flexes:2 },
+    { emoji:'🚴', label:'10-min spin class', domain:'movement',  when:'7:30 AM',  avatars:2, proof:PC+'10min Apple Fitness Spin Class_Dylan.JPG', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'💻', label:'Code before bed', domain:'mind',   when:'10:30 PM', repeat:'Daily',   avatars:2, proof:PC+'Code Before Bed_Manny.jpg', by:'Crew_Manny.png', flexes:4 },
+    { emoji:'💪', label:'Gym pull day', domain:'movement',       when:'6:00 PM', repeat:'Weekly on Mon, Thu',   avatars:3, proof:PC+'Gym Pull Day_Dylan.JPG', desc:'Back and biceps', by:'MainUser_Dylan.png', flexes:4 },
+    { emoji:'🦵', label:'Knee rehab', domain:'movement',         when:'Anytime', repeat:'Daily',   avatars:3, proof:PC+'Knee Exercises_Dylan.JPG', desc:'ACL recovery, one day at a time', by:'MainUser_Dylan.png', flexes:3 },
+    { emoji:'🌿', label:'An hour in the garden', when:'10:00 AM', repeat:'Weekly on Sat', avatars:3, proof:PC+'Gardening and Yard Work_Ele.JPG', by:'Family_Ele.png', flexes:3 },
   ];
 
   // Presence pool for the avatar dots — Dylan (main user) gets the blue ring.
@@ -3991,7 +4010,7 @@ function toggleMode() {
     meta.appendChild(flex);
     proof.appendChild(meta);
 
-    // plan layer (front at rest) — cadence pill, emoji title, "Backed by" row
+    // plan layer (front at rest) — when, emoji title, repeat line, "Backed by" row
     const front = document.createElement('div');
     front.className = 'cwall-card cwall-plan';
     // backers are drawn from the circle — never the poster backing themselves
@@ -4004,7 +4023,8 @@ function toggleMode() {
       const you = face === 'MainUser_Dylan.png' ? ' is-you' : '';
       return '<span class="cwall-av' + you + '"><img src="' + AV + face + '" alt="" loading="lazy" decoding="async"></span>';
     }).join('');
-    const clock = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.6" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.6V6l1.9 1.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+    // AppIcons.repeat (solar refresh-bold)
+    const repeatIc = '<svg viewBox="-0.9 -0.9 25.8 25.8" fill="currentColor"><path d="M12.0789 2.25C7.2854 2.25 3.34478 5.913 2.96055 10.5833H2.00002C1.69614 10.5833 1.42229 10.7667 1.30655 11.0477C1.19081 11.3287 1.25606 11.6517 1.47178 11.8657L3.15159 13.5324C3.444 13.8225 3.91567 13.8225 4.20808 13.5324L5.88789 11.8657C6.10361 11.6517 6.16886 11.3287 6.05312 11.0477C5.93738 10.7667 5.66353 10.5833 5.35965 10.5833H4.4668C4.84652 6.75167 8.10479 3.75 12.0789 3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0002 7.42199 20.1104 6.96007 19.8934 6.60721C18.2871 3.99427 15.3873 2.25 12.0789 2.25Z"/><path d="M20.8411 10.4666C20.549 10.1778 20.0789 10.1778 19.7867 10.4666L18.1005 12.1333C17.8841 12.3471 17.8184 12.6703 17.9339 12.9517C18.0495 13.233 18.3235 13.4167 18.6277 13.4167H19.5268C19.1455 17.2462 15.8759 20.25 11.8828 20.25C9.10026 20.25 6.66586 18.7903 5.31796 16.6061C5.10042 16.2536 4.63833 16.1442 4.28583 16.3618C3.93334 16.5793 3.82393 17.0414 4.04146 17.3939C5.65407 20.007 8.56406 21.75 11.8828 21.75C16.6906 21.75 20.6475 18.0892 21.0331 13.4167H22.0002C22.3043 13.4167 22.5783 13.233 22.6939 12.9517C22.8095 12.6703 22.7437 12.3471 22.5274 12.1333L20.8411 10.4666Z"/></svg>';
     // Compact echo of the app's dashed CTA: camera disc + "Capture Proof" for
     // photo plans, pen disc + "Sign to Promise" for signature plans.
     const isSig = plan.proof === 'signature';
@@ -4012,12 +4032,13 @@ function toggleMode() {
       ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>'
       : '<svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4z"/><circle cx="12" cy="13" r="3.6" fill="#3B3FA8"/></svg>';
     front.innerHTML =
-      '<span class="cwall-pill">' + clock + plan.cadence + '</span>' +
+      '<span class="cwall-when' + (/\d/.test(plan.when) ? '' : ' is-word') + '">' + plan.when + '</span>' +
       '<div class="cwall-label">' + plan.emoji + ' ' + plan.label + '</div>' +
+      (plan.repeat ? '<div class="cwall-repeat">' + repeatIc + 'Repeats ' + plan.repeat + '</div>' : '') +
       (plan.desc ? '<div class="cwall-desc">' + plan.desc + '</div>' : '') +
       '<div class="cwall-plan-foot">' +
         '<div class="cwall-cta" aria-hidden="true"><span class="cwall-cta-ic">' + ctaGlyph + '</span>' + (isSig ? 'Sign to Promise' : 'Capture Proof') + '</div>' +
-        '<div class="cwall-backed">Backed by<span class="cwall-avs">' + avs + '</span></div>' +
+        '<div class="cwall-backed"><span class="cwall-dot"></span>Backed by<span class="cwall-avs">' + avs + '</span></div>' +
       '</div>';
 
     stack.appendChild(proof);
