@@ -1833,8 +1833,8 @@
        viewport minus its gap, clamped so narrow windows don't shrink cards to
        slivers and ultrawides don't blow them up. Height comes from
        aspect-ratio. The gap is deliberately loose (was 18px at 7-up): with the
-       per-stack tilt below, cards read as laid out by hand rather than as a
-       tight grid, and the tilt needs the air or neighbouring corners crowd.
+       wheel arch (see the wall script), outer cards lean, and the lean needs
+       the air or neighbouring corners crowd.
        (--cw-w / --cw-gap are declared on .cwall-zone.) */
     /* dark (default) — navy-leaning surfaces to match the night sky */
     --cw-card-bg:#1b1930; --cw-card-bd:rgba(255,255,255,.13);
@@ -1854,12 +1854,11 @@
     position:relative;z-index:2;margin-top:38px;overflow:hidden;
     /* grab-to-scrub: horizontal drag is ours, vertical stays native page scroll */
     cursor:grab;touch-action:pan-y;-webkit-tap-highlight-color:transparent;
-    /* 28px headroom for the peeking proof card — 17px of peek plus the ~5px a
-       tilted stack's high corner lifts, with a little spare (the 6px added
-       here came off margin-top, so the wall hasn't moved); 36px foot-room so
-       the cards' downward shadow fades out fully instead of being clipped to
-       a hard line by this container's overflow:hidden */
-    padding:28px 0 36px;
+    /* 28px headroom for the peeking proof card — 17px of peek plus a little
+       spare; 36px foot-room so the cards' downward shadow fades out fully
+       instead of being clipped to a hard line by overflow:hidden, plus 3vw for
+       the outer cards dipping down the wheel arch */
+    padding:28px 0 calc(36px + 3vw);
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
     mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
   }
@@ -4054,13 +4053,36 @@ function toggleMode() {
   // ---- Measure: the track is two identical segments; wrapping the offset at
   // one segment's width keeps the marquee seamless in both directions and under
   // any drag distance. ----
+  // ---- Wheel arch: the row reads as the top of one giant circle. Each stack
+  // sits on the rim at the angle its distance from the wall's centre implies,
+  // so the centre card is highest and level, and cards dip and lean outward
+  // towards the edges. Radius scales with the wall, so the curve has the same
+  // shape at every width. ----
+  const WHEEL_R_PER_W = 3.2;            // radius as a multiple of the wall's width
+  const stacks = Array.from(track.querySelectorAll('.cwall-stack'));
+  let stackMids = [], wallMid = 0, wheelR = 1;
+
   let segWidth = 0;
-  function measure(){ segWidth = track.scrollWidth / 2; }
+  function measure(){
+    segWidth = track.scrollWidth / 2;
+    stackMids = stacks.map(st => st.offsetLeft + st.offsetWidth / 2);
+    wallMid = wall.clientWidth / 2;
+    wheelR = Math.max(600, wall.clientWidth * WHEEL_R_PER_W);
+  }
+  function applyArch(){
+    for (let i = 0; i < stacks.length; i++){
+      const dx = stackMids[i] - offset - wallMid;  // along-the-rim distance from centre
+      const a = dx / wheelR;                         // angle on the wheel
+      const sx = wheelR * Math.sin(a) - dx;          // pull in slightly as the rim curves
+      const sy = wheelR * (1 - Math.cos(a));         // drop below the top
+      stacks[i].style.transform = 'translate3d(' + sx.toFixed(2) + 'px,' + sy.toFixed(2) + 'px,0) rotate(' + (a * 180 / Math.PI).toFixed(3) + 'deg)';
+    }
+  }
   measure();
   let wallResizeTO;
   window.addEventListener('resize', () => {
     clearTimeout(wallResizeTO);
-    wallResizeTO = setTimeout(measure, 150);
+    wallResizeTO = setTimeout(() => { measure(); applyArch(); }, 150);
   });
 
   // ---- Proof reveals ----
@@ -4107,6 +4129,7 @@ function toggleMode() {
   function applyTransform(){
     if (segWidth > 0) offset = ((offset % segWidth) + segWidth) % segWidth;
     track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
+    applyArch();
   }
 
   let lastFrame = null;
@@ -4130,6 +4153,7 @@ function toggleMode() {
     applyTransform();
     requestAnimationFrame(frame);
   }
+  applyArch();  // place the arch now, so reduced-motion (no frame loop) still gets it
   requestAnimationFrame(frame);
 
   // Hover (desktop mouse): CSS reveals the hovered card; we track state so drift
