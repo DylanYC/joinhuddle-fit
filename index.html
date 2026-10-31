@@ -473,87 +473,66 @@
   .ic-copy h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:12px;}
   .ic-copy p{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
   .hlc{color:var(--text1);font-weight:500;}
-  /* SHARED PLANS sample card — a 1:1 model of the app's task card. Chrome from
-     task_card_shell.dart (16px radius, 2.5px #C8C8C8 stroke @90%, the pinched
-     bottom-only shadow); the green "With …" badge from pact_badge.dart, which
-     is TimePill's chip recipe (8x4 padding, radius 8, 12px/700) in the pact
-     green. Like the loop-stack cards, it stays in the app's LIGHT theme in both
-     site modes — it reads as a screenshot, not as site chrome. */
-  .sp-card{
-    width:100%;box-sizing:border-box;
-    background:#FFFFFF;
-    border:2.5px solid rgba(200,200,200,0.9);
-    border-radius:16px;
-    padding:14px 12px 12px;
-    box-shadow:0 6px 2px -2.25px rgba(0,0,0,0.15);
-  }
-  /* Two sample plans in a swipe carousel, so the section can show a solo-ish
-     pact and a whole-family one without stacking two screenshots. Native
-     overflow scrolling does the swiping (momentum + snap for free); the JS
-     only clones the end cards to close the loop and drives the pointer drag
-     for mice. Without JS this degrades to a plain two-card scroller. */
-  /* --sp-gut is the strip of neighbouring card that peeks past the centred
-     one on each side. It doubles as the fade distance below, so the peek
-     dissolves into the page instead of being sliced off at a hard edge. */
-  .sp-carousel{--sp-gut:18px;max-width:calc(326px + 2 * var(--sp-gut));margin:22px auto 10px;}
-  .sp-viewport{
-    overflow-x:auto;overflow-y:hidden;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-x:contain;
-    /* The card's bottom shadow lives outside its box, and an x-scroller can't
-       keep overflow-y visible — so the clearance is padding, not spill. */
-    padding-bottom:10px;
-    scrollbar-width:none;-ms-overflow-style:none;
-    cursor:grab;
-    /* Alpha mask rather than gradient overlays, so the fade works over
-       whatever the section's background happens to be in either theme. */
-    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--sp-gut),#000 calc(100% - var(--sp-gut)),transparent 100%);
-    mask-image:linear-gradient(to right,transparent 0,#000 var(--sp-gut),#000 calc(100% - var(--sp-gut)),transparent 100%);
-  }
-  .sp-viewport::-webkit-scrollbar{display:none;}
-  /* Snap is switched off for the duration of a mouse drag so the browser
-     doesn't fight the scrollLeft we're writing frame by frame; it comes back
-     once we've landed exactly on a snap point, so re-enabling never jumps. */
-  .sp-viewport.is-dragging{cursor:grabbing;scroll-snap-type:none;}
-  .sp-viewport:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:18px;}
-  .sp-track{display:flex;align-items:stretch;}
-  /* Gutter spacers instead of padding on the scroller: end padding on an
-     overflowing scroll container is honoured inconsistently, a flex item is
-     honoured everywhere. They carry no snap-align, so they're never a stop. */
-  .sp-track::before,.sp-track::after{content:'';flex:0 0 var(--sp-gut);}
-  .sp-slide{flex:0 0 calc(100% - 2 * var(--sp-gut));scroll-snap-align:center;scroll-snap-stop:always;display:flex;}
-  .sp-dots{display:flex;justify-content:center;gap:2px;margin-top:2px;}
-  .sp-dot{display:block;width:22px;height:22px;padding:7px;border:0;background:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
-  .sp-dot span{display:block;width:8px;height:8px;border-radius:50%;background:var(--text3);opacity:.34;transition:opacity .22s ease,background-color .22s ease;}
-  .sp-dot.is-on span{background:var(--accent);opacity:1;}
-  .sp-dot:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:50%;}
-  @media (prefers-reduced-motion: reduce){ .sp-dot span{transition:none;} }
-  .sp-desc{margin-top:3px;font-size:13px;line-height:1.4;color:#5A5D72;}
-  .sp-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;line-height:1;}
-  .sp-chip svg{flex-shrink:0;}
-  /* Chip inks diverge from the app's #6F75FF / #0E8F62 for contrast only —
-     see the .loop-feed-scene note above. */
-  .sp-time{background:#EEEFFF;color:#4B51DE;}
-  .sp-with{background:#DFF5EA;color:#0A7350;}
-  /* Badge + member avatars sit on one row, 6px apart (PactBadge.build). */
-  .sp-withrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px 6px;margin-top:4px;}
-  /* Multi-member pacts stack their avatars: the ring below is the card colour,
-     so a 6px overlap reads as one group rather than three loose circles. */
-  .sp-avs{display:flex;align-items:center;}
-  .sp-avs .sp-av + .sp-av{margin-left:-6px;}
-  /* 20px, 1.5px card-coloured separator ring — invisible against the white
-     card by design: absence is never rendered, so a member who hasn't shown
-     up yet gets nothing at all. */
-  .sp-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid #FFFFFF;flex-shrink:0;background:#CFD1FF;box-sizing:border-box;}
-  .sp-av img{width:100%;height:100%;object-fit:cover;display:block;}
-  .sp-title{margin-top:4px;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.2px;color:#1C1C1C;}
-  .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;line-height:1.3;color:#6B6E85;}
+  /* SHARED PLANS — one shared plan the way the app draws it: Dylan's own
+     Sunday Run card, then the plan sheet's "Together so far" rail. A scale
+     model of the app's light theme, measured from task_card_self.dart,
+     task_card_shell.dart, time_pill.dart, meta_line.dart, pact_badge.dart and
+     shared_plan_history_rail.dart (rules in docs/surface-spec.md): a 1pt
+     hairline and no shadow, the "when" as a slanted Risers Display word, the
+     pact green as ink with no chip. Like the loop-stack cards it stays in the
+     app's LIGHT theme in both site modes, so it reads as a screenshot. */
+  .sp-sec{padding:16px 24px 64px;text-align:center;}
+  .sp-sec > h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:10px;}
+  .sp-sec > p{font-size:15px;color:var(--text2);line-height:1.6;max-width:420px;margin:0 auto;}
+  /* Card and rail side by side; they stack on a phone */
+  .sp{display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:28px auto 0;text-align:left;}
+  .sp-card,.sp-rail{width:360px;max-width:100%;}
+  @media (max-width:820px){ .sp{flex-direction:column;align-items:center;gap:10px;} }
+  @media (max-width:640px){ .sp-sec{padding:8px 16px 48px;} }
+  .sp-card,.sp-rail{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;}
+  .sp-card{padding:16px 12px;}
+  /* MetaLine: when, a 3pt dot, then the group; the menu glyph centred on the line */
+  .sp-meta{display:flex;align-items:center;}
+  .sp-when{display:inline-block;font-family:var(--font-display);font-weight:normal;font-synthesis:none;
+    transform:skewX(7deg);font-size:12px;line-height:14.4px;letter-spacing:-.2px;color:#75757B;white-space:nowrap;padding-right:2px;}
+  .sp-when.is-word{font-size:13px;letter-spacing:.6px;}
+  .sp-sep{width:3px;height:3px;border-radius:50%;background:rgba(23,24,46,.45);margin:0 8px;flex-shrink:0;}
+  /* Pact green: the app's #0E8F62 is darkened for the 13px label's contrast,
+     as the site does for its other chip inks. The ring keeps the app's own. */
+  .sp-with{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;line-height:1;color:#0A7350;white-space:nowrap;}
+  .sp-avs{display:inline-flex;}
+  .sp-av{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1.5px solid #FFFFFF;flex-shrink:0;background:#F5F5F5;}
+  .sp-av + .sp-av{margin-left:-6px;}
+  /* Presence ring: showed up today. Nobody else gets anything. */
+  .sp-av.is-in{border:1.8px solid #0E8F62;}
+  .sp-av img,.sp-face img,.sp-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sp-kdots{margin-left:auto;display:flex;gap:2.5px;padding-left:8px;}
+  .sp-kdots span{width:3px;height:3px;border-radius:50%;background:#9E9E9E;}
+  .sp-presence{margin-top:4px;font-size:12px;font-weight:600;line-height:1.2;color:#6C6C72;}
+  .sp-title{margin-top:12px;font-size:20px;font-weight:700;letter-spacing:-.2px;line-height:1.25;color:#17182E;}
+  .sp-repeat{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12px;line-height:1.35;color:#6C6C72;}
   .sp-repeat svg{flex-shrink:0;}
-  /* Caption under the sample card — reads as a note about the screenshot, not
-     as body copy. The step down is size + centring; the ink only drops one
-     rung on the ramp, because at 13px this is still body-size text to WCAG. */
-  .ic-copy p.sp-note{max-width:326px;margin:0 auto;text-align:center;font-size:13px;line-height:1.6;color:var(--text3);}
+  /* CaptureProofCta: the card's own surface inside a dashed edge */
+  .sp-cta{margin-top:12px;height:60px;border:1.5px dashed #CFCDC5;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:14px;font-weight:600;color:#17182E;}
+  .sp-cta svg{width:28px;height:28px;flex-shrink:0;}
+  /* SharedPlanHistoryRail: faces over columns, a dated hairline per day,
+     square tiles. A day someone skipped is empty space, never a placeholder. */
+  .sp-rail{padding:18px 20px 0;}
+  .sp-rail-h{font-size:16px;font-weight:700;line-height:1.25;color:#17182E;}
+  /* Tiles fill the row up to the app's 120pt ceiling, then centre */
+  .sp-cols{display:grid;grid-template-columns:repeat(4,minmax(0,120px));justify-content:center;gap:8px;}
+  .sp-faces{margin:10px 0 20px;}
+  .sp-face{justify-self:center;width:26px;height:26px;border-radius:50%;overflow:hidden;background:#F5F5F5;}
+  .sp-face.is-me{box-shadow:0 0 0 2px #6F75FF;}
+  .sp-day{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;line-height:1.2;color:#9E9E9E;white-space:nowrap;}
+  .sp-day::before,.sp-day::after{content:'';flex:1;height:1px;background:#F1F1F1;}
+  .sp-tiles{margin:8px 0 20px;}
+  .sp-thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;}
+  /* Your own open slot today: the app's dashed "not finished yet" edge, the
+     same dash as Capture Proof above. Only ever on your own column; anyone
+     else who hasn't shown up stays empty space. */
+  .sp-thumb.is-yours{border:1.5px dashed #CFCDC5;}
   /* POSITIONING — BeReal + Strava + your calendar = Risers.
      Colours ride the site theme: dark is the base, .light overrides. The road
      greys and the three brand accents are fixed; everything else maps to site
@@ -2392,61 +2371,38 @@
       <h2>Up to 12 people.<br/>Partners or small groups.</h2>
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
-
-      <div class="sp-carousel" id="sp-carousel">
-        <div class="sp-viewport" id="sp-viewport" tabindex="0" role="group" aria-label="Example shared plans">
-          <div class="sp-track">
-
-            <div class="sp-slide">
-              <div class="sp-card">
-                <span class="sp-chip sp-time">
-                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Anytime
-                </span>
-                <div class="sp-withrow">
-                  <span class="sp-chip sp-with">
-                    <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Klaudia
-                  </span>
-                  <span class="sp-avs">
-                    <span class="sp-av"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span>
-                  </span>
-                </div>
-                <div class="sp-title">🥘 Meal Prep Sunday</div>
-                <div class="sp-repeat">
-                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every 2 weeks on Sun
-                </div>
-              </div>
-            </div>
-
-            <div class="sp-slide">
-              <div class="sp-card">
-                <span class="sp-chip sp-time">
-                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="3.2" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8.2" y2="7.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>8:00 PM
-                </span>
-                <div class="sp-withrow">
-                  <span class="sp-chip sp-with">
-                    <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.1" r="1.9" fill="currentColor"/><path d="M1.1 10.1c0-1.9 1.5-3.1 3.4-3.1s3.4 1.2 3.4 3.1z" fill="currentColor"/><circle cx="9" cy="4.5" r="1.5" fill="currentColor" opacity=".75"/><path d="M8.1 6.6c1.6-.2 2.9.9 2.9 2.5v1H9.3c0-1.4-.5-2.6-1.2-3.5z" fill="currentColor" opacity=".75"/></svg>With Ele, Richard, Gisela
-                  </span>
-                  <span class="sp-avs">
-                    <span class="sp-av"><img src="assets/Avatars/Family_Ele.png" alt="" loading="lazy" decoding="async"></span>
-                    <span class="sp-av"><img src="assets/Avatars/Family_Richard.png" alt="" loading="lazy" decoding="async"></span>
-                    <span class="sp-av"><img src="assets/Avatars/Family_Gisela.png" alt="" loading="lazy" decoding="async"></span>
-                  </span>
-                </div>
-                <div class="sp-title">🚶 After Dinner Walk</div>
-                <div class="sp-desc">A short walk outside to help with digestion</div>
-                <div class="sp-repeat">
-                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 5.4V4.8A1.8 1.8 0 0 1 4 3h4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 1.7 8.9 3 7.3 4.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 6.6v.6A1.8 1.8 0 0 1 8 9H3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 10.3 3.1 9l1.6-1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Repeats Every weekday
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="sp-dots" id="sp-dots"></div>
-      </div>
-
-      <p class="sp-note">You can even share a plan with someone in your circle. Same commitment, regardless of continents or time zones.</p>
     </div>
+  </section>
+
+  <!-- 5a. SHARED PLANS — one real shared plan: the card, then its history -->
+  <section class="sp-sec" id="shared-plans" aria-labelledby="sp-sec-title">
+    <h2 id="sp-sec-title">Share a plan.</h2>
+    <p>Same commitment, regardless of continents or time zones.</p>
+
+    <!-- Sunday Run, a real four-person plan across two continents. Today
+         Kyle and Klaudia have shown up; Dylan and Karl haven't yet.
+         The two dates are filled in by script (this Sunday and the one before). -->
+    <figure class="sp" aria-label="A shared plan, Sunday Run, with Kyle, Karl and Klaudia">
+      <div class="sp-card">
+        <div class="sp-meta">
+          <span class="sp-when is-word">Anytime</span><span class="sp-sep" aria-hidden="true"></span>
+          <span class="sp-with">With Kyle +2 <span class="sp-avs"><span class="sp-av is-in"><img src="assets/Avatars/Family_Kyle.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av"><img src="assets/Avatars/Family_Karl.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av is-in"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span></span></span>
+          <span class="sp-kdots" aria-hidden="true"><span></span><span></span><span></span></span>
+        </div>
+        <div class="sp-presence">Kyle and Klaudia showed up today so far</div>
+        <div class="sp-title">👟 Sunday Run</div>
+        <div class="sp-repeat"><svg width="14" height="14" viewBox="-0.9 -0.9 25.8 25.8" fill="currentColor" aria-hidden="true"><path d="M12.0789 2.25C7.2854 2.25 3.34478 5.913 2.96055 10.5833H2.00002C1.69614 10.5833 1.42229 10.7667 1.30655 11.0477C1.19081 11.3287 1.25606 11.6517 1.47178 11.8657L3.15159 13.5324C3.444 13.8225 3.91567 13.8225 4.20808 13.5324L5.88789 11.8657C6.10361 11.6517 6.16886 11.3287 6.05312 11.0477C5.93738 10.7667 5.66353 10.5833 5.35965 10.5833H4.4668C4.84652 6.75167 8.10479 3.75 12.0789 3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0002 7.42199 20.1104 6.96007 19.8934 6.60721C18.2871 3.99427 15.3873 2.25 12.0789 2.25Z"/><path d="M20.8411 10.4666C20.549 10.1778 20.0789 10.1778 19.7867 10.4666L18.1005 12.1333C17.8841 12.3471 17.8184 12.6703 17.9339 12.9517C18.0495 13.233 18.3235 13.4167 18.6277 13.4167H19.5268C19.1455 17.2462 15.8759 20.25 11.8828 20.25C9.10026 20.25 6.66586 18.7903 5.31796 16.6061C5.10042 16.2536 4.63833 16.1442 4.28583 16.3618C3.93334 16.5793 3.82393 17.0414 4.04146 17.3939C5.65407 20.007 8.56406 21.75 11.8828 21.75C16.6906 21.75 20.6475 18.0892 21.0331 13.4167H22.0002C22.3043 13.4167 22.5783 13.233 22.6939 12.9517C22.8095 12.6703 22.7437 12.3471 22.5274 12.1333L20.8411 10.4666Z"/></svg>Repeats Weekly on Sun</div>
+        <div class="sp-cta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="url(#spCamGrad)"/><g transform="translate(12,12) scale(0.575) translate(-12,-12)"><path d="M7.00 6.05 H17.00 A4.30 4.30 0 0 1 21.30 10.35 V16.35 A4.30 4.30 0 0 1 17.00 20.65 H7.00 A4.30 4.30 0 0 1 2.70 16.35 V10.35 A4.30 4.30 0 0 1 7.00 6.05 Z M6.50 6.65 L8.03 4.35 A1.20 1.20 0 0 1 9.36 3.35 L14.64 3.35 A1.20 1.20 0 0 1 15.97 4.35 L17.50 6.65 Z M15.75 13.35 A3.75 3.75 0 1 0 8.25 13.35 A3.75 3.75 0 1 0 15.75 13.35 Z" fill="#FFFFFF"/></g><defs><linearGradient id="spCamGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#7C82FF"/><stop offset="1" stop-color="#3B3FA8"/></linearGradient></defs></svg>Capture Proof</div>
+      </div>
+      <div class="sp-rail">
+        <div class="sp-rail-h">Together so far</div>
+        <div class="sp-cols sp-faces" aria-hidden="true"><span class="sp-face is-me"><img src="assets/Avatars/MainUser_Dylan.png" alt="" loading="lazy" decoding="async"></span><span class="sp-face"><img src="assets/Avatars/Family_Kyle.png" alt="" loading="lazy" decoding="async"></span><span class="sp-face"><img src="assets/Avatars/Family_Karl.png" alt="" loading="lazy" decoding="async"></span><span class="sp-face"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span></div>
+        <div class="sp-day" id="sp-day-0">Sun, Oct 25</div>
+        <div class="sp-cols sp-tiles"><span class="sp-thumb is-yours" aria-hidden="true"></span><span class="sp-thumb"><img src="assets/Shared Plan Images/Sunday Run_Kyle.jpg" alt="Kyle after his Sunday run" loading="lazy" decoding="async"></span><span class="sp-thumb"></span><span class="sp-thumb"><img src="assets/Shared Plan Images/Sunday Run_Klaudia.jpg" alt="Klaudia on her Sunday run" loading="lazy" decoding="async"></span></div>
+        <div class="sp-day" id="sp-day-1">Sun, Oct 18</div>
+        <div class="sp-cols sp-tiles"><span class="sp-thumb"><img src="assets/Shared Plan Images/Sunday Run_Dylan.jpg" alt="Dylan on his Sunday run" loading="lazy" decoding="async"></span><span class="sp-thumb"><img src="assets/Shared Plan Images/Sunday Run Trail_Kyle.jpg" alt="Kyle on a trail" loading="lazy" decoding="async"></span><span class="sp-thumb"><img src="assets/Shared Plan Images/Sunday Run_Karl.jpg" alt="Karl&#39;s run route" loading="lazy" decoding="async"></span><span class="sp-thumb"><img src="assets/Proof Carousel/Rewe 5K Company Run_Klaudia.JPG" alt="Klaudia with a race medal" loading="lazy" decoding="async"></span></div>
+      </div>
+    </figure>
   </section>
 
   <!-- 5b. POSITIONING — Risers where BeReal, Strava and your calendar meet.
@@ -4645,149 +4601,19 @@ function toggleMode() {
 })();
 
 /* ============================================================
-   SHARED PLANS — infinite swipe carousel
-   Two sample task cards that cycle forever in both directions. The loop is
-   the usual clone trick: a copy of the last card sits before the first and a
-   copy of the first sits after the last, so a swipe off either end lands on a
-   copy, and once the scroll settles we jump to the identical real card with
-   scrolling behaviour forced to instant. Nothing animates during the swap, so
-   it can't be seen.
+   SHARED PLANS — the rail's two dates: this Sunday (today, on a Sunday)
+   and the one before, so the sample never looks stale.
    ============================================================ */
 (() => {
-  const root = document.getElementById('sp-carousel');
-  const vp   = document.getElementById('sp-viewport');
-  const dots = document.getElementById('sp-dots');
-  if (!root || !vp || !dots) return;
-  const track = vp.querySelector('.sp-track');
-  const reals = Array.from(track.children);
-  const N = reals.length;
-  if (N < 2) return;
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  // --- clone the ends -------------------------------------------------
-  const head = reals[N - 1].cloneNode(true);
-  const tail = reals[0].cloneNode(true);
-  [head, tail].forEach(c => {
-    c.setAttribute('aria-hidden', 'true');
-    // The clones are always one swipe away, so their images must not wait for
-    // a lazy-load intersection that fires mid-transition.
-    c.querySelectorAll('img').forEach(im => im.removeAttribute('loading'));
+  const fmt = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  const sun = new Date();
+  sun.setDate(sun.getDate() - sun.getDay());
+  const prev = new Date(sun);
+  prev.setDate(sun.getDate() - 7);
+  [sun, prev].forEach((d, i) => {
+    const el = document.getElementById('sp-day-' + i);
+    if (el) el.textContent = fmt(d);
   });
-  track.insertBefore(head, reals[0]);
-  track.appendChild(tail);
-
-  // The pitch is the slide, not the viewport: the viewport is wider by the two
-  // gutter spacers that let the neighbouring card peek out and fade.
-  const W  = () => track.querySelector('.sp-slide').getBoundingClientRect().width;
-  // Slide i sits one gutter in from the scroll origin, and a centred slide
-  // leaves exactly one gutter on its left — so the two cancel out.
-  const slideAt = i => i * W();          // i counts clones: 0 = head clone
-  let cur = 0;                            // index into `reals`
-
-  function jump(i){                       // no animation, no snap fight
-    const prev = vp.style.scrollBehavior;
-    vp.style.scrollBehavior = 'auto';
-    vp.scrollLeft = slideAt(i);
-    vp.style.scrollBehavior = prev;
-  }
-  function glide(i){
-    vp.scrollTo({ left: slideAt(i), behavior: still.matches ? 'auto' : 'smooth' });
-  }
-
-  // --- dots -----------------------------------------------------------
-  const buttons = reals.map((slide, k) => {
-    const name = (slide.querySelector('.sp-title')?.textContent || ('Plan ' + (k + 1))).trim();
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'sp-dot';
-    b.setAttribute('aria-label', 'Show ' + name);
-    b.innerHTML = '<span></span>';
-    b.addEventListener('click', () => { halt(); glide(k + 1); });
-    dots.appendChild(b);
-    return b;
-  });
-  function paintDots(){
-    buttons.forEach((b, k) => {
-      b.classList.toggle('is-on', k === cur);
-      b.setAttribute('aria-current', k === cur ? 'true' : 'false');
-    });
-  }
-
-  // --- settle: swap a clone for the real card it copies ----------------
-  function settle(){
-    vp.classList.remove('is-dragging');
-    const i = Math.round(vp.scrollLeft / W());
-    if (i <= 0)          { cur = N - 1; jump(N); }
-    else if (i >= N + 1) { cur = 0;     jump(1); }
-    else                 { cur = i - 1; }
-    paintDots();
-  }
-  let settleT = 0;
-  // Long enough that a smooth scroll's own stream of events keeps pushing it
-  // back rather than settling mid-flight.
-  function scheduleSettle(ms){ clearTimeout(settleT); settleT = setTimeout(settle, ms); }
-  vp.addEventListener('scroll', () => scheduleSettle(140), { passive: true });
-
-  // --- autoplay: a nudge so the second card is discoverable ------------
-  // It only runs while the section is on screen, and it stops for good the
-  // moment the visitor takes over — nothing worse than a card sliding out
-  // from under a finger.
-  let timer = 0, visible = false, stopped = false;
-  function arm(){
-    clearInterval(timer); timer = 0;
-    if (stopped || !visible || still.matches) return;
-    timer = setInterval(() => glide(cur + 2), 5200);
-  }
-  function halt(){ stopped = true; clearInterval(timer); timer = 0; }
-  new IntersectionObserver(es => { visible = es[0].isIntersecting; arm(); },
-    { threshold: 0.4 }).observe(root);
-  still.addEventListener('change', arm);
-  root.addEventListener('mouseenter', () => { clearInterval(timer); timer = 0; });
-  root.addEventListener('mouseleave', arm);
-
-  // --- mouse drag (touch already has native scrolling) -----------------
-  let dragging = false, sx = 0, sl = 0;
-  vp.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'touch' || e.button !== 0) return;
-    dragging = true; sx = e.clientX; sl = vp.scrollLeft;
-    vp.classList.add('is-dragging');
-    vp.setPointerCapture(e.pointerId);
-    halt();
-  });
-  vp.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    vp.scrollLeft = sl - (e.clientX - sx);
-    e.preventDefault();
-  });
-  function endDrag(e){
-    if (!dragging) return;
-    dragging = false;
-    try { vp.releasePointerCapture(e.pointerId); } catch (_) {}
-    const dx = e.clientX - sx;
-    let i = Math.round(sl / W());
-    if (Math.abs(dx) > W() * 0.18) i += dx < 0 ? 1 : -1;   // flick past 18%
-    glide(i);
-    // settle() is what drops .is-dragging and turns snap back on, so it has to
-    // run even for a press-and-release that never moved — that scrolls
-    // nowhere, and a scroll that never happens fires no scroll event.
-    scheduleSettle(320);
-  }
-  vp.addEventListener('pointerup', endDrag);
-  vp.addEventListener('pointercancel', endDrag);
-  vp.addEventListener('dragstart', e => e.preventDefault());
-
-  vp.addEventListener('keydown', e => {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-    e.preventDefault(); halt();
-    glide(cur + 1 + (e.key === 'ArrowRight' ? 1 : -1));
-  });
-  // Touch counts as taking over too.
-  vp.addEventListener('touchstart', halt, { passive: true });
-
-  window.addEventListener('resize', () => { jump(cur + 1); });
-
-  jump(1);
-  paintDots();
 })();
 </script>
 
