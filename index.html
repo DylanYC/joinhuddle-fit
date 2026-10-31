@@ -484,10 +484,39 @@
   .sp-sec{padding:16px 24px 64px;text-align:center;}
   .sp-sec > h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:10px;text-wrap:balance;}
   .sp-sec > p{font-size:15px;color:var(--text2);line-height:1.6;max-width:420px;margin:0 auto;text-wrap:balance;}
+  .sp-sec > p em{font-style:italic;color:var(--text1);}
+  /* "Shared Plan" named as a feature: a soft pact-green tint with dark ink,
+     the same recipe as the old time pills (#CFD1FF / #292D91), so it reads as
+     a label rather than a button. Green is Shared Plans in the app. */
+  .sp-tag{display:inline-block;padding:1px 7px 2px;border-radius:6px;background:rgba(14,143,98,.22);color:#A7E6C9;font-size:13.5px;font-weight:600;line-height:1.35;white-space:nowrap;vertical-align:1px;}
+  .site.light .sp-tag{background:#D5EFE3;color:#0A5A3F;}
   /* Card and rail side by side; they stack on a phone */
-  .sp{display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:28px auto 0;text-align:left;}
-  .sp-card,.sp-rail{width:360px;max-width:100%;}
-  @media (max-width:820px){ .sp{flex-direction:column;align-items:center;gap:10px;} }
+  .sp{display:grid;grid-template-columns:repeat(2,minmax(0,360px));gap:10px 20px;justify-content:center;align-items:start;margin:28px auto 0;text-align:left;}
+
+  /* "Share this plan" — the plan editor's _SettingRow: 34pt icon tile,
+     16/600 label, the value right-aligned, a chevron. "Just me" is the
+     default; once people are on it the value names them in ink. */
+  .sp-share{grid-column:1 / -1;background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;padding:13px 16px;display:flex;align-items:center;}
+  .sp-share-ic{width:34px;height:34px;border-radius:10px;background:#E0E0E0;color:#0A0F81;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sp-share-ic svg{width:16px;height:16px;}
+  .sp-share-label{margin-left:14px;font-size:16px;font-weight:600;color:#000000;white-space:nowrap;}
+  .sp-share-val{display:grid;align-items:center;flex:1;min-width:0;margin-left:16px;text-align:right;}
+  .sp-share-val > span{grid-area:1 / 1;font-size:15px;line-height:20px;transition:opacity .35s ease;}
+  .sp-val-solo{font-weight:500;color:#757575;opacity:0;}
+  .sp-val-shared{font-weight:600;color:#000000;}
+  .sp-share-chev{width:14px;height:14px;margin-left:6px;color:#757575;flex-shrink:0;}
+  /* Before the switch (set by script, so no-JS and reduced motion just show
+     the shared plan): "Just me", no green group, no presence, no history. */
+  .sp-pact{display:inline-flex;align-items:center;transition:opacity .4s ease .15s;}
+  .sp-presence-wrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .4s ease .15s;}
+  .sp-presence-wrap > .sp-presence{min-height:0;overflow:hidden;}
+  .sp-rail{transition:opacity .5s ease .35s,transform .5s ease .35s;}
+  .sp.is-solo .sp-val-solo{opacity:1;}
+  .sp.is-solo .sp-val-shared{opacity:0;}
+  .sp.is-solo .sp-pact{opacity:0;}
+  .sp.is-solo .sp-presence-wrap{grid-template-rows:0fr;}
+  .sp.is-solo .sp-rail{opacity:0;transform:translateY(8px);}
+  @media (max-width:820px){ .sp{grid-template-columns:minmax(0,360px);} }
   @media (max-width:640px){ .sp-sec{padding:8px 16px 48px;} }
   .sp-card,.sp-rail{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;}
   .sp-card{padding:16px 12px;}
@@ -2376,20 +2405,27 @@
 
   <!-- 5a. SHARED PLANS — one real shared plan: the card, then its history -->
   <section class="sp-sec" id="shared-plans" aria-labelledby="sp-sec-title">
-    <h2 id="sp-sec-title">Same plan. Your own time.</h2>
-    <p>See each other show up, and keep every day you did it together. Regardless of continents or time zones.</p>
+    <h2 id="sp-sec-title">Plans can be shared.</h2>
+    <p>Want to do the <em>same</em> activity with your circle? Any plan can be turned into a <span class="sp-tag">Shared Plan</span>, enabling the victories to roll into one place. Each member can do it any time they please, regardless of time zone.</p>
 
     <!-- Sunday Run, a real four-person plan across two continents. Today
          Kyle and Klaudia have shown up; Dylan and Karl haven't yet.
          The two dates are filled in by script (this Sunday and the one before). -->
-    <figure class="sp" aria-label="A shared plan, Sunday Run, with Kyle, Karl and Klaudia">
+    <figure class="sp" id="sp" aria-label="A shared plan, Sunday Run, with Kyle, Karl and Klaudia">
+      <!-- The plan editor's last row (plan_card_builder_dialog.dart). Every
+           plan starts at "Just me"; sharing is something you switch on. -->
+      <div class="sp-share">
+        <span class="sp-share-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="4"/><path d="M20 17.5C20 19.9853 20 22 12 22C4 22 4 19.9853 4 17.5C4 15.0147 7.58172 13 12 13C16.4183 13 20 15.0147 20 17.5Z"/></svg></span>
+        <span class="sp-share-label">Share this plan</span>
+        <span class="sp-share-val"><span class="sp-val-solo" aria-hidden="true">Just me</span><span class="sp-val-shared">With Kyle, Karl and Klaudia</span></span>
+        <svg class="sp-share-chev" viewBox="2 2 20 20" fill="currentColor" aria-hidden="true"><path d="M15.8351 11.6296L9.20467 5.1999C8.79094 4.79869 8 5.04189 8 5.5703L8 18.4297C8 18.9581 8.79094 19.2013 9.20467 18.8001L15.8351 12.3704C16.055 12.1573 16.0549 11.8427 15.8351 11.6296Z"/></svg>
+      </div>
       <div class="sp-card">
         <div class="sp-meta">
-          <span class="sp-when is-word">Anytime</span><span class="sp-sep" aria-hidden="true"></span>
-          <span class="sp-with">With Kyle +2 <span class="sp-avs"><span class="sp-av is-in"><img src="assets/Avatars/Family_Kyle.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av"><img src="assets/Avatars/Family_Karl.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av is-in"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span></span></span>
+          <span class="sp-when is-word">Anytime</span><span class="sp-pact"><span class="sp-sep" aria-hidden="true"></span>          <span class="sp-with">With Kyle +2 <span class="sp-avs"><span class="sp-av is-in"><img src="assets/Avatars/Family_Kyle.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av"><img src="assets/Avatars/Family_Karl.png" alt="" loading="lazy" decoding="async"></span><span class="sp-av is-in"><img src="assets/Avatars/Partner_Klaudia.png" alt="" loading="lazy" decoding="async"></span></span></span></span>
           <span class="sp-kdots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
-        <div class="sp-presence">Kyle and Klaudia showed up today so far</div>
+        <div class="sp-presence-wrap"><div class="sp-presence">Kyle and Klaudia showed up today so far</div></div>
         <div class="sp-title">👟 Sunday Run</div>
         <div class="sp-repeat"><svg width="14" height="14" viewBox="-0.9 -0.9 25.8 25.8" fill="currentColor" aria-hidden="true"><path d="M12.0789 2.25C7.2854 2.25 3.34478 5.913 2.96055 10.5833H2.00002C1.69614 10.5833 1.42229 10.7667 1.30655 11.0477C1.19081 11.3287 1.25606 11.6517 1.47178 11.8657L3.15159 13.5324C3.444 13.8225 3.91567 13.8225 4.20808 13.5324L5.88789 11.8657C6.10361 11.6517 6.16886 11.3287 6.05312 11.0477C5.93738 10.7667 5.66353 10.5833 5.35965 10.5833H4.4668C4.84652 6.75167 8.10479 3.75 12.0789 3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0002 7.42199 20.1104 6.96007 19.8934 6.60721C18.2871 3.99427 15.3873 2.25 12.0789 2.25Z"/><path d="M20.8411 10.4666C20.549 10.1778 20.0789 10.1778 19.7867 10.4666L18.1005 12.1333C17.8841 12.3471 17.8184 12.6703 17.9339 12.9517C18.0495 13.233 18.3235 13.4167 18.6277 13.4167H19.5268C19.1455 17.2462 15.8759 20.25 11.8828 20.25C9.10026 20.25 6.66586 18.7903 5.31796 16.6061C5.10042 16.2536 4.63833 16.1442 4.28583 16.3618C3.93334 16.5793 3.82393 17.0414 4.04146 17.3939C5.65407 20.007 8.56406 21.75 11.8828 21.75C16.6906 21.75 20.6475 18.0892 21.0331 13.4167H22.0002C22.3043 13.4167 22.5783 13.233 22.6939 12.9517C22.8095 12.6703 22.7437 12.3471 22.5274 12.1333L20.8411 10.4666Z"/></svg>Repeats Weekly on Sun</div>
         <div class="sp-cta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="url(#spCamGrad)"/><g transform="translate(12,12) scale(0.575) translate(-12,-12)"><path d="M7.00 6.05 H17.00 A4.30 4.30 0 0 1 21.30 10.35 V16.35 A4.30 4.30 0 0 1 17.00 20.65 H7.00 A4.30 4.30 0 0 1 2.70 16.35 V10.35 A4.30 4.30 0 0 1 7.00 6.05 Z M6.50 6.65 L8.03 4.35 A1.20 1.20 0 0 1 9.36 3.35 L14.64 3.35 A1.20 1.20 0 0 1 15.97 4.35 L17.50 6.65 Z M15.75 13.35 A3.75 3.75 0 1 0 8.25 13.35 A3.75 3.75 0 1 0 15.75 13.35 Z" fill="#FFFFFF"/></g><defs><linearGradient id="spCamGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#7C82FF"/><stop offset="1" stop-color="#3B3FA8"/></linearGradient></defs></svg>Capture Proof</div>
@@ -4614,6 +4650,20 @@ function toggleMode() {
     const el = document.getElementById('sp-day-' + i);
     if (el) el.textContent = fmt(d);
   });
+
+  // "Share this plan": starts at Just me, then switches on once, the first
+  // time the card is in full view (the whole figure is taller than a phone
+  // screen, so it can't be the trigger). Reduced motion skips to shared.
+  const fig = document.getElementById('sp');
+  if (!fig || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  fig.classList.add('is-solo');
+  const io = new IntersectionObserver(es => {
+    if (!es[0].isIntersecting) return;
+    io.disconnect();
+    setTimeout(() => fig.classList.remove('is-solo'), 1100);
+  }, { threshold: 0.9 });
+  io.observe(fig.querySelector('.sp-card'));
 })();
 </script>
 
