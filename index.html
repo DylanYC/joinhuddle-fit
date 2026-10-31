@@ -1887,12 +1887,7 @@
      width, clamped), so bigger desktop cards keep the 188px design's density
      instead of growing whitespace — and the clamp floors keep small cards
      exactly as they are on phones / narrow windows. */
-  /* --cw-tilt is set per stack by the wall script: a couple of degrees either
-     way, so the row looks placed rather than ruled. It lives on the stack, not
-     the cards, so plan and proof tilt together and the flip transforms on the
-     cards are untouched. */
-  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:inherit;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);
-    transform:rotate(var(--cw-tilt,0deg));}
+  .cwall-stack{position:relative;width:var(--cw-w);aspect-ratio:158/190;flex-shrink:0;cursor:inherit;container-type:inline-size;--cw-pad:clamp(10px,6cqw,15px);}
   .cwall-card{position:absolute;inset:0;border-radius:12px;transform-origin:bottom center;
     transition:transform .7s cubic-bezier(.33,1,.68,1),opacity .7s cubic-bezier(.33,1,.68,1);}
   .cwall-plan{z-index:2;background:var(--cw-card-bg);border:1px solid var(--cw-card-bd);box-shadow:var(--cw-card-sh);padding:var(--cw-pad);text-align:left;}
@@ -3944,15 +3939,9 @@ function toggleMode() {
   if (!wall || !track) return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  // Resting tilt per stack, in degrees. Keyed on the plan's index, so both
-  // segments tilt identically and the loop seam stays invisible. Alternating
-  // sign with uneven sizes: a strict +/- of one angle reads as a zigzag.
-  const TILTS = [-2, 1.4, -0.8, 2.2, -1.6, 1, -2.3, 1.8];
-
   function buildStack(plan, i){
     const stack = document.createElement('div');
     stack.className = 'cwall-stack';
-    stack.style.setProperty('--cw-tilt', TILTS[i % TILTS.length] + 'deg');
 
     // proof layer (behind at rest)
     const proof = document.createElement('div');
