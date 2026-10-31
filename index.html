@@ -595,6 +595,10 @@
   .rx-road{fill:none;stroke:var(--rx-road);stroke-linecap:round;}
   .rx-plaza{fill:var(--rx-road);}
   .rx-lane{fill:none;stroke:var(--rx-lane);stroke-linecap:round;}
+  /* The dashes turn Risers blue (the icon's dot colour) as each road nears
+     the centre: the three apps' ideas meet and Risers emerges. */
+  .rx-fade-from{stop-color:var(--rx-lane);}
+  .rx-fade-to{stop-color:#6F75FF;}
   /* soft shadow is baked into the PNG, same as the hero icon */
   .rx-icon{position:absolute;display:block;}
   .rx-card{position:absolute;box-sizing:border-box;background:var(--rx-card);border:1px solid var(--rx-border);box-shadow:var(--rx-shadow);}
@@ -2451,13 +2455,18 @@
     <!-- Desktop canvas: 1280 x 659 -->
     <div class="rx-stage rx-desktop">
       <svg class="rx-svg" aria-hidden="true" width="1280" height="659" viewBox="0 0 1280 659">
+        <defs>
+          <linearGradient id="rx-fade-dl" gradientUnits="userSpaceOnUse" x1="305.7" y1="84" x2="553.8" y2="227.3"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+          <linearGradient id="rx-fade-dr" gradientUnits="userSpaceOnUse" x1="974.3" y1="84" x2="726.2" y2="227.3"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+          <linearGradient id="rx-fade-db" gradientUnits="userSpaceOnUse" x1="640" y1="575" x2="640" y2="365"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+        </defs>
         <path class="rx-road" stroke-width="46" d="M233 42 C 368.6 120.3, 504.3 198.7, 640 277"/>
         <path class="rx-road" stroke-width="46" d="M1047 42 C 911.4 120.3, 775.7 198.7, 640 277"/>
         <path class="rx-road" stroke-width="46" d="M640 617 C 640 503.7, 640 390.3, 640 277"/>
         <rect class="rx-plaza" x="556" y="193" width="168" height="168" rx="48"/>
-        <path class="rx-lane" stroke-width="3" stroke-dasharray="16 12" d="M305.7 84 C 388.4 131.8, 471.1 179.5, 553.8 227.3"/>
-        <path class="rx-lane" stroke-width="3" stroke-dasharray="16 12" d="M974.3 84 C 891.6 131.8, 808.9 179.5, 726.2 227.3"/>
-        <path class="rx-lane" stroke-width="3" stroke-dasharray="16 12" d="M640 575 C 640 505, 640 435, 640 365"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-dl)" stroke-width="3" stroke-dasharray="16 12" d="M305.7 84 C 388.4 131.8, 471.1 179.5, 553.8 227.3"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-dr)" stroke-width="3" stroke-dasharray="16 12" d="M974.3 84 C 891.6 131.8, 808.9 179.5, 726.2 227.3"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-db)" stroke-width="3" stroke-dasharray="16 12" d="M640 575 C 640 505, 640 435, 640 365"/>
       </svg>
 
       <div class="rx-card" style="left:113px; top:0px">
@@ -2486,13 +2495,18 @@
     <!-- Mobile canvas: 350 x 570 -->
     <div class="rx-stage rx-mobile">
       <svg class="rx-svg" aria-hidden="true" width="350" height="570" viewBox="0 0 350 570">
+        <defs>
+          <linearGradient id="rx-fade-ml" gradientUnits="userSpaceOnUse" x1="82" y1="160" x2="112" y2="251.4"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+          <linearGradient id="rx-fade-mr" gradientUnits="userSpaceOnUse" x1="268" y1="160" x2="238" y2="251.4"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+          <linearGradient id="rx-fade-mb" gradientUnits="userSpaceOnUse" x1="175" y1="410" x2="179" y2="328"><stop class="rx-fade-from" offset="0.15"/><stop class="rx-fade-to" offset="0.85"/></linearGradient>
+        </defs>
         <path class="rx-road" stroke-width="34" d="M82 160 C 82 225, 100 262, 150 262"/>
         <path class="rx-road" stroke-width="34" d="M268 160 C 268 225, 250 262, 200 262"/>
         <path class="rx-road" stroke-width="34" d="M175 410 C 161 376, 189 338, 175 300"/>
         <rect class="rx-plaza" x="113" y="200" width="124" height="124" rx="36"/>
-        <path class="rx-lane" stroke-width="2.5" stroke-dasharray="11 10" d="M82 160 C 82 204.6, 90.5 236.1, 112 251.4"/>
-        <path class="rx-lane" stroke-width="2.5" stroke-dasharray="11 10" d="M268 160 C 268 204.6, 259.5 236.1, 238 251.4"/>
-        <path class="rx-lane" stroke-width="2.5" stroke-dasharray="11 10" d="M175 410 C 164.4 384.4, 177.8 356.5, 179 328"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-ml)" stroke-width="2.5" stroke-dasharray="11 10" d="M82 160 C 82 204.6, 90.5 236.1, 112 251.4"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-mr)" stroke-width="2.5" stroke-dasharray="11 10" d="M268 160 C 268 204.6, 259.5 236.1, 238 251.4"/>
+        <path class="rx-lane" style="stroke:url(#rx-fade-mb)" stroke-width="2.5" stroke-dasharray="11 10" d="M175 410 C 164.4 384.4, 177.8 356.5, 179 328"/>
       </svg>
 
       <div class="rx-card" style="left:0; top:0; width:165px; height:160px">
