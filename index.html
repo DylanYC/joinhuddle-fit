@@ -1862,6 +1862,8 @@
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
     mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
   }
+  /* Bottom of the wheel: the edges rise, so the 3vw of arch room moves to the top. */
+  .cwall.cwall-bowl{margin:-24px 0 24px;padding:calc(28px + 3vw) 0 36px;}
   .light .cwall{
     --cw-card-bg:#ffffff; --cw-card-bd:rgba(10,10,24,.10);
     --cw-card-sh:0 3px 8px -3px rgba(26,22,92,.10),0 14px 24px -12px rgba(26,22,92,.14);
@@ -2608,7 +2610,16 @@
 
       <div class="waitlist-error" id="waitlistError" hidden></div>
     </div>
+
   </section>
+
+  <!-- CARD WALL, bottom of the wheel — same cards as the hero, curving the
+       other way. Decorative repeat, so hidden from screen readers. -->
+  <div class="cwall-zone cwall-zone-bowl">
+    <div class="cwall cwall-bowl" id="cwallBowl" aria-hidden="true">
+      <div class="cwall-track" id="cwallBowlTrack"></div>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer class="footer">
@@ -3933,9 +3944,6 @@ function toggleMode() {
   // Presence pool for the avatar dots — Dylan (main user) gets the blue ring.
   const FACES = ['MainUser_Dylan.png','Partner_Klaudia.png','Family_Kyle.png','Crew_Leila.png','Family_Richard.png','Family_Ele.png','Crew_Kev.png','Family_Rachael.png','Crew_Sabi.png','Family_Karl.png','Family_Gisela.png','Family_Mike.png'];
 
-  const wall = document.getElementById('cwall');
-  const track = document.getElementById('cwallTrack');
-  if (!wall || !track) return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function buildStack(plan, i){
@@ -4040,12 +4048,24 @@ function toggleMode() {
     return stack;
   }
 
+  // One giant wheel, seen twice: the hero row is its top (arching up, drifting
+  // left) and the row under the closing waitlist is its bottom (curving like a
+  // bowl, drifting right — the way the underside of a turning wheel moves).
+  // Same engine for both; opt picks the side.
+  //   opt.bowl  — true for the bottom of the wheel
+  //   opt.dir   — 1 drifts left, -1 drifts right
+  //   opt.shift — start the plan list this many cards in, so the rows differ
+  //   opt.input — selector for the form input that pauses this row while typing
+  function initWall(wall, track, opt){
+  if (!wall || !track) return;
+  const order = PLANS.slice(opt.shift).concat(PLANS.slice(0, opt.shift));
+
   // Two identical segments → translateX(0 → -50%) loops seamlessly for any PLANS length.
   for (let copy = 0; copy < 2; copy++) {
     const seg = document.createElement('div');
     seg.className = 'cwall-seg';
     if (copy === 1) seg.setAttribute('aria-hidden', 'true'); // don't read the wall twice
-    PLANS.forEach((p, i) => seg.appendChild(buildStack(p, i)));
+    order.forEach((p, i) => seg.appendChild(buildStack(p, i)));
     track.appendChild(seg);
   }
 
@@ -4053,13 +4073,15 @@ function toggleMode() {
   // ---- Measure: the track is two identical segments; wrapping the offset at
   // one segment's width keeps the marquee seamless in both directions and under
   // any drag distance. ----
-  // ---- Wheel arch: the row reads as the top of one giant circle. Each stack
-  // sits on the rim at the angle its distance from the wall's centre implies,
-  // so the centre card is highest and level, and cards dip and lean outward
-  // towards the edges. Radius scales with the wall, so the curve has the same
-  // shape at every width. ----
+  // ---- Wheel arch: each row reads as part of one giant circle. Each stack
+  // sits on the rim at the angle its distance from the wall's centre implies.
+  // Top of the wheel: the centre card is highest and level, and cards dip and
+  // lean outward towards the edges. Bottom (bowl): mirrored — the centre card
+  // is lowest, and cards rise and lean inward, staying upright. Radius scales
+  // with the wall, so the curve has the same shape at every width. ----
   const WHEEL_R_PER_W = 3.2;            // radius as a multiple of the wall's width
   const stacks = Array.from(track.querySelectorAll('.cwall-stack'));
+  const archSign = opt.bowl ? -1 : 1;
   let stackMids = [], wallMid = 0, wheelR = 1;
 
   let segWidth = 0;
@@ -4074,8 +4096,8 @@ function toggleMode() {
       const dx = stackMids[i] - offset - wallMid;  // along-the-rim distance from centre
       const a = dx / wheelR;                         // angle on the wheel
       const sx = wheelR * Math.sin(a) - dx;          // pull in slightly as the rim curves
-      const sy = wheelR * (1 - Math.cos(a));         // drop below the top
-      stacks[i].style.transform = 'translate3d(' + sx.toFixed(2) + 'px,' + sy.toFixed(2) + 'px,0) rotate(' + (a * 180 / Math.PI).toFixed(3) + 'deg)';
+      const sy = archSign * wheelR * (1 - Math.cos(a)); // drop below the top / rise up the bowl
+      stacks[i].style.transform = 'translate3d(' + sx.toFixed(2) + 'px,' + sy.toFixed(2) + 'px,0) rotate(' + (archSign * a * 180 / Math.PI).toFixed(3) + 'deg)';
     }
   }
   measure();
@@ -4112,7 +4134,7 @@ function toggleMode() {
   // marquee); a drag sets position directly; a release launches a flick that
   // eases back to AUTO_SPEED. So scrubbing and drifting are never two modes —
   // they blend. Replaces the old CSS marquee + tap-to-reveal.
-  const AUTO_SPEED = DRIFT_PX_PER_S;  // px/s, resting leftward drift
+  const AUTO_SPEED = DRIFT_PX_PER_S * opt.dir;  // px/s, resting drift (+ is leftward)
   const FLICK_MAX  = 2600;            // px/s cap so a hard flick can't rocket away
   const COAST_TAU  = 0.42;            // s, how fast a flick eases back into drift
   const NEAR_REST  = 45;              // px/s; under this the wall counts as "settled"
@@ -4162,10 +4184,10 @@ function toggleMode() {
   wall.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') isHovering = false; });
 
   // Nothing moves while someone is typing.
-  const heroInput = document.querySelector('#heroForm input');
-  if (heroInput){
-    heroInput.addEventListener('focus', () => { inputFocused = true; });
-    heroInput.addEventListener('blur',  () => { inputFocused = false; });
+  const formInput = document.querySelector(opt.input);
+  if (formInput){
+    formInput.addEventListener('focus', () => { inputFocused = true; });
+    formInput.addEventListener('blur',  () => { inputFocused = false; });
   }
 
   // Press + drag to scrub (mouse & touch). A vertical gesture is handed back to
@@ -4244,6 +4266,12 @@ function toggleMode() {
       flipStack(best);
     }
   }, FLIP_INTERVAL_MS);
+  }
+
+  initWall(document.getElementById('cwall'), document.getElementById('cwallTrack'),
+    { bowl:false, dir:1, shift:0, input:'#heroForm input' });
+  initWall(document.getElementById('cwallBowl'), document.getElementById('cwallBowlTrack'),
+    { bowl:true, dir:-1, shift:Math.floor(PLANS.length / 2), input:'#mainForm input' });
 })();
 
 /* ============================ THE CLIMB ============================
