@@ -1945,8 +1945,11 @@
   .cwall-cta-ic svg{display:block;width:56%;height:56%;}
   .cwall-backed{display:flex;align-items:center;gap:.5em;font-weight:500;color:var(--cw-meta);white-space:nowrap;overflow:hidden;}
   /* the app's SeenByPulseDot, at rest: a solid dot in a faint disc of itself */
-  .cwall-dot{width:clamp(12px,7cqw,17px);aspect-ratio:1;border-radius:50%;flex-shrink:0;margin-right:-.15em;
-    background:radial-gradient(circle,var(--cw-dot) 0 45%,color-mix(in srgb,var(--cw-dot) 16%,transparent) 47%);}
+  /* inner dot is its own rounded box, not a hard-stop radial gradient —
+     gradients alias into a hexagon at this size once the wheel rotates the card */
+  .cwall-dot{position:relative;width:clamp(12px,7cqw,17px);aspect-ratio:1;border-radius:50%;flex-shrink:0;margin-right:-.15em;
+    background:color-mix(in srgb,var(--cw-dot) 16%,transparent);}
+  .cwall-dot::after{content:"";position:absolute;inset:18%;border-radius:50%;background:var(--cw-dot);}
   .cwall-avs{display:flex;flex-shrink:0;}
   .cwall-av{width:clamp(18px,10.6cqw,26px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.5px solid var(--cw-ring);background:#CFD1FF;flex-shrink:0;}
   .cwall-av+.cwall-av{margin-left:-.32em;}
