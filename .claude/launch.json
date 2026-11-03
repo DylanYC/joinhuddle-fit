@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8848"],
       "port": 8848
+    },
+    {
+      "name": "static-ruby",
+      "runtimeExecutable": "ruby",
+      "runtimeArgs": ["-run", "-e", "httpd", ".", "-p", "8849"],
+      "port": 8849
     }
   ]
 }
