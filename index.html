@@ -1440,12 +1440,17 @@
      tokens, same ask-shimmer keyframes. inline-block gives background-clip a
      single box to clip to; the padding/negative-margin pair is the same
      glyph-overhang allowance line 2 uses and leaves the spacing untouched. */
-  /* POP TRIAL (2026-11): the warm stop takes the candidate Risers "pop"
-     orange #F7773B instead of the shared --ask-warm bronze/sand. Overridden
-     on this span only, so the Climb's ask keeps its summit gold. Same stop
-     position and width — the orange is still an edge on the indigo peak, not
-     a phase of its own. Remove this one line to fall back to the gold. */
-  .rhero-h--keep .rhero-shine{--ask-warm:#F7773B;}
+  /* POP TRIAL (2026-11): the warm stop leans toward the candidate Risers
+     "pop" orange #F7773B instead of the shared --ask-warm bronze/sand.
+     Overridden on this span only, so the Climb's ask keeps its summit gold.
+     Full-strength #F7773B was tried first and read as a solid block across
+     "ach" at display size, so each mode takes the midpoint between the pop
+     and its own old warm stop: light is #F7773B/#8F6B2E (a terracotta, ~3.7:1
+     on the sky), dark is #F7773B/#EFE0C2 (a peach that lifts white text the
+     way the sand did, only warmer). Same stop position and width as before.
+     Remove these two rules to fall back to the gold. */
+  .rhero-h--keep .rhero-shine{--ask-warm:#F4A171;}
+  .light .rhero-h--keep .rhero-shine{--ask-warm:#C37134;}
   .rhero-h--keep .rhero-shine{display:inline-block;padding:.16em;margin:-.16em;
     background-image:linear-gradient(90deg,
       var(--ask-base) 0%, var(--ask-base) 38%,
