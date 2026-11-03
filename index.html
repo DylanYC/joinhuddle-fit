@@ -510,12 +510,17 @@
   .sp-pact{display:inline-flex;align-items:center;transition:opacity .4s ease .15s;}
   .sp-presence-wrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .4s ease .15s;}
   .sp-presence-wrap > .sp-presence{min-height:0;overflow:hidden;}
-  .sp-rail{transition:opacity .5s ease .35s,transform .5s ease .35s;}
+  .sp-rail{transition:opacity .45s ease .05s,transform .6s cubic-bezier(.22,.61,.36,1) .05s;}
+  /* Inside the rail, faces, dates and tiles settle in reading order (--d is
+     set by script) so the panel fills in rather than popping in whole. */
+  .sp-rail .sp-face,.sp-rail .sp-day,.sp-rail .sp-thumb{transition:opacity .4s ease,transform .55s cubic-bezier(.22,.61,.36,1);transition-delay:calc(.15s + var(--d,0) * 35ms);}
   .sp.is-solo .sp-val-solo{opacity:1;}
   .sp.is-solo .sp-val-shared{opacity:0;}
   .sp.is-solo .sp-pact{opacity:0;}
   .sp.is-solo .sp-presence-wrap{grid-template-rows:0fr;}
-  .sp.is-solo .sp-rail{opacity:0;transform:translateY(8px);}
+  .sp.is-solo .sp-rail{opacity:0;transform:translateY(10px);}
+  .sp.is-solo .sp-face,.sp.is-solo .sp-thumb{opacity:0;transform:scale(.92);}
+  .sp.is-solo .sp-day{opacity:0;}
   @media (max-width:820px){ .sp{grid-template-columns:minmax(0,360px);} }
   @media (max-width:640px){ .sp-sec{padding:8px 16px 48px;} }
   .sp-card,.sp-rail{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;}
@@ -4720,18 +4725,20 @@ function toggleMode() {
     if (el) el.textContent = fmt(d);
   });
 
-  // "Share this plan": starts at Just me, then switches on once, the first
-  // time the card is in full view (the whole figure is taller than a phone
+  // "Share this plan": starts at Just me, then switches on once, soon after
+  // the card is mostly in view (the whole figure is taller than a phone
   // screen, so it can't be the trigger). Reduced motion skips to shared.
   const fig = document.getElementById('sp');
   if (!fig || !('IntersectionObserver' in window)) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  fig.querySelectorAll('.sp-rail .sp-face, .sp-rail .sp-day, .sp-rail .sp-thumb')
+    .forEach((el, i) => el.style.setProperty('--d', i));
   fig.classList.add('is-solo');
   const io = new IntersectionObserver(es => {
     if (!es[0].isIntersecting) return;
     io.disconnect();
-    setTimeout(() => fig.classList.remove('is-solo'), 1100);
-  }, { threshold: 0.9 });
+    setTimeout(() => fig.classList.remove('is-solo'), 450);
+  }, { threshold: 0.6 });
   io.observe(fig.querySelector('.sp-card'));
 })();
 </script>
