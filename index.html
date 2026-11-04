@@ -505,22 +505,27 @@
   .sp-val-solo{font-weight:500;color:#757575;opacity:0;}
   .sp-val-shared{font-weight:600;color:#000000;}
   .sp-share-chev{width:14px;height:14px;margin-left:6px;color:#757575;flex-shrink:0;}
-  /* Before the switch (set by script, so no-JS and reduced motion just show
-     the shared plan): "Just me", no green group, no presence, no history. */
+  /* Entrance (classes set by script, so no-JS and reduced motion just show
+     the shared plan). is-pre: the share row, card and rail are all held back,
+     then rise in together, a beat apart, as soon as the figure is in view.
+     is-solo: a moment later the plan switches from "Just me" to shared, which
+     only touches the small details: the value, green group and presence line. */
+  .sp-share,.sp-card,.sp-rail{transition:opacity .5s ease,transform .7s cubic-bezier(.22,.61,.36,1);}
+  .sp-card{transition-delay:70ms;}
+  .sp-rail{transition-delay:140ms;}
+  .sp.is-pre .sp-share,.sp.is-pre .sp-card,.sp.is-pre .sp-rail{opacity:0;transform:translateY(14px);}
   .sp-pact{display:inline-flex;align-items:center;transition:opacity .4s ease .15s;}
   .sp-presence-wrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .4s ease .15s;}
   .sp-presence-wrap > .sp-presence{min-height:0;overflow:hidden;}
-  .sp-rail{transition:opacity .45s ease .05s,transform .6s cubic-bezier(.22,.61,.36,1) .05s;}
   /* Inside the rail, faces, dates and tiles settle in reading order (--d is
      set by script) so the panel fills in rather than popping in whole. */
-  .sp-rail .sp-face,.sp-rail .sp-day,.sp-rail .sp-thumb{transition:opacity .4s ease,transform .55s cubic-bezier(.22,.61,.36,1);transition-delay:calc(.15s + var(--d,0) * 35ms);}
+  .sp-rail .sp-face,.sp-rail .sp-day,.sp-rail .sp-thumb{transition:opacity .4s ease,transform .55s cubic-bezier(.22,.61,.36,1);transition-delay:calc(.22s + var(--d,0) * 30ms);}
   .sp.is-solo .sp-val-solo{opacity:1;}
   .sp.is-solo .sp-val-shared{opacity:0;}
   .sp.is-solo .sp-pact{opacity:0;}
   .sp.is-solo .sp-presence-wrap{grid-template-rows:0fr;}
-  .sp.is-solo .sp-rail{opacity:0;transform:translateY(10px);}
-  .sp.is-solo .sp-face,.sp.is-solo .sp-thumb{opacity:0;transform:scale(.92);}
-  .sp.is-solo .sp-day{opacity:0;}
+  .sp.is-pre .sp-face,.sp.is-pre .sp-thumb{opacity:0;transform:scale(.92);}
+  .sp.is-pre .sp-day{opacity:0;}
   @media (max-width:820px){ .sp{grid-template-columns:minmax(0,360px);} }
   @media (max-width:640px){ .sp-sec{padding:8px 16px 48px;} }
   .sp-card,.sp-rail{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;}
@@ -4725,21 +4730,22 @@ function toggleMode() {
     if (el) el.textContent = fmt(d);
   });
 
-  // "Share this plan": starts at Just me, then switches on once, soon after
-  // the card is mostly in view (the whole figure is taller than a phone
-  // screen, so it can't be the trigger). Reduced motion skips to shared.
+  // The figure rises in as soon as its top is a little way into view, then
+  // "Share this plan" switches from Just me to shared once it has landed.
+  // Reduced motion skips straight to the finished plan.
   const fig = document.getElementById('sp');
   if (!fig || !('IntersectionObserver' in window)) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   fig.querySelectorAll('.sp-rail .sp-face, .sp-rail .sp-day, .sp-rail .sp-thumb')
     .forEach((el, i) => el.style.setProperty('--d', i));
-  fig.classList.add('is-solo');
+  fig.classList.add('is-pre', 'is-solo');
   const io = new IntersectionObserver(es => {
     if (!es[0].isIntersecting) return;
     io.disconnect();
-    setTimeout(() => fig.classList.remove('is-solo'), 450);
-  }, { threshold: 0.6 });
-  io.observe(fig.querySelector('.sp-card'));
+    fig.classList.remove('is-pre');
+    setTimeout(() => fig.classList.remove('is-solo'), 700);
+  }, { rootMargin: '0px 0px -12% 0px' });
+  io.observe(fig);
 })();
 </script>
 
