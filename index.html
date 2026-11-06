@@ -471,6 +471,28 @@
 
   .ic-copy{max-width:360px;}
   .ic-copy h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.1;color:var(--text1);margin-bottom:12px;}
+  /* POP TRIAL (2026-11): matches "each other" on App Store slide 1 — one
+     diagonal sweep (white -> #E78851 -> #AEB2FF -> white) across the whole
+     heading, not restarted per word. It sits on the h2 (background-clip:text
+     clips to descendant glyphs too); the h2's own solid text paints over it
+     and only the .ic-pop spans go transparent to let it show. 170deg here
+     reads like the slide's angle because this box is wider than the slide's
+     (more of the sweep runs left-to-right). Light mode drops the fade back
+     to the base colour (dark -> orange went muddy brown on the pale sky)
+     and deepens the lavender so it still reads. Solid #F7773B: too loud. */
+  .ic-copy h2{background-image:linear-gradient(170deg,
+      #fff 22%, #E78851 45%, #AEB2FF 68%, #fff 88%);
+    -webkit-background-clip:text;background-clip:text;}
+  .light .ic-copy h2{background-image:linear-gradient(170deg,
+      #E07A42 30%, #E78851 45%, #8E92F0 70%, #7D81E6 90%);}
+  .ic-copy h2 .ic-pop{color:transparent;-webkit-text-fill-color:transparent;}
+  /* "Partners" sits early in that sweep and only caught the peach/orange
+     end, so it gets its own copy of the same gradient, sized to the h2
+     (11.25em x 3.3em at 32px) and shifted so the word is centred on the
+     stretch "small" sees — orange easing into lavender, like the slide. */
+  .ic-copy h2 .ic-pop--lead{background-image:inherit;background-size:11.25em 3.3em;
+    background-position:-4.625em -1.04em;background-repeat:no-repeat;
+    -webkit-background-clip:text;background-clip:text;}
   .ic-copy p{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
   .hlc{color:var(--text1);font-weight:500;}
   /* SHARED PLANS — one shared plan the way the app draws it: Dylan's own
@@ -2421,7 +2443,7 @@
       </div>
     </div>
     <div class="ic-copy">
-      <h2>Up to 12 people.<br/>Partners or small groups.</h2>
+      <h2>Up to 12 people.<br/><span class="ic-pop ic-pop--lead">Partners</span> or <span class="ic-pop">small groups</span>.</h2>
       <p>Your inner circle is <span class="hlc">invite-only and consent-based.</span> No strangers. No performance. Just the people you trust enough to be vulnerable with.</p>
       <p>They see your commitments. They see your proof. There for every win and every setback.</p>
     </div>
