@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Risers</title>
+<meta name="robots" content="noindex">
+<!-- Target of the homepage QR code (and anything printed later).
+     iPhones go straight to the App Store once live; everyone else lands on
+     the homepage, which shows the right version for their device. -->
+<script src="/assets/launch.js"></script>
+<script>
+  (function () {
+    var L = window.RISERS_LAUNCH || {};
+    var to = (L.state === 'ios-live' && L.platform === 'ios' && L.appStoreUrl) ? L.appStoreUrl : '/';
+    location.replace(to);
+  })();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=/"></noscript>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 -apple-system,Helvetica,Arial,sans-serif;background:#eef0fb;color:#17151f;}a{color:#5b54e8;}</style>
+<p><a href="/">Continue to risers.fit</a></p>

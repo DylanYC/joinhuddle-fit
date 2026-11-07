@@ -1,0 +1,10 @@
+/* Show/hide rules for the launch switch in assets/launch.js.
+   With no attribute set (JS off), the page falls back to the waitlist version. */
+html:not([data-launch="ios-live"]) .when-live,
+html[data-launch="ios-live"] .when-waitlist{display:none !important;}
+
+/* Device versions (only used by the live call-to-action blocks). */
+html:not([data-platform="desktop"]) .only-desktop,
+html:not([data-platform="ios"]) .only-ios,
+html:not([data-platform="android"]) .only-android,
+html[data-platform="android"] .not-android{display:none !important;}

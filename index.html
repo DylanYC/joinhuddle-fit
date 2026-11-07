@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risers — Everyday wins, shared with your inner circle</title>
+<link rel="stylesheet" href="assets/launch.css">
+<script src="assets/launch.js"></script>
 <link rel="icon" type="image/svg+xml" href="assets/Risers-Favicon-Simple.svg">
 <link rel="apple-touch-icon" href="assets/Risers-Favicon-Simple.svg">
 <!-- Prioritize the topmost (hero) imagery so it paints first instead of racing the rest of the page -->
@@ -2058,6 +2060,63 @@
     .cwall-card{transition:none;}
     .cwall-proof::after{transition:none;}
   }
+
+  /* ============================================================= */
+  /* ==========  LAUNCH: App Store CTA + Android notify  ========== */
+  /* ============================================================= */
+  /* Shown when assets/launch.js sets data-launch="ios-live". The badge and
+     QR card share one height (64px, border-box) so the pair lines up. */
+  .as-badge{box-sizing:border-box;display:inline-flex;align-items:center;gap:10px;height:64px;padding:0 24px 0 19px;
+    background:#000;color:#fff;border:1px solid #a6a6a6;border-radius:13px;text-decoration:none;
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif;
+    transition:transform .15s ease;}
+  .as-badge:hover{transform:translateY(-1px);}
+  .as-badge svg{width:34px;height:34px;fill:#fff;flex:none;margin-top:-3px;}
+  .as-txt{display:flex;flex-direction:column;align-items:flex-start;text-align:left;}
+  .as-txt small{font-size:12.5px;font-weight:500;letter-spacing:.15px;line-height:1.05;}
+  .as-txt b{font-size:28px;font-weight:600;letter-spacing:-.7px;line-height:1.05;}
+
+  .qr-card{box-sizing:border-box;height:64px;display:inline-flex;align-items:center;gap:12px;padding:5px 18px 5px 5px;text-align:left;
+    background:var(--r-card-bg);border:1px solid var(--r-card-bd);border-radius:14px;box-shadow:var(--r-card-sh);
+    backdrop-filter:blur(var(--r-card-blur));-webkit-backdrop-filter:blur(var(--r-card-blur));}
+  .qr-tile{box-sizing:border-box;width:52px;height:52px;padding:3px;background:#fff;border-radius:9px;flex:none;}
+  .qr-tile svg{display:block;width:100%;height:100%;}
+  .qr-cap{display:flex;flex-direction:column;gap:2px;font-family:'Bricolage Grotesque',sans-serif;}
+  .qr-cap b{font-size:14px;font-weight:700;color:var(--r-sub-strong);}
+  .qr-cap span{font-size:12px;color:var(--r-sub);}
+
+  .get-row{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
+  .ios-note{margin:12px 0 0;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:var(--r-sub);}
+
+  .droid{margin-top:18px;font-family:'Bricolage Grotesque',sans-serif;font-size:13.5px;color:var(--r-sub);}
+  .droid-line{display:inline-flex;align-items:center;gap:7px;margin:0;}
+  .droid-line[hidden],.droid-link[hidden],.droid-kicker[hidden]{display:none;}
+  .droid-line svg,.get-droid svg,.droid-kicker svg{width:15px;height:15px;fill:currentColor;flex:none;opacity:.85;}
+  .droid-link{margin-left:4px;background:none;border:none;padding:0;font:inherit;font-weight:700;color:var(--accent2);cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;}
+  .droid .hero-waitlist{margin-top:12px;}
+  .droid-note{margin:9px 0 0;font-size:12px;color:var(--r-sub);}
+  .droid-done{margin:0;font-weight:600;color:var(--r-sub-strong);}
+  .droid-err{margin:9px 0 0;font-size:13px;color:#ff7a7a;}
+  .light .droid-err{color:#c43c3c;}
+
+  /* Android hero: the form is the main CTA, so it shows straight away */
+  .droid-hero{margin-top:0;}
+  .droid-kicker{display:inline-flex;align-items:center;gap:7px;margin:0;padding:6px 13px;border-radius:999px;
+    font-size:13px;font-weight:600;color:var(--r-sub-strong);
+    background:var(--r-card-bg);border:1px solid var(--r-card-bd);}
+  .droid-hero .hero-waitlist{margin-top:14px;}
+  .droid-hero .droid-done{margin-top:6px;font-size:15px;}
+
+  html[data-launch="ios-live"] .waitlist-card{max-width:580px;}
+  .get-card-row{margin:4px 0 0;}
+  .get-divider{height:1px;background:var(--border);margin:28px 0 22px;}
+  .get-droid{display:flex;gap:9px;align-items:flex-start;text-align:left;font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+  .get-droid svg{margin-top:4px;}
+  .get-droid b{color:var(--text1);}
+  .get-ios-link{margin:0;font-size:13px;color:var(--text2);}
+  .get-ios-link a{color:var(--accent2);font-weight:700;text-decoration:underline;text-underline-offset:3px;}
+  @media (max-width:640px){ .get-divider{margin:24px 0 18px;} }
 </style>
 
 <div class="site light" id="site">
@@ -2074,9 +2133,22 @@
         <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
         <span class="t-lbl" id="tlbl">Light</span>
       </button>
-      <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
+      <button class="nav-cta" onclick="risersNavCta()"><span class="when-waitlist">Join Waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Get notified</span></button>
     </div>
   </nav>
+
+  <script>
+  // Nav button: iPhone visitors go straight to the App Store once live,
+  // Android visitors to the hero's notify form, everyone else to #waitlist.
+  function risersNavCta(){
+    var L = window.RISERS_LAUNCH || {};
+    if (L.state === 'ios-live') {
+      if (L.platform === 'ios' && L.appStoreUrl) { location.href = L.appStoreUrl; return; }
+      if (L.platform === 'android') { document.getElementById('rhero').scrollIntoView({behavior:'smooth'}); return; }
+    }
+    document.getElementById('waitlist').scrollIntoView({behavior:'smooth'});
+  }
+  </script>
 
   <!-- 1. HERO — Risers "Daybreak" -->
   <section class="rhero" id="rhero">
@@ -2109,6 +2181,33 @@
       <h1 class="rhero-h rhero-h--keep">Keep <span class="rhero-shine">each other</span> going.</h1>
       <p class="rhero-sub rhero-sub--keep">Risers is a private app where you and your inner circle plan the small things that keep you healthy, share your daily wins with photos, and celebrate together.</p>
       <div class="rhero-cta-center">
+        <!-- LIVE (assets/launch.js → ios-live): App Store first, Android notify -->
+        <div class="when-live">
+          <div class="get-row not-android"><a class="as-badge" href="#" data-appstore aria-label="Download on the App Store"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg><span class="as-txt"><small>Download on the</small><b>App Store</b></span></a><div class="qr-card only-desktop"><div class="qr-tile" id="qrHero"><svg viewBox="0 0 25 25" shape-rendering="crispEdges" role="img" aria-label="QR code that opens risers.fit/get"><!-- encodes https://risers.fit/get (qrcode-generator, level M) --><path fill="#17151f" d="M0 0h7v1h-7zM12 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h2v1h-2zM12 1h1v1h-1zM14 1h3v1h-3zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM15 2h1v1h-1zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h3v1h-3zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM11 5h1v1h-1zM13 5h3v1h-3zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM8 7h1v1h-1zM10 7h3v1h-3zM14 7h1v1h-1zM16 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h3v1h-3zM18 8h5v1h-5zM0 9h1v1h-1zM2 9h3v1h-3zM8 9h5v1h-5zM16 9h1v1h-1zM19 9h1v1h-1zM23 9h1v1h-1zM1 10h2v1h-2zM6 10h2v1h-2zM9 10h2v1h-2zM12 10h4v1h-4zM20 10h2v1h-2zM23 10h2v1h-2zM0 11h2v1h-2zM3 11h1v1h-1zM8 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h3v1h-3zM24 11h1v1h-1zM1 12h1v1h-1zM5 12h2v1h-2zM9 12h1v1h-1zM13 12h2v1h-2zM17 12h4v1h-4zM22 12h3v1h-3zM0 13h2v1h-2zM4 13h2v1h-2zM8 13h3v1h-3zM12 13h1v1h-1zM17 13h1v1h-1zM19 13h1v1h-1zM21 13h1v1h-1zM23 13h1v1h-1zM0 14h1v1h-1zM3 14h4v1h-4zM8 14h1v1h-1zM10 14h1v1h-1zM14 14h3v1h-3zM18 14h4v1h-4zM23 14h2v1h-2zM0 15h1v1h-1zM8 15h3v1h-3zM12 15h1v1h-1zM14 15h1v1h-1zM17 15h1v1h-1zM19 15h2v1h-2zM24 15h1v1h-1zM0 16h1v1h-1zM2 16h2v1h-2zM5 16h2v1h-2zM8 16h1v1h-1zM12 16h9v1h-9zM22 16h1v1h-1zM8 17h3v1h-3zM14 17h1v1h-1zM16 17h1v1h-1zM20 17h2v1h-2zM0 18h7v1h-7zM9 18h4v1h-4zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h3v1h-3zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h4v1h-4zM16 19h1v1h-1zM20 19h2v1h-2zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM11 20h1v1h-1zM15 20h6v1h-6zM22 20h3v1h-3zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM12 21h2v1h-2zM15 21h4v1h-4zM20 21h5v1h-5zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM8 22h2v1h-2zM13 22h3v1h-3zM21 22h2v1h-2zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM12 23h2v1h-2zM16 23h6v1h-6zM24 23h1v1h-1zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h1v1h-1zM17 24h8v1h-8z"/></svg></div><div class="qr-cap"><b>Scan to download</b><span>Point your iPhone camera here</span></div></div></div>
+          <p class="ios-note only-ios">Free on iPhone and iPad.</p>
+          <div class="droid only-desktop" id="droidHero" data-droid>
+            <p class="droid-line" data-step="line form"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/></svg>On Android? Risers lands on Google Play in a couple of weeks.<button type="button" class="droid-link" data-step="line" data-open>Get notified →</button></p>
+            <form class="hero-waitlist" data-step="form" hidden novalidate>
+              <input type="email" aria-label="Email for the Android launch" placeholder="your@email.com" required autocomplete="email"/>
+              <button type="submit">Notify me</button>
+            </form>
+            <p class="droid-note" data-step="form" hidden>One email, the day it lands. Same launch perks as iPhone.</p>
+            <p class="droid-err" data-err hidden></p>
+            <p class="droid-done" data-step="done" hidden>✓ Got it. We'll email you the day Risers lands on Android.</p>
+          </div>
+          <div class="droid droid-hero only-android" id="droidAndroid" data-droid>
+            <p class="droid-kicker" data-step="form"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/></svg>Coming to Android in a couple of weeks</p>
+            <form class="hero-waitlist" data-step="form" novalidate>
+              <input type="email" aria-label="Email for the Android launch" placeholder="your@email.com" required autocomplete="email"/>
+              <button type="submit">Notify me</button>
+            </form>
+            <p class="droid-note" data-step="form">Already live on iPhone. We'll send one email the day it lands, with the same launch perks.</p>
+            <p class="droid-err" data-err hidden></p>
+            <p class="droid-done" data-step="done" hidden>✓ Got it. We'll email you the day Risers lands on Android.</p>
+          </div>
+        </div>
+        <!-- WAITLIST (pre-launch) -->
+        <div class="when-waitlist">
         <!-- waitlist form kept from existing build (wired to waitlist JS) -->
         <form class="hero-waitlist" id="heroForm" novalidate>
           <input type="email" aria-label="Your email address" placeholder="your@email.com" required autocomplete="email"/>
@@ -2121,6 +2220,7 @@
         <div class="hero-waitlist-note" id="heroSuccess" hidden>✓ You're in. <a href="#waitlist" style="color:var(--accent2);text-decoration:underline;">See your share link →</a></div>
         <div class="ref-callout" id="heroPerk" hidden></div>
         <div class="ref-callout" id="heroRefCallout" hidden><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
+        </div>
       </div>
     </div>
 
@@ -2627,9 +2727,33 @@
 
   <!-- 6. WAITLIST SECTION -->
   <section class="waitlist-sec" id="waitlist">
-    <div class="slbl">Waitlist</div>
-    <h2 class="stitle" style="max-width:460px;margin:0 auto;">Join the<br/><em>waitlist.</em></h2>
+    <div class="slbl"><span class="when-waitlist">Waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Android</span></div>
+    <h2 class="stitle" style="max-width:460px;margin:0 auto;"><span class="when-waitlist">Join the<br/><em>waitlist.</em></span><span class="when-live not-android">Start your<br/><em>circle today.</em></span><span class="when-live only-android">Be first<br/><em>on Android.</em></span></h2>
     <div class="waitlist-card">
+      <!-- LIVE (assets/launch.js → ios-live) -->
+      <div class="when-live">
+        <div class="not-android">
+          <p>Risers is free on iPhone. Download it, add your first plan, and invite the people who keep you going.</p>
+          <div class="get-row get-card-row"><a class="as-badge" href="#" data-appstore aria-label="Download on the App Store"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg><span class="as-txt"><small>Download on the</small><b>App Store</b></span></a><div class="qr-card only-desktop"><div class="qr-tile" id="qrMain"><svg viewBox="0 0 25 25" shape-rendering="crispEdges" role="img" aria-label="QR code that opens risers.fit/get"><!-- encodes https://risers.fit/get (qrcode-generator, level M) --><path fill="#17151f" d="M0 0h7v1h-7zM12 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h2v1h-2zM12 1h1v1h-1zM14 1h3v1h-3zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM15 2h1v1h-1zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h3v1h-3zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM11 5h1v1h-1zM13 5h3v1h-3zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM8 7h1v1h-1zM10 7h3v1h-3zM14 7h1v1h-1zM16 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h3v1h-3zM18 8h5v1h-5zM0 9h1v1h-1zM2 9h3v1h-3zM8 9h5v1h-5zM16 9h1v1h-1zM19 9h1v1h-1zM23 9h1v1h-1zM1 10h2v1h-2zM6 10h2v1h-2zM9 10h2v1h-2zM12 10h4v1h-4zM20 10h2v1h-2zM23 10h2v1h-2zM0 11h2v1h-2zM3 11h1v1h-1zM8 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h3v1h-3zM24 11h1v1h-1zM1 12h1v1h-1zM5 12h2v1h-2zM9 12h1v1h-1zM13 12h2v1h-2zM17 12h4v1h-4zM22 12h3v1h-3zM0 13h2v1h-2zM4 13h2v1h-2zM8 13h3v1h-3zM12 13h1v1h-1zM17 13h1v1h-1zM19 13h1v1h-1zM21 13h1v1h-1zM23 13h1v1h-1zM0 14h1v1h-1zM3 14h4v1h-4zM8 14h1v1h-1zM10 14h1v1h-1zM14 14h3v1h-3zM18 14h4v1h-4zM23 14h2v1h-2zM0 15h1v1h-1zM8 15h3v1h-3zM12 15h1v1h-1zM14 15h1v1h-1zM17 15h1v1h-1zM19 15h2v1h-2zM24 15h1v1h-1zM0 16h1v1h-1zM2 16h2v1h-2zM5 16h2v1h-2zM8 16h1v1h-1zM12 16h9v1h-9zM22 16h1v1h-1zM8 17h3v1h-3zM14 17h1v1h-1zM16 17h1v1h-1zM20 17h2v1h-2zM0 18h7v1h-7zM9 18h4v1h-4zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h3v1h-3zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h4v1h-4zM16 19h1v1h-1zM20 19h2v1h-2zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM11 20h1v1h-1zM15 20h6v1h-6zM22 20h3v1h-3zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM12 21h2v1h-2zM15 21h4v1h-4zM20 21h5v1h-5zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM8 22h2v1h-2zM13 22h3v1h-3zM21 22h2v1h-2zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM12 23h2v1h-2zM16 23h6v1h-6zM24 23h1v1h-1zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h1v1h-1zM17 24h8v1h-8z"/></svg></div><div class="qr-cap"><b>Scan to download</b><span>Point your iPhone camera here</span></div></div></div>
+          <div class="get-divider"></div>
+        </div>
+        <div class="droid" id="droidMain" data-droid style="margin:0;">
+          <div class="get-droid" data-step="line"><span class="not-android" style="display:contents"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/></svg></span><span><span class="not-android"><b>On Android?</b> Risers lands on Google Play in the next couple of weeks. Leave your email and we'll tell you the day it's ready.</span><span class="only-android">Risers is live on iPhone and lands on Google Play in a couple of weeks. Leave your email and we'll tell you the day it's ready.</span></span></div>
+          <form class="waitlist-form" data-step="line" novalidate>
+            <input type="email" aria-label="Email for the Android launch" placeholder="your@email.com" required autocomplete="email"/>
+            <button type="submit">Notify me</button>
+          </form>
+          <div class="waitlist-note" data-step="line"><span class="not-android">One email, the day it lands. Same launch perks as iPhone.</span><span class="only-android">One email, the day it lands, with the same launch perks.</span></div>
+          <p class="droid-err" data-err hidden></p>
+          <p class="droid-done" data-step="done" hidden>✓ Got it. We'll email you the day Risers lands on Android.</p>
+        </div>
+        <div class="only-android">
+          <div class="get-divider"></div>
+          <p class="get-ios-link">On an iPhone or iPad? <a href="#" data-appstore>Download on the App Store →</a></p>
+        </div>
+      </div>
+      <!-- WAITLIST (pre-launch) -->
+      <div class="when-waitlist">
       <p id="waitlistIntro">Risers is almost here. Be first in your circle — get early access when we launch on iOS and Android.</p>
       <div class="ref-callout" id="mainRefCallout" hidden style="margin-bottom:18px;"><strong>You've been invited!</strong> Join and we'll lock in <em>1 free month</em> of <span class="pro-tag">Risers Pro</span> for you on the spot — earn 1 more for every friend you bring, up to 12.</div>
       <form class="waitlist-form" id="mainForm" novalidate>
@@ -2655,6 +2779,7 @@
       </div>
 
       <div class="waitlist-error" id="waitlistError" hidden></div>
+      </div>
     </div>
 
   </section>
@@ -4230,11 +4355,10 @@ function toggleMode() {
   wall.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') isHovering = false; });
 
   // Nothing moves while someone is typing.
-  const formInput = document.querySelector(opt.input);
-  if (formInput){
+  document.querySelectorAll(opt.input).forEach((formInput) => {
     formInput.addEventListener('focus', () => { inputFocused = true; });
     formInput.addEventListener('blur',  () => { inputFocused = false; });
-  }
+  });
 
   // Press + drag to scrub (mouse & touch). A vertical gesture is handed back to
   // the page so the wall never traps a scroll.
@@ -4315,9 +4439,9 @@ function toggleMode() {
   }
 
   initWall(document.getElementById('cwall'), document.getElementById('cwallTrack'),
-    { bowl:false, dir:1, shift:0, input:'#heroForm input' });
+    { bowl:false, dir:1, shift:0, input:'#heroForm input, #droidHero input, #droidAndroid input' });
   initWall(document.getElementById('cwallBowl'), document.getElementById('cwallBowlTrack'),
-    { bowl:true, dir:-1, shift:Math.floor(PLANS.length / 2), input:'#mainForm input' });
+    { bowl:true, dir:-1, shift:Math.floor(PLANS.length / 2), input:'#mainForm input, #droidMain input' });
 })();
 
 /* ============================ THE CLIMB ============================
@@ -5096,6 +5220,58 @@ heroForm.addEventListener('submit', (e) => {
 mainForm.addEventListener('submit', (e) => {
   e.preventDefault();
   handleSubmit(mainForm.querySelector('input'));
+});
+
+// ---------- Android "notify me" (launch state ios-live) ----------
+// A separate list from the waitlist, keyed by sha256(email). The rules allow
+// create only, so a repeat signup is refused and we can say "already on it".
+async function submitAndroidNotify(email) {
+  const normalized = email.trim().toLowerCase();
+  const emailHash = await hashEmail(normalized);
+  await setDoc(doc(db, 'androidWaitlist', emailHash), {
+    email: normalized,
+    joinedAt: serverTimestamp(),
+  });
+}
+
+document.querySelectorAll('[data-droid]').forEach((box) => {
+  const show = (step) => box.querySelectorAll('[data-step]').forEach((el) => {
+    el.hidden = !el.dataset.step.split(' ').includes(step);
+  });
+  const err = box.querySelector('[data-err]');
+  const done = box.querySelector('.droid-done');
+  const fail = (msg) => { err.textContent = msg; err.hidden = false; };
+
+  const open = box.querySelector('[data-open]');
+  if (open) open.addEventListener('click', () => { show('form'); box.querySelector('input').focus(); });
+
+  const form = box.querySelector('form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.hidden = true;
+    const email = (form.querySelector('input').value || '').trim();
+    if (!EMAIL_RE.test(email) || email.length > 254) { fail('Please enter a valid email address.'); return; }
+
+    const btn = form.querySelector('button');
+    const label = btn.innerHTML;
+    btn.innerHTML = '<span class="btn-spinner" aria-label="Loading"></span>';
+    btn.disabled = true;
+    try {
+      await submitAndroidNotify(email);
+      show('done');
+    } catch (ex) {
+      if (ex && ex.code === 'permission-denied') {
+        done.textContent = "✓ You're already on the list. We'll email you the day Risers lands on Android.";
+        show('done');
+      } else {
+        console.error('[android notify]', ex);
+        fail('Something went wrong. Please try again.');
+      }
+    } finally {
+      btn.innerHTML = label;
+      btn.disabled = false;
+    }
+  });
 });
 
 const hasNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
