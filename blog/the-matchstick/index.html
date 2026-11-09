@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding Consistency: The Matchstick — Risers</title>
+<link rel="stylesheet" href="/assets/launch.css">
+<script src="/assets/launch.js"></script>
+<meta name="description" content="What if motivation isn't a fuel source at all, but the little flame on a matchstick?">
+<link rel="canonical" href="https://risers.fit/blog/the-matchstick/">
+<meta property="og:title" content="Finding Consistency: The Matchstick">
+<meta property="og:description" content="What if motivation isn't a fuel source at all, but the little flame on a matchstick?">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://risers.fit/blog/the-matchstick/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="apple-touch-icon" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="stylesheet" href="/assets/page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* Blog post. Same quiet long-form column as Our Story and the first post:
+     plain type, no scroll effects, no accent colour in the body. */
+
+  .post{max-width:680px;padding-top:56px;}
+
+  /* Header */
+  .post-kicker{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);text-decoration:none;margin-bottom:20px;transition:color .2s;}
+  .post-kicker:hover{color:var(--text1);}
+  .post h1{font-size:clamp(34px,5.4vw,48px);line-height:1.08;margin-bottom:28px;text-wrap:balance;}
+  .post h1 .h1-sub{display:block;color:var(--text3);}
+
+  .byline{display:flex;align-items:center;gap:12px;padding-bottom:32px;margin-bottom:36px;border-bottom:1px solid var(--prose-rule);}
+  .byline img{width:40px;height:40px;border-radius:50%;box-shadow:0 0 0 2px #5B52E8;display:block;}
+  .byline .who{font-size:14px;font-weight:600;color:var(--text1);line-height:1.3;}
+  .byline .when{font-size:13px;color:var(--text3);line-height:1.3;margin-top:2px;}
+
+  /* Body */
+  .post .prose{font-size:18px;line-height:1.75;}
+  .post .prose p{margin:0 0 22px;}
+  .post .prose strong{font-weight:600;}
+  .post-lede{font-size:20px !important;line-height:1.65 !important;color:var(--text1);}
+
+  /* Goal / "Use motivation to" pairs. The essay runs the same three goals
+     twice, so both runs share one plain layout and read side by side. */
+  .goals{list-style:none;margin:8px 0 30px !important;padding:0;border-top:1px solid var(--prose-rule);}
+  .goals li{margin:0 !important;padding:18px 0;border-bottom:1px solid var(--prose-rule);display:grid;grid-template-columns:150px 1fr;row-gap:6px;}
+  .goal-label{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding-top:5px;}
+  .goal-is{color:var(--text1);font-weight:600;}
+  .goal-use{color:var(--text2);}
+
+  /* The one quote the essay is built around. */
+  .pull{margin:30px 0;padding:2px 0 2px 20px;border-left:2px solid var(--text1);font-size:20px;line-height:1.55;color:var(--text1);font-weight:500;}
+
+  /* A short beat on its own line ("What then?") */
+  .beat{color:var(--text1);font-weight:600;}
+
+  /* The essay's own section break, "~Shift in Perspective~". */
+  .shift-break{text-align:center;color:var(--text3);font-size:15px;letter-spacing:.06em;margin:44px 0 30px !important;}
+
+  /* "Warning": the writer's own heading, kept as a small label over a rule
+     rather than a coloured alert box. */
+  .warn{margin:44px 0 18px !important;padding-top:22px;border-top:1px solid var(--prose-rule);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
+
+  /* Closing note */
+  .closing{margin-top:56px;padding-top:36px;border-top:1px solid var(--prose-rule);}
+  .closing-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+  .closing p{color:var(--text1);}
+  .signoff{margin:6px 0 30px !important;color:var(--text1);font-family:"Caveat","Segoe Script","Bradley Hand",cursive;font-weight:600;font-size:30px;line-height:1.2;}
+  .closing-cta{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text1) !important;border:1px solid var(--border2) !important;border-radius:12px;padding:12px 18px;text-decoration:none;transition:border-color .2s, background .2s;}
+  .closing-cta:hover{border-color:var(--text3) !important;background:var(--surface);}
+
+  /* Nav width ladder — same five links as Our Story. */
+  @media (max-width:1140px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:940px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:860px){ .nav-links{display:none;} }
+
+  @media (max-width:760px){
+    .post{padding-top:36px;}
+    .post .prose{font-size:17px;}
+    .post-lede{font-size:18.5px !important;}
+    .pull{font-size:18.5px;}
+    .goals li{grid-template-columns:1fr;row-gap:2px;}
+    .goals li .goal-label:nth-of-type(3){margin-top:12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site light" id="site">
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"></a>
+    <ul class="nav-links">
+      <li><a href="/#loop">How It Works</a></li>
+      <li><a href="/#inner-circle">Inner Circle</a></li>
+      <li><a href="/#climb">The Climb</a></li>
+      <li><a href="/why-risers-works/">Why It Works</a></li>
+      <li><a href="/our-story/">Our Story</a></li>
+    </ul>
+    <div class="nav-right">
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
+        <span class="t-lbl" id="tlbl">Light</span>
+      </button>
+      <a class="nav-cta" href="/#waitlist"><span class="when-waitlist">Join Waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Get notified</span></a>
+    </div>
+  </nav>
+
+  <main class="page post">
+    <article>
+      <a class="post-kicker" href="/blog/">Consistency &amp; Potential</a>
+      <h1>Finding Consistency: <span class="h1-sub">The Matchstick</span></h1>
+
+      <div class="byline">
+        <img src="/assets/Avatars/MainUser_Dylan.png" alt="" width="40" height="40">
+        <div>
+          <div class="who">Dylan Yip-Chuck</div>
+          <div class="when"><time datetime="2026-11-09">November 9, 2026</time> · 4 min read</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="post-lede">It&rsquo;s time to rethink what motivation really is.</p>
+
+        <p>
+          Motivation feels like it&rsquo;s this giant furnace of energy, enough to
+          fuel us all the way to the end of the goal.
+        </p>
+
+        <p>
+          Most of us do the logical thing: we use 100% of it to fuel our work in
+          achieving the goal.
+        </p>
+
+        <ul class="goals">
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Lose 20lbs by summer</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">go to the gym</span>
+          </li>
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Learn to speak a 2nd language</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">download a bunch of language apps and start crushing lessons</span>
+          </li>
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Write a book</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">write, write, write!!!</span>
+          </li>
+        </ul>
+
+        <p>
+          You get the picture. We tend to get tunnel vision on the obvious work
+          which most quickly accelerates us towards the outcome we want. And if
+          the goal is something relatively small, something like &lsquo;waking up
+          earlier&rsquo;, we can even use the motivation to get the end result
+          instantly: by using the energy to hop out of bed.
+        </p>
+
+        <p>
+          But we know how this story goes: the thing that felt like a never
+          ending furnace reaches the end of its fuel supply&hellip; and goes cold.
+          We wake up one morning and&hellip; it&rsquo;s gone. No more motivation.
+          No more energy.
+        </p>
+
+        <p class="beat">What then?</p>
+
+        <p>
+          More often than not, our progress comes to a halt. Twiddling our thumbs
+          waiting for the spark to come back. And when it doesn&rsquo;t, we face
+          that horrible reality: goal = failed.
+        </p>
+
+        <p class="shift-break">~ Shift in Perspective ~</p>
+
+        <p>
+          What if instead of thinking of motivation as a fuel source, we saw it
+          merely as the little flame on a matchstick?
+        </p>
+
+        <p>
+          Think about what you do when you light a match in real life. Your
+          purpose is focused and singular: get this little flame somewhere
+          QUICK&hellip; to a candle&hellip; to a stack of logs&hellip; somewhere
+          to outlast its inevitable demise!
+        </p>
+
+        <p>
+          Let&rsquo;s replay those goals, this time, with the matchstick
+          perspective in mind.
+        </p>
+
+        <ul class="goals">
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Lose 20lbs by summer</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">rid the house of temptations, build a well thought out plan which keeps things fun and doable without being too ambitious, tell a close friend and ask them to check in on your progress, and so on and so forth&hellip;</span>
+          </li>
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Learn to speak a 2nd language</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">research different learning methods and add a few to the mix that suit your learning style best, seek out a friend who&rsquo;s also learning the language and set up calls on weekends to share progress and practice, pick a future date and circle it on the calendar when you want to take the level A1 test and give yourself a reward if you pass it, and so on and so forth&hellip;</span>
+          </li>
+          <li>
+            <span class="goal-label">Goal</span><span class="goal-is">Write a book</span>
+            <span class="goal-label">Use motivation to</span><span class="goal-use">clean your workspace, add a few blocks of time to your calendar for uninterrupted work time, and so on and so forth&hellip;</span>
+          </li>
+        </ul>
+
+        <p>
+          Hopefully you get the picture. There&rsquo;s a million and one ways to
+          help yourself succeed that aren&rsquo;t actually &ldquo;progressing&rdquo;
+          the goal itself in the direct sense.
+        </p>
+
+        <p class="warn">Warning</p>
+
+        <p class="beat">
+          Does this mean you neglect the actual work and just procrastinate with
+          peripheral things that don&rsquo;t actually lead to real progress?
+        </p>
+
+        <p>
+          It can if you&rsquo;re not careful. This peripheral work can actually
+          feel a lot like &ldquo;real&rdquo; work and give you a sense of
+          accomplishment when you haven&rsquo;t really done anything.
+        </p>
+
+        <p>
+          The right approach is a balanced one. Harness the motivation in part to
+          get to work: to start building momentum and to start getting reps
+          in&hellip; but not all of it. Some of it, however much is necessary,
+          should be spent on building the system to fall back on once the
+          motivation runs cold.
+        </p>
+
+        <p>
+          And even once you&rsquo;re in the swing of things, and the initial
+          systems you built are working&hellip; you can never stop stoking the
+          fire and going out to chop wood to keep it going.
+        </p>
+
+        <p>When you&rsquo;re basking in motivation and energy, ask yourself:</p>
+
+        <blockquote class="pull">&ldquo;When I wake up one day, and do not feel like doing any work, what&rsquo;s going to keep me going?&rdquo;</blockquote>
+
+        <aside class="closing">
+          <div class="closing-label">A footnote on Risers</div>
+          <p>
+            Risers is designed with this philosophy in mind. In its essence,
+            Risers provides a system to fall back on when motivation and
+            willpower cease to exist. That system is plans + witnesses. We believe
+            that when you have the right plan coupled with the right witness(es),
+            you&rsquo;re much more likely to find consistency. And it&rsquo;s
+            daily consistency that matters in the end.
+          </p>
+          <p class="signoff">&mdash; Dylan</p>
+          <a class="closing-cta" href="/#waitlist"><span class="when-waitlist">Join the waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Get notified</span> <span aria-hidden="true">&rarr;</span></a>
+        </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="fbrand">
+      <a href="/" class="fl">
+        <img class="fl-dark" src="/assets/Risers-Logo-Dark-Icon+Wordmark.svg" alt="Risers" width="120" height="28">
+        <img class="fl-light" src="/assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
+      </a>
+      <span class="fbuilt">Built in <span class="fflag">🇩🇪🇨🇦</span></span>
+    </div>
+    <div class="fd">risers.fit</div>
+    <ul class="flinks">
+      <li><a href="/our-story/">Our Story</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/privacy">Privacy Policy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="fcopy">© 2026 Risers™ · Dylan Yip-Chuck</div>
+  </footer>
+
+</div>
+
+<script src="/assets/page.js"></script>
+</body>
+</html>
