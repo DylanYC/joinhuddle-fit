@@ -4098,10 +4098,13 @@ function toggleMode() {
   // plans lead; the more specific ones (knee rehab) sit further back.
   // domain: the app's rising domain for the plan. Not drawn any more (the
   // haze behind the wall went); kept as data.
+  // pinAt: hold this plan at that index in BOTH rows, whatever the row's
+  // shift — so a plan meant to be seen early isn't buried in the bottom row.
   const PLANS = [
     { emoji:'🏃', label:'Morning jog', domain:'movement',        when:'7:00 AM', repeat:'Weekly on Tue, Thu',     avatars:3, proof:PC+'Morning Run by the River_Richard.JPG', desc:'Easy pace by the river', by:'Family_Richard.png', flexes:6 },
     { emoji:'🚶', label:'1000 steps during lunch break', domain:'movement', when:'12:30 PM',  avatars:2, proof:PC+'Lunchtime Walk_Karl.jpg', by:'Family_Karl.png', flexes:3 },
     { emoji:'🥗', label:'Sunday meal prep', domain:'nutrition',   when:'Anytime', repeat:'Weekly on Sun',     avatars:3, proof:PC+'Sunday Meal Prep_Klaudia.JPG', desc:'Lunches ready for the week', by:'Partner_Klaudia.png', flexes:5 },
+    { emoji:'📖', label:'Read a few pages', domain:'hobbies', when:'Anytime', repeat:'Daily', avatars:2, proof:PC+'Read a Few Pages_Dylan.jpg', by:'MainUser_Dylan.png', flexes:3, pinAt:3 },
     { emoji:'😴', label:'Bed by 11', domain:'rest',          when:'11:00 PM', repeat:'Daily', avatars:3, proof:'signature', by:'Partner_Klaudia.png', flexes:2 },
     { emoji:'🍎', label:'Healthy snacks only', domain:'nutrition', when:'All Day', repeat:'Daily',   avatars:2, proof:PC+'Healthy Snacks Only_Klaudia.JPG', by:'Partner_Klaudia.png', flexes:3 },
     { emoji:'👟', label:'15,000 Steps', domain:'movement',       when:'All Day', repeat:'Weekly on Sat, Sun',   avatars:2, proof:'assets/Simple Loop Section Images/Walk 10000 Steps_Kyle.JPG', by:'Family_Kyle.png', flexes:4 },
@@ -4232,7 +4235,11 @@ function toggleMode() {
   //   opt.input — selector for the form input that pauses this row while typing
   function initWall(wall, track, opt){
   if (!wall || !track) return;
-  const order = PLANS.slice(opt.shift).concat(PLANS.slice(0, opt.shift));
+  const order = PLANS.slice(opt.shift).concat(PLANS.slice(0, opt.shift))
+    .filter(p => p.pinAt == null);
+  PLANS.filter(p => p.pinAt != null)
+    .sort((a, b) => a.pinAt - b.pinAt)
+    .forEach(p => order.splice(p.pinAt, 0, p));
 
   // Two identical segments → translateX(0 → -50%) loops seamlessly for any PLANS length.
   for (let copy = 0; copy < 2; copy++) {
