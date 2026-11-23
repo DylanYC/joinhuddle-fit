@@ -16,7 +16,7 @@
  * set before first paint; assets/launch.css does the showing and hiding.
  */
 (function () {
-  var LAUNCH = 'waitlist';
+  var LAUNCH = 'ios-live';
   var APP_STORE_ID = '6798331472'; // Apple ID from App Store Connect → App Information
 
   var q = new URLSearchParams(location.search);
