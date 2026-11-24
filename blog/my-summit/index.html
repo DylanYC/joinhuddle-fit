@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Summit (Public Launch!) — Risers</title>
+<link rel="stylesheet" href="/assets/launch.css">
+<script src="/assets/launch.js"></script>
+<meta name="description" content="After years of almost giving up, Risers is out in 175 countries. Dylan on quitting hockey at 17, the pattern it left, and the formula that finally broke it.">
+<link rel="canonical" href="https://risers.fit/blog/my-summit/">
+<meta property="og:title" content="My Summit (Public Launch!)">
+<meta property="og:description" content="After years of almost giving up, Risers is out in 175 countries. Dylan on quitting hockey at 17, the pattern it left, and the formula that finally broke it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://risers.fit/blog/my-summit/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="apple-touch-icon" href="/assets/Risers-Favicon-Simple.svg">
+<link rel="stylesheet" href="/assets/page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* Blog post. Same quiet long-form column as Our Story and the earlier posts:
+     plain type, no scroll effects, no accent colour in the body. */
+
+  .post{max-width:680px;padding-top:56px;}
+
+  /* Header */
+  .post-kicker{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);text-decoration:none;margin-bottom:20px;transition:color .2s;}
+  .post-kicker:hover{color:var(--text1);}
+  .post h1{font-size:clamp(34px,5.4vw,48px);line-height:1.08;margin-bottom:28px;text-wrap:balance;}
+  .post h1 .h1-sub{display:block;color:var(--text3);}
+
+  .byline{display:flex;align-items:center;gap:12px;padding-bottom:32px;margin-bottom:36px;border-bottom:1px solid var(--prose-rule);}
+  .byline img{width:40px;height:40px;border-radius:50%;box-shadow:0 0 0 2px #5B52E8;display:block;}
+  .byline .who{font-size:14px;font-weight:600;color:var(--text1);line-height:1.3;}
+  .byline .when{font-size:13px;color:var(--text3);line-height:1.3;margin-top:2px;}
+
+  /* Body */
+  .post .prose{font-size:18px;line-height:1.75;}
+  .post .prose p{margin:0 0 22px;}
+  .post .prose strong{font-weight:600;}
+  .post-lede{font-size:20px !important;line-height:1.65 !important;color:var(--text1);}
+
+  /* "I finally never gave up." The one line the story strips down to. */
+  .pull{margin:30px 0;padding:2px 0 2px 20px;border-left:2px solid var(--text1);font-size:20px;line-height:1.55;color:var(--text1);font-weight:500;}
+
+  /* A short beat on its own line ("Years of almost giving up.") */
+  .beat{color:var(--text1);font-weight:600;}
+
+  /* The unedited 2am phone note, quoted in full. Indented under a quiet rule
+     so it reads as a different voice from the rest of the post. */
+  .phone-note{margin:30px 0 34px;padding:4px 0 4px 22px;border-left:1px solid var(--border2);}
+  .phone-note p{color:var(--text2);}
+  .phone-note p:last-child{margin-bottom:0 !important;}
+
+  /* Closing note */
+  .closing{margin-top:56px;padding-top:36px;border-top:1px solid var(--prose-rule);}
+  .closing-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+  .closing p{color:var(--text1);}
+  .signoff{margin:6px 0 30px !important;color:var(--text1);font-family:"Caveat","Segoe Script","Bradley Hand",cursive;font-weight:600;font-size:30px;line-height:1.2;}
+  .closing-cta{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text1) !important;border:1px solid var(--border2) !important;border-radius:12px;padding:12px 18px;text-decoration:none;transition:border-color .2s, background .2s;}
+  .closing-cta:hover{border-color:var(--text3) !important;background:var(--surface);}
+
+  /* Nav width ladder — same five links as Our Story. */
+  @media (max-width:1140px){ .nav-links{position:static;transform:none;gap:20px;} }
+  @media (max-width:940px){ .nav-links{gap:16px;font-size:13.5px;} }
+  @media (max-width:860px){ .nav-links{display:none;} }
+
+  @media (max-width:760px){
+    .post{padding-top:36px;}
+    .post .prose{font-size:17px;}
+    .post-lede{font-size:18.5px !important;}
+    .pull{font-size:18.5px;}
+    .phone-note{padding-left:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site light" id="site">
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/assets/Risers-Wordmark-Light.svg" alt="Risers" class="nav-logo-img"></a>
+    <ul class="nav-links">
+      <li><a href="/#loop">How It Works</a></li>
+      <li><a href="/why-risers-works/">Why It Works</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/our-story/">Our Story</a></li>
+    </ul>
+    <div class="nav-right">
+      <button type="button" class="toggle" id="toggle" onclick="toggleMode()" aria-pressed="false" aria-label="Dark mode">
+        <span class="t-icon" id="ticon" aria-hidden="true">☀️</span>
+        <div class="t-pill" aria-hidden="true"><div class="t-thumb"></div></div>
+        <span class="t-lbl" id="tlbl">Light</span>
+      </button>
+      <a class="nav-cta" href="/#waitlist"><span class="when-waitlist">Join Waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Get notified</span></a>
+    </div>
+  </nav>
+
+  <main class="page post">
+    <article>
+      <a class="post-kicker" href="/blog/">Consistency &amp; Potential</a>
+      <h1>My Summit <span class="h1-sub">Public Launch!</span></h1>
+
+      <div class="byline">
+        <img src="/assets/Avatars/MainUser_Dylan.png" alt="" width="40" height="40">
+        <div>
+          <div class="who">Dylan Yip-Chuck</div>
+          <div class="when"><time datetime="2026-11-24">November 24, 2026</time> · 5 min read</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="post-lede">
+          Is there anything better in this world than reaching the summit after
+          a long and winding journey?
+        </p>
+
+        <p>
+          After many years, many late nights, and many early mornings, my
+          passion project, Risers, is <em>finally</em> released to the public in
+          175 countries.
+        </p>
+
+        <p>
+          This is one of the proudest and happiest achievements of my life. If
+          not, the greatest one.
+        </p>
+
+        <p>
+          I know&hellip; <em>it&rsquo;s just an app</em>. And I know,
+          there&rsquo;s millions of these little apps floating around out there.
+          And millions more coming with the Claude and the ChatGPT AIs of the
+          world now at everyone&rsquo;s fingertips&hellip; enabling people like
+          me to build without writing a single line of code.
+        </p>
+
+        <p>
+          But, this little app, weighing only 165MB of space on your phone, is
+          much bigger to me.
+        </p>
+
+        <p>
+          This wasn&rsquo;t a weekend hack job. This isn&rsquo;t one of those
+          &ldquo;I vibe coded an app in 48 hours&rdquo; stories. This has been
+          <em>years</em> in the making. Years of slowly thinking about the
+          problem of consistency. Years of failing, over and over. And years of
+          slowly tinkering away on wireframes and app names:
+          &ldquo;GymBuddies&rdquo;, &ldquo;FitBuddies&rdquo;,
+          &ldquo;FitBuds&rdquo;, &ldquo;Huddle&rdquo;, and now, Risers.
+        </p>
+
+        <p class="beat">Years of <em>almost</em> giving up.</p>
+
+        <p>
+          And if my Risers story was stripped down to a single line, it would
+          be:
+        </p>
+
+        <blockquote class="pull">&ldquo;I finally never gave up.&rdquo;</blockquote>
+
+        <p>
+          You see, my pattern prior to this was a guy who gave up. A guy who
+          started projects but never finished them. A guy who dreamed more than
+          he actually accomplished. This was becoming my self-talk track. My
+          self identity was cementing more and more each year, that I was a
+          quitter.
+        </p>
+
+        <p>
+          If we really dig it all up, the origins of this self identity go back
+          to my late teenage years, when I gave up on my dream to play pro
+          hockey. At 17, I watched my best friends and teammates get drafted to
+          the Ontario Hockey League. I was 1 of only 3 others on my team who
+          went undrafted. This nearly killed me!
+        </p>
+
+        <p>
+          In the hockey community, I was labelled as &ldquo;injury prone&rdquo;
+          and outside onlookers gave the crutch that it was my femur break or my
+          shoulder separations which was why it ended for me. But, I know the
+          <em>real</em> reason: it wasn&rsquo;t my injuries&hellip; I failed
+          because I gave up. I didn&rsquo;t consistently do the rehab I knew I
+          needed to do to get healthy and back on the ice. And it was very much
+          possible to. My long-time defence partner of 7 seasons, for example,
+          had the identical shoulder injury as I did, and he went on to fully
+          recover and go pro.
+        </p>
+
+        <p>
+          (Quick note: I am not saying I would have gone pro&hellip; don&rsquo;t
+          worry, I am not one of those &ldquo;I&rsquo;d have gone pro if
+          only&hellip;X, Y, Z&rdquo; guys lol! I never had the same God given
+          talent as my friends who made it. But I certainly <em>know</em> I quit
+          before my potential. I know that.)
+        </p>
+
+        <p>
+          Consistency and discipline have never been in my nature. On the flip
+          side, it&rsquo;s in my nature to dream big and be hyper motivated in
+          short spurts. My issue is <em>doing the work you know you have to do
+          when you don&rsquo;t feel like doing it</em>. This is why I failed as
+          a hockey player at 17. And it&rsquo;s the same reason why, since then,
+          I&rsquo;ve never really accomplished anything of real significance. It
+          wasn&rsquo;t for lack of ideas, or motivation. Those have been
+          plentiful.
+        </p>
+
+        <p>
+          I just suck at the consistency part. And in the end, without
+          consistency, all roads end before the summit&hellip;
+        </p>
+
+        <p>
+          So, maybe now, you can see why this little app, Risers, means so much
+          to me. On many levels, it liberated me from the horrible pattern
+          I&rsquo;d entrenched for myself since I was 17 years old. Now at 30, I
+          finally made it to the summit on one of my big dreams after a very
+          long and winding road. Many moments I wanted to quit. Many moments it
+          would have been easier to fall into the grooves of my old ways and
+          give up when things got hard.
+        </p>
+
+        <p>
+          You&rsquo;ll find a lot of this story tucked inside of Risers. In the
+          name, in the visuals, in the monthly consistency challenge (which I
+          call &ldquo;The Climb&rdquo;). My story is deeply embedded within this
+          thing.
+        </p>
+
+        <p>
+          To end this little blog, I thought I&rsquo;d share my unedited note
+          from my phone that I wrote at 2am last night, as I couldn&rsquo;t fall
+          asleep. I was too busy dreaming! Something I can&rsquo;t help but
+          do&hellip;
+        </p>
+
+        <div class="phone-note">
+          <p>
+            We all have something in our life (or maybe even multiple things!)
+            that we wish we were doing more of to be healthier. Whether
+            it&rsquo;s an ambition to be more active, or perhaps a desire to eat
+            better, or to read more, or to sleep longer, or perhaps even to put
+            more time into a hobby like playing an instrument&hellip;or
+            painting&hellip;or knitting or whatever it is you&rsquo;d love to do.
+            And <em>yet,</em> so often we attempt to stay on top of these things
+            completely <em>alone</em> with just our own individual discipline and
+            will power to rely on.
+          </p>
+          <p>
+            I&rsquo;ve always struggled with these things: discipline and will
+            power. I so badly want to be consistent, I know consistency is the
+            key. But, I&rsquo;m the kind of person to be hyper motivated at the
+            start, and then drop off a massive cliff after a bit of
+            time&hellip;after the motivation fades.
+          </p>
+          <p>
+            I realized that for me, there was a formula I was missing. This
+            formula is: daily plans, actually written down, plus witnesses,
+            actually aware of the plan and whether I followed through.
+          </p>
+          <p>
+            So, I built risers to give this formula a home. Its purpose is to
+            help people stick with whatever they&rsquo;re trying to stick with,
+            with their partner or inner circle by their side.
+          </p>
+          <p>
+            You join with your circle (a partner, a few close friends, or a few
+            family members), make and share your own personal daily plans of
+            whatever you&rsquo;re wanting to stick with (however big or small),
+            snap a quick photo or video as proof, and share these little moments
+            and wins throughout the day.
+          </p>
+          <p>
+            It turns out this little act, simply sharing healthy moments with
+            that person or those few who really have your back is also an amazing
+            way to stay in touch from anywhere; to stay in contact in a simple,
+            unforced and healthy way. Most apps on our phones these
+            days&hellip;most technology in general&hellip; tends to do more harm
+            than good for our health. And tend to prioritize seeing strangers.
+            Risers is meant to flip that upside down: to put <em>your health</em>
+            and <em>your closest people</em> back in the spotlight.
+          </p>
+          <p>
+            I hope you try it with your circle. And I hope it helps you find a
+            bit more consistency with whatever it is in your life which would
+            help you feel healthy. And I hope this becomes a space for you to
+            connect even more&hellip; and keep each other going!
+          </p>
+        </div>
+
+        <aside class="closing">
+          <div class="closing-label">A footnote on Risers</div>
+          <p>
+            Risers, perhaps not so ironically, is about helping people like
+            myself crack the code on being more consistent. Plan(s) +
+            witness(es) is my formula for consistency and I hope that it can
+            help others like me too.
+          </p>
+          <p class="signoff">&mdash; Dylan</p>
+          <a class="closing-cta" href="/#waitlist"><span class="when-waitlist">Join the waitlist</span><span class="when-live not-android">Get the app</span><span class="when-live only-android">Get notified</span> <span aria-hidden="true">&rarr;</span></a>
+        </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="fbrand">
+      <a href="/" class="fl">
+        <img class="fl-dark" src="/assets/Risers-Logo-Dark-Icon+Wordmark.svg" alt="Risers" width="120" height="28">
+        <img class="fl-light" src="/assets/Risers-Logo-Light-Icon+Wordpark.svg" alt="Risers" width="120" height="28">
+      </a>
+      <span class="fbuilt">Built in <span class="fflag">🇩🇪🇨🇦</span></span>
+    </div>
+    <div class="fd">risers.fit</div>
+    <ul class="flinks">
+      <li><a href="/our-story/">Our Story</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/privacy">Privacy Policy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="fcopy">© 2026 Risers™ · Dylan Yip-Chuck</div>
+  </footer>
+
+</div>
+
+<script src="/assets/page.js"></script>
+</body>
+</html>
