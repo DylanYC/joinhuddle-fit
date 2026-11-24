@@ -1505,6 +1505,11 @@
      one line. Below that the size is derived from the box itself — viewport
      minus the column's 2x24px padding, over 10.95 for a hair of slack — so it
      stays on one line at every width instead of wrapping "going." alone. */
+  /* Kicker above "Keep each other going." — a quiet category label, not a
+     second headline: small tracked caps in the accent ink, no pill, no
+     full stop. Same face/tracking family as .rhero-iceyebrow. */
+  .rhero-kicker{font-family:'Bricolage Grotesque',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r-accent);margin:0 0 12px;}
+  @media (max-width:600px){.rhero-kicker{font-size:11px;margin-bottom:8px;}}
   .rhero-h.rhero-h--keep{font-weight:800;font-size:clamp(24px,calc((100vw - 48px) / 10.95),65px);line-height:1.08;letter-spacing:-0.025em;}
   /* "each other" takes line 2's shimmer as-is — same stops, same --ask-*
      tokens, same ask-shimmer keyframes. inline-block gives background-clip a
@@ -2214,6 +2219,7 @@
       <h1 class="rhero-h"><span class="rhero-accent">Rise each day,</span><span class="rhero-line2">backed by your inner&nbsp;circle.</span></h1>
       <p class="rhero-sub">Plan the daily things you want to stick with.<br>Capture proof when you do.<br>Only your inner circle sees it.</p>
       -->
+      <p class="rhero-kicker">Find consistency, together</p>
       <h1 class="rhero-h rhero-h--keep">Keep <span class="rhero-shine">each other</span> going.</h1>
       <p class="rhero-sub rhero-sub--keep">Risers is a private app where you and your inner circle plan the small things that keep you healthy, share your daily wins with photos, and celebrate together.</p>
       <div class="rhero-cta-center">
